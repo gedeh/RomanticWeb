@@ -111,7 +111,7 @@ namespace RomanticWeb.Tests.IntegrationTests
 
         public class LifeOntology : IOntologyProvider
         {
-            public IEnumerable<Ontology> Ontologies
+            public IEnumerable<IOntology> Ontologies
             {
                 get
                 {
@@ -132,7 +132,7 @@ namespace RomanticWeb.Tests.IntegrationTests
 
         public class ChemOntology : IOntologyProvider
         {
-            public IEnumerable<Ontology> Ontologies
+            public IEnumerable<IOntology> Ontologies
             {
                 get
                 {

@@ -24,7 +24,7 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         }
 
         /// <summary>Get an <see cref="ObservableCollection{T}"/> containing <paramref name="nodes"/>' values.</summary>
-        public override object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, [AllowNull] IEnumerable<Node> nodes)
+        public override object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, [AllowNull] IEnumerable<INode> nodes)
         {
             var convertedValues = nodes.Select(node => ((ICollectionMapping)property).ElementConverter.Convert(node, context));
             var collectionElements = ((IEnumerable<object>)Aggregator.Aggregate(convertedValues)).ToArray();
@@ -46,14 +46,14 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         }
 
         /// <summary>Gets a node for each collection element.</summary>
-        public override IEnumerable<Node> ToNodes(object collection, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
+        public override IEnumerable<INode> ToNodes(object collection, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
         {
             return from object value in (IEnumerable)collection
                    select base.ToNodes(value, proxy, property, context).Single();
         }
 
         /// <inheritdoc />
-        protected override object Transform(Node node, IPropertyMapping property, IEntityContext context)
+        protected override object Transform(INode node, IPropertyMapping property, IEntityContext context)
         {
             return property.Converter.Convert(node, context);
         }

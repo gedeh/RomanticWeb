@@ -1,7 +1,7 @@
-/*********************************************************************************   
+/*********************************************************************************
     The MIT License (MIT)
 
-    Copyright (c) 2014 bernhard.richter@gmail.com
+    Copyright (c) 2015 bernhard.richter@gmail.com
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -21,42 +21,59 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ******************************************************************************
-    LightInject version 3.0.2.0
+    LightInject version 4.0.11
     http://www.lightinject.net/
     http://twitter.com/bernhardrichter
 ******************************************************************************/
+
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1126:PrefixCallsCorrectly", Justification = "Reviewed")]
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1101:PrefixLocalCallsWithThis", Justification = "No inheritance")]
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Single source file deployment.")]
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1633:FileMustHaveHeader", Justification = "Custom header.")]
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "All public members are documented.")]
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Performance")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("MaintainabilityRules", "SA1403", Justification = "One source file")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationRules", "SA1649", Justification = "One source file")]
 
 namespace RomanticWeb.LightInject
 {
-    using System;    
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
     using System.IO;
+#endif
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Reflection.Emit;
+#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
+    using System.Reflection.Emit;
+#endif
     using System.Runtime.CompilerServices;
+#if NET45
     using System.Runtime.Remoting.Messaging;
+#endif
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
 
     /// <summary>
+    /// A delegate that represent the dynamic method compiled to resolved service instances.
+    /// </summary>
+    /// <param name="args">The arguments used by the dynamic method that this delegate represents.</param>
+    /// <returns>A service instance.</returns>
+    internal delegate object GetInstanceDelegate(object[] args);
+
+    /// <summary>
     /// Defines a set of methods used to register services into the service container.
     /// </summary>
-    internal interface IServiceRegistry
-    {           
+    public interface IServiceRegistry
+    {
         /// <summary>
-        /// Gets a list of <see cref="ServiceRegistration"/> instances that represents the 
-        /// registered services.          
+        /// Gets a list of <see cref="ServiceRegistration"/> instances that represents the
+        /// registered services.
         /// </summary>
         IEnumerable<ServiceRegistration> AvailableServices { get; }
 
@@ -97,7 +114,8 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
-        void Register<TService, TImplementation>() where TImplementation : TService;
+        void Register<TService, TImplementation>()
+            where TImplementation : TService;
 
         /// <summary>
         /// Registers the <typeparamref name="TService"/> with the <typeparamref name="TImplementation"/>.
@@ -105,7 +123,8 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        void Register<TService, TImplementation>(ILifetime lifetime) where TImplementation : TService;
+        void Register<TService, TImplementation>(ILifetime lifetime)
+            where TImplementation : TService;
 
         /// <summary>
         /// Registers the <typeparamref name="TService"/> with the <typeparamref name="TImplementation"/>.
@@ -113,7 +132,8 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
         /// <param name="serviceName">The name of the service.</param>
-        void Register<TService, TImplementation>(string serviceName) where TImplementation : TService;
+        void Register<TService, TImplementation>(string serviceName)
+            where TImplementation : TService;
 
         /// <summary>
         /// Registers the <typeparamref name="TService"/> with the <typeparamref name="TImplementation"/>.
@@ -122,17 +142,18 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
         /// <param name="serviceName">The name of the service.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        void Register<TService, TImplementation>(string serviceName, ILifetime lifetime) where TImplementation : TService;
+        void Register<TService, TImplementation>(string serviceName, ILifetime lifetime)
+            where TImplementation : TService;
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>. 
+        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="instance">The instance returned when this service is requested.</param>
         void RegisterInstance<TService>(TService instance);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>. 
+        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="instance">The instance returned when this service is requested.</param>
@@ -140,14 +161,14 @@ namespace RomanticWeb.LightInject
         void RegisterInstance<TService>(TService instance, string serviceName);
 
         /// <summary>
-        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>. 
+        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <param name="serviceType">The service type to register.</param>
         /// <param name="instance">The instance returned when this service is requested.</param>
         void RegisterInstance(Type serviceType, object instance);
 
         /// <summary>
-        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>. 
+        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <param name="serviceType">The service type to register.</param>
         /// <param name="instance">The instance returned when this service is requested.</param>
@@ -159,7 +180,7 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         void Register<TService>();
-                
+
         /// <summary>
         /// Registers a concrete type as a service.
         /// </summary>
@@ -179,130 +200,130 @@ namespace RomanticWeb.LightInject
         /// <param name="serviceType">The concrete type to register.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
         void Register(Type serviceType, ILifetime lifetime);
-       
+
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        void Register<TService>(Expression<Func<IServiceFactory, TService>> factory);
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        void Register<TService>(Func<IServiceFactory, TService> factory);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T">The parameter type.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        void Register<T, TService>(Expression<Func<IServiceFactory, T, TService>> factory);
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        void Register<T, TService>(Func<IServiceFactory, T, TService> factory);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T">The parameter type.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param> 
-        /// <param name="serviceName">The name of the service.</param>        
-        void Register<T, TService>(Expression<Func<IServiceFactory, T, TService>> factory, string serviceName);
-
-        /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
-        /// </summary>
-        /// <typeparam name="T1">The type of the first parameter.</typeparam>
-        /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        void Register<T1, T2, TService>(Expression<Func<IServiceFactory, T1, T2, TService>> factory);
-
-        /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
-        /// </summary>
-        /// <typeparam name="T1">The type of the first parameter.</typeparam>
-        /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
         /// <param name="serviceName">The name of the service.</param>
-        void Register<T1, T2, TService>(Expression<Func<IServiceFactory, T1, T2, TService>> factory, string serviceName);
+        void Register<T, TService>(Func<IServiceFactory, T, TService> factory, string serviceName);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        void Register<T1, T2, TService>(Func<IServiceFactory, T1, T2, TService> factory);
+
+        /// <summary>
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        /// <param name="serviceName">The name of the service.</param>
+        void Register<T1, T2, TService>(Func<IServiceFactory, T1, T2, TService> factory, string serviceName);
+
+        /// <summary>
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        void Register<T1, T2, T3, TService>(Expression<Func<IServiceFactory, T1, T2, T3, TService>> factory);
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        void Register<T1, T2, T3, TService>(Func<IServiceFactory, T1, T2, T3, TService> factory);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
         /// <param name="serviceName">The name of the service.</param>
-        void Register<T1, T2, T3, TService>(Expression<Func<IServiceFactory, T1, T2, T3, TService>> factory, string serviceName);
+        void Register<T1, T2, T3, TService>(Func<IServiceFactory, T1, T2, T3, TService> factory, string serviceName);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        void Register<T1, T2, T3, T4, TService>(Expression<Func<IServiceFactory, T1, T2, T3, T4, TService>> factory);
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        void Register<T1, T2, T3, T4, TService>(Func<IServiceFactory, T1, T2, T3, T4, TService> factory);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
         /// <param name="serviceName">The name of the service.</param>
-        void Register<T1, T2, T3, T4, TService>(Expression<Func<IServiceFactory, T1, T2, T3, T4, TService>> factory, string serviceName);
+        void Register<T1, T2, T3, T4, TService>(Func<IServiceFactory, T1, T2, T3, T4, TService> factory, string serviceName);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        void Register<TService>(Expression<Func<IServiceFactory, TService>> factory, ILifetime lifetime);
+        void Register<TService>(Func<IServiceFactory, TService> factory, ILifetime lifetime);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
-        /// <param name="serviceName">The name of the service.</param>        
-        void Register<TService>(Expression<Func<IServiceFactory, TService>> factory, string serviceName);
+        /// <param name="serviceName">The name of the service.</param>
+        void Register<TService>(Func<IServiceFactory, TService> factory, string serviceName);
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
-        /// <param name="serviceName">The name of the service.</param>        
+        /// <param name="serviceName">The name of the service.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        void Register<TService>(Expression<Func<IServiceFactory, TService>> factory, string serviceName, ILifetime lifetime);
+        void Register<TService>(Func<IServiceFactory, TService> factory, string serviceName, ILifetime lifetime);
 
         /// <summary>
         /// Registers a custom factory delegate used to create services that is otherwise unknown to the service container.
@@ -324,15 +345,15 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <param name="serviceRegistration">The <see cref="ServiceRegistration"/> instance that contains service metadata.</param>
         void Register(ServiceRegistration serviceRegistration);
-        
+
         /// <summary>
-        /// Registers services from the given <paramref name="assembly"/>.
+        /// Registers composition roots from the given <paramref name="assembly"/>.
         /// </summary>
-        /// <param name="assembly">The assembly to be scanned for services.</param>        
+        /// <param name="assembly">The assembly to be scanned for services.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
+        /// </remarks>
         void RegisterAssembly(Assembly assembly);
 
         /// <summary>
@@ -341,21 +362,21 @@ namespace RomanticWeb.LightInject
         /// <param name="assembly">The assembly to be scanned for services.</param>
         /// <param name="shouldRegister">A function delegate that determines if a service implementation should be registered.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
+        /// </remarks>
         void RegisterAssembly(Assembly assembly, Func<Type, Type, bool> shouldRegister);
 
         /// <summary>
         /// Registers services from the given <paramref name="assembly"/>.
         /// </summary>
         /// <param name="assembly">The assembly to be scanned for services.</param>
-        /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
+        /// <param name="lifetimeFactory">The <see cref="ILifetime"/> factory that controls the lifetime of the registered service.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
-        void RegisterAssembly(Assembly assembly, Func<ILifetime> lifetime);
+        /// </remarks>
+        void RegisterAssembly(Assembly assembly, Func<ILifetime> lifetimeFactory);
 
         /// <summary>
         /// Registers services from the given <paramref name="assembly"/>.
@@ -364,23 +385,53 @@ namespace RomanticWeb.LightInject
         /// <param name="lifetimeFactory">The <see cref="ILifetime"/> factory that controls the lifetime of the registered service.</param>
         /// <param name="shouldRegister">A function delegate that determines if a service implementation should be registered.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
+        /// </remarks>
         void RegisterAssembly(Assembly assembly, Func<ILifetime> lifetimeFactory, Func<Type, Type, bool> shouldRegister);
 
         /// <summary>
         /// Registers services from the given <typeparamref name="TCompositionRoot"/> type.
         /// </summary>
         /// <typeparam name="TCompositionRoot">The type of <see cref="ICompositionRoot"/> to register from.</typeparam>
-        void RegisterFrom<TCompositionRoot>() where TCompositionRoot : ICompositionRoot, new();
+        void RegisterFrom<TCompositionRoot>()
+            where TCompositionRoot : ICompositionRoot, new();
 
+        /// <summary>
+        /// Registers a factory delegate to be used when resolving a constructor dependency for
+        /// a implicitly registered service.
+        /// </summary>
+        /// <typeparam name="TDependency">The dependency type.</typeparam>
+        /// <param name="factory">The factory delegate used to create an instance of the dependency.</param>
+        void RegisterConstructorDependency<TDependency>(
+            Func<IServiceFactory, ParameterInfo, TDependency> factory);
+
+        /// <summary>
+        /// Registers a factory delegate to be used when resolving a constructor dependency for
+        /// a implicitly registered service.
+        /// </summary>
+        /// <typeparam name="TDependency">The dependency type.</typeparam>
+        /// <param name="factory">The factory delegate used to create an instance of the dependency.</param>
+        void RegisterConstructorDependency<TDependency>(
+            Func<IServiceFactory, ParameterInfo, object[], TDependency> factory);
+
+        /// <summary>
+        /// Registers a factory delegate to be used when resolving a constructor dependency for
+        /// a implicitly registered service.
+        /// </summary>
+        /// <typeparam name="TDependency">The dependency type.</typeparam>
+        /// <param name="factory">The factory delegate used to create an instance of the dependency.</param>
+        void RegisterPropertyDependency<TDependency>(
+            Func<IServiceFactory, PropertyInfo, TDependency> factory);
+
+#if NET45 || NET46 || NETSTANDARD11
         /// <summary>
         /// Registers composition roots from assemblies in the base directory that matches the <paramref name="searchPattern"/>.
         /// </summary>
         /// <param name="searchPattern">The search pattern used to filter the assembly files.</param>
-        void RegisterAssembly(string searchPattern);    
-   
+        void RegisterAssembly(string searchPattern);
+#endif
+
         /// <summary>
         /// Decorates the <paramref name="serviceType"/> with the given <paramref name="decoratorType"/>.
         /// </summary>
@@ -394,7 +445,7 @@ namespace RomanticWeb.LightInject
         /// Decorates the <paramref name="serviceType"/> with the given <paramref name="decoratorType"/>.
         /// </summary>
         /// <param name="serviceType">The target service type.</param>
-        /// <param name="decoratorType">The decorator type used to decorate the <paramref name="serviceType"/>.</param>        
+        /// <param name="decoratorType">The decorator type used to decorate the <paramref name="serviceType"/>.</param>
         void Decorate(Type serviceType, Type decoratorType);
 
         /// <summary>
@@ -402,14 +453,15 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The target service type.</typeparam>
         /// <typeparam name="TDecorator">The decorator type used to decorate the <typeparamref name="TService"/>.</typeparam>
-        void Decorate<TService, TDecorator>() where TDecorator : TService;
+        void Decorate<TService, TDecorator>()
+            where TDecorator : TService;
 
         /// <summary>
         /// Decorates the <typeparamref name="TService"/> using the given decorator <paramref name="factory"/>.
         /// </summary>
         /// <typeparam name="TService">The target service type.</typeparam>
         /// <param name="factory">A factory delegate used to create a decorator instance.</param>
-        void Decorate<TService>(Expression<Func<IServiceFactory, TService, TService>> factory);
+        void Decorate<TService>(Func<IServiceFactory, TService, TService> factory);
 
         /// <summary>
         /// Registers a decorator based on a <see cref="DecoratorRegistration"/> instance.
@@ -427,12 +479,26 @@ namespace RomanticWeb.LightInject
         void Override(
             Func<ServiceRegistration, bool> serviceSelector,
             Func<IServiceFactory, ServiceRegistration, ServiceRegistration> serviceRegistrationFactory);
+
+        /// <summary>
+        /// Allows post-processing of a service instance.
+        /// </summary>
+        /// <param name="predicate">A function delegate that determines if the given service can be post-processed.</param>
+        /// <param name="processor">An action delegate that exposes the created service instance.</param>
+        void Initialize(Func<ServiceRegistration, bool> predicate, Action<IServiceFactory, object> processor);
+
+        /// <summary>
+        /// Sets the default lifetime for types registered without an explicit lifetime. Will only affect new registrations (after this call).
+        /// </summary>
+        /// <typeparam name="T">The default lifetime type</typeparam>
+        void SetDefaultLifetime<T>()
+            where T : ILifetime, new();
     }
-    
+
     /// <summary>
     /// Defines a set of methods used to retrieve service instances.
     /// </summary>
-    internal interface IServiceFactory
+    public interface IServiceFactory
     {
         /// <summary>
         /// Starts a new <see cref="Scope"/>.
@@ -465,7 +531,7 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <param name="serviceType">The type of the requested service.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <param name="arguments">The arguments to be passed to the target instance.</param>        
+        /// <param name="arguments">The arguments to be passed to the target instance.</param>
         /// <returns>The requested service instance.</returns>
         object GetInstance(Type serviceType, string serviceName, object[] arguments);
 
@@ -489,26 +555,26 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<TService>(string serviceName);
 
         /// <summary>
         /// Gets an instance of the given <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="T">The type of the argument.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="value">The argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T, TService>(T value);
 
         /// <summary>
         /// Gets an instance of the given <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="T">The type of the parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="value">The argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T, TService>(T value, string serviceName);
 
         /// <summary>
@@ -516,10 +582,10 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T1, T2, TService>(T1 arg1, T2 arg2);
 
         /// <summary>
@@ -527,11 +593,11 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T1, T2, TService>(T1 arg1, T2 arg2, string serviceName);
 
         /// <summary>
@@ -540,11 +606,11 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T1, T2, T3, TService>(T1 arg1, T2 arg2, T3 arg3);
 
         /// <summary>
@@ -553,12 +619,12 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T1, T2, T3, TService>(T1 arg1, T2 arg2, T3 arg3, string serviceName);
 
         /// <summary>
@@ -568,12 +634,12 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
         /// <param name="arg4">The fourth argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T1, T2, T3, T4, TService>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 
         /// <summary>
@@ -583,13 +649,13 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
         /// <param name="arg4">The fourth argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         TService GetInstance<T1, T2, T3, T4, TService>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, string serviceName);
 
         /// <summary>
@@ -635,19 +701,35 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TService">The type of services to resolve.</typeparam>
         /// <returns>A list that contains all implementations of the <typeparamref name="TService"/> type.</returns>
         IEnumerable<TService> GetAllInstances<TService>();
+
+        /// <summary>
+        /// Creates an instance of a concrete class.
+        /// </summary>
+        /// <typeparam name="TService">The type of class for which to create an instance.</typeparam>
+        /// <returns>An instance of <typeparamref name="TService"/>.</returns>
+        /// <remarks>The concrete type will be registered if not already registered with the container.</remarks>
+        TService Create<TService>()
+            where TService : class;
+
+        /// <summary>
+        /// Creates an instance of a concrete class.
+        /// </summary>
+        /// <param name="serviceType">The type of class for which to create an instance.</param>
+        /// <returns>An instance of the <paramref name="serviceType"/>.</returns>
+        object Create(Type serviceType);
     }
 
     /// <summary>
     /// Represents an inversion of control container.
     /// </summary>
-    internal interface IServiceContainer : IServiceRegistry, IServiceFactory, IDisposable
+    public interface IServiceContainer : IServiceRegistry, IServiceFactory, IDisposable
     {
         /// <summary>
-        /// Gets or sets the <see cref="IScopeManagerProvider"/> that is responsible 
+        /// Gets or sets the <see cref="IScopeManagerProvider"/> that is responsible
         /// for providing the <see cref="ScopeManager"/> used to manage scopes.
         /// </summary>
         IScopeManagerProvider ScopeManagerProvider { get; set; }
-        
+
         /// <summary>
         /// Returns <b>true</b> if the container can create the requested service, otherwise <b>false</b>.
         /// </summary>
@@ -655,19 +737,25 @@ namespace RomanticWeb.LightInject
         /// <param name="serviceName">The name of the service.</param>
         /// <returns><b>true</b> if the container can create the requested service, otherwise <b>false</b>.</returns>
         bool CanGetInstance(Type serviceType, string serviceName);
-        
+
         /// <summary>
         /// Injects the property dependencies for a given <paramref name="instance"/>.
         /// </summary>
         /// <param name="instance">The target instance for which to inject its property dependencies.</param>
         /// <returns>The <paramref name="instance"/> with its property dependencies injected.</returns>
         object InjectProperties(object instance);
+
+        /// <summary>
+        /// Creates a clone of the current <see cref="IServiceContainer"/>.
+        /// </summary>
+        /// <returns>A new <see cref="IServiceContainer"/> instance.</returns>
+        IServiceContainer Clone();
     }
 
     /// <summary>
     /// Represents a class that manages the lifetime of a service instance.
     /// </summary>
-    internal interface ILifetime
+    public interface ILifetime
     {
         /// <summary>
         /// Returns a service instance according to the specific lifetime characteristics.
@@ -681,7 +769,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that acts as a composition root for an <see cref="IServiceRegistry"/> instance.
     /// </summary>
-    internal interface ICompositionRoot
+    public interface ICompositionRoot
     {
         /// <summary>
         /// Composes services by adding services to the <paramref name="serviceRegistry"/>.
@@ -693,7 +781,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that extracts a set of types from an <see cref="Assembly"/>.
     /// </summary>
-    internal interface ITypeExtractor
+    public interface ITypeExtractor
     {
         /// <summary>
         /// Extracts types found in the given <paramref name="assembly"/>.
@@ -704,9 +792,25 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
+    /// Represents a class that is capable of extracting
+    /// attributes of type <see cref="CompositionRootTypeAttribute"/> from an <see cref="Assembly"/>.
+    /// </summary>
+    public interface ICompositionRootAttributeExtractor
+    {
+        /// <summary>
+        /// Gets a list of attributes of type <see cref="CompositionRootTypeAttribute"/> from
+        /// the given <paramref name="assembly"/>.
+        /// </summary>
+        /// <param name="assembly">The assembly from which to extract
+        /// <see cref="CompositionRootTypeAttribute"/> attributes.</param>
+        /// <returns>A list of attributes of type <see cref="CompositionRootTypeAttribute"/></returns>
+        CompositionRootTypeAttribute[] GetAttributes(Assembly assembly);
+    }
+
+    /// <summary>
     /// Represents a class that is responsible for selecting injectable properties.
     /// </summary>
-    internal interface IPropertySelector
+    public interface IPropertySelector
     {
         /// <summary>
         /// Selects properties that represents a dependency from the given <paramref name="type"/>.
@@ -719,7 +823,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for selecting the property dependencies for a given <see cref="Type"/>.
     /// </summary>
-    internal interface IPropertyDependencySelector
+    public interface IPropertyDependencySelector
     {
         /// <summary>
         /// Selects the property dependencies for the given <paramref name="type"/>.
@@ -733,7 +837,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for selecting the constructor dependencies for a given <see cref="ConstructorInfo"/>.
     /// </summary>
-    internal interface IConstructorDependencySelector
+    public interface IConstructorDependencySelector
     {
         /// <summary>
         /// Selects the constructor dependencies for the given <paramref name="constructor"/>.
@@ -745,10 +849,10 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// Represents a class that is capable of building a <see cref="ConstructorInfo"/> instance 
+    /// Represents a class that is capable of building a <see cref="ConstructorInfo"/> instance
     /// based on a <see cref="Registration"/>.
     /// </summary>
-    internal interface IConstructionInfoBuilder
+    public interface IConstructionInfoBuilder
     {
         /// <summary>
         /// Returns a <see cref="ConstructionInfo"/> instance based on the given <see cref="Registration"/>.
@@ -761,7 +865,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that keeps track of a <see cref="ConstructionInfo"/> instance for each <see cref="Registration"/>.
     /// </summary>
-    internal interface IConstructionInfoProvider
+    public interface IConstructionInfoProvider
     {
         /// <summary>
         /// Gets a <see cref="ConstructionInfo"/> instance for the given <paramref name="registration"/>.
@@ -771,29 +875,16 @@ namespace RomanticWeb.LightInject
         ConstructionInfo GetConstructionInfo(Registration registration);
 
         /// <summary>
-        /// Invalidates the <see cref="IConstructionInfoProvider"/> and causes new <see cref="ConstructionInfo"/> instances 
+        /// Invalidates the <see cref="IConstructionInfoProvider"/> and causes new <see cref="ConstructionInfo"/> instances
         /// to be created when the <see cref="GetConstructionInfo"/> method is called.
         /// </summary>
         void Invalidate();
     }
 
     /// <summary>
-    /// Represents a class that builds a <see cref="ConstructionInfo"/> instance based on a <see cref="LambdaExpression"/>.
-    /// </summary>
-    internal interface ILambdaConstructionInfoBuilder
-    {
-        /// <summary>
-        /// Parses the <paramref name="lambdaExpression"/> and returns a <see cref="ConstructionInfo"/> instance.
-        /// </summary>
-        /// <param name="lambdaExpression">The <see cref="LambdaExpression"/> to parse.</param>
-        /// <returns>A <see cref="ConstructionInfo"/> instance.</returns>
-        ConstructionInfo Execute(LambdaExpression lambdaExpression);
-    }
-
-    /// <summary>
     /// Represents a class that builds a <see cref="ConstructionInfo"/> instance based on the implementing <see cref="Type"/>.
     /// </summary>
-    internal interface ITypeConstructionInfoBuilder
+    public interface ITypeConstructionInfoBuilder
     {
         /// <summary>
         /// Analyzes the <paramref name="registration"/> and returns a <see cref="ConstructionInfo"/> instance.
@@ -804,9 +895,9 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// Represents a class that selects the constructor to be used for creating a new service instance. 
+    /// Represents a class that selects the constructor to be used for creating a new service instance.
     /// </summary>
-    internal interface IConstructorSelector
+    public interface IConstructorSelector
     {
         /// <summary>
         /// Selects the constructor to be used when creating a new instance of the <paramref name="implementingType"/>.
@@ -816,11 +907,12 @@ namespace RomanticWeb.LightInject
         /// when creating a new instance of the <paramref name="implementingType"/>.</returns>
         ConstructorInfo Execute(Type implementingType);
     }
+#if NET45 || NET46 || NETSTANDARD11
 
     /// <summary>
     /// Represents a class that is responsible loading a set of assemblies based on the given search pattern.
     /// </summary>
-    internal interface IAssemblyLoader
+    public interface IAssemblyLoader
     {
         /// <summary>
         /// Loads a set of assemblies based on the given <paramref name="searchPattern"/>.
@@ -829,16 +921,17 @@ namespace RomanticWeb.LightInject
         /// <returns>A list of assemblies based on the given <paramref name="searchPattern"/>.</returns>
         IEnumerable<Assembly> Load(string searchPattern);
     }
+#endif
 
     /// <summary>
     /// Represents a class that is capable of scanning an assembly and register services into an <see cref="IServiceContainer"/> instance.
     /// </summary>
-    internal interface IAssemblyScanner
+    public interface IAssemblyScanner
     {
         /// <summary>
         /// Scans the target <paramref name="assembly"/> and registers services found within the assembly.
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>        
+        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>
         /// <param name="serviceRegistry">The target <see cref="IServiceRegistry"/> instance.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
         /// <param name="shouldRegister">A function delegate that determines if a service implementation should be registered.</param>
@@ -847,7 +940,7 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Scans the target <paramref name="assembly"/> and executes composition roots found within the <see cref="Assembly"/>.
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>        
+        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>
         /// <param name="serviceRegistry">The target <see cref="IServiceRegistry"/> instance.</param>
         void Scan(Assembly assembly, IServiceRegistry serviceRegistry);
     }
@@ -855,7 +948,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for instantiating and executing an <see cref="ICompositionRoot"/>.
     /// </summary>
-    internal interface ICompositionRootExecutor
+    public interface ICompositionRootExecutor
     {
         /// <summary>
         /// Creates an instance of the <paramref name="compositionRootType"/> and executes the <see cref="ICompositionRoot.Compose"/> method.
@@ -865,10 +958,10 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// Represents an abstraction of the <see cref="ILGenerator"/> class that provides information 
+    /// Represents an abstraction of the <see cref="ILGenerator"/> class that provides information
     /// about the <see cref="Type"/> currently on the stack.
     /// </summary>
-    internal interface IEmitter
+    public interface IEmitter
     {
         /// <summary>
         /// Gets the <see cref="Type"/> currently on the stack.
@@ -892,7 +985,7 @@ namespace RomanticWeb.LightInject
         /// <param name="code">The MSIL instruction to be put onto the stream.</param>
         /// <param name="arg">The numerical argument pushed onto the stream immediately after the instruction.</param>
         void Emit(OpCode code, int arg);
-       
+
         /// <summary>
         /// Puts the specified instruction and numerical argument onto the Microsoft intermediate language (MSIL) stream of instructions.
         /// </summary>
@@ -913,7 +1006,7 @@ namespace RomanticWeb.LightInject
         /// <param name="code">The MSIL instruction to be put onto the stream.</param>
         /// <param name="type">A <see cref="Type"/> representing the type metadata token.</param>
         void Emit(OpCode code, Type type);
-        
+
         /// <summary>
         /// Puts the specified instruction and metadata token for the specified constructor onto the Microsoft intermediate language (MSIL) stream of instructions.
         /// </summary>
@@ -927,7 +1020,7 @@ namespace RomanticWeb.LightInject
         /// <param name="code">The MSIL instruction to be emitted onto the stream.</param>
         /// <param name="localBuilder">A local variable.</param>
         void Emit(OpCode code, LocalBuilder localBuilder);
-        
+
         /// <summary>
         /// Puts the specified instruction onto the Microsoft intermediate language (MSIL) stream followed by the metadata token for the given method.
         /// </summary>
@@ -940,18 +1033,18 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <param name="type">A <see cref="Type"/> object that represents the type of the local variable.</param>
         /// <returns>The declared local variable.</returns>
-        LocalBuilder DeclareLocal(Type type);        
+        LocalBuilder DeclareLocal(Type type);
     }
 
     /// <summary>
     /// Represents a dynamic method skeleton for emitting the code needed to resolve a service instance.
     /// </summary>
-    internal interface IMethodSkeleton
+    public interface IMethodSkeleton
     {
         /// <summary>
         /// Gets the <see cref="IEmitter"/> for the this dynamic method.
         /// </summary>
-        /// <returns>The <see cref="IEmitter"/> for this dynamic method.</returns>        
+        /// <returns>The <see cref="IEmitter"/> for this dynamic method.</returns>
         IEmitter GetEmitter();
 
         /// <summary>
@@ -959,13 +1052,13 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <param name="delegateType">A delegate type whose signature matches that of the dynamic method.</param>
         /// <returns>A delegate of the specified type, which can be used to execute the dynamic method.</returns>
-        Delegate CreateDelegate(Type delegateType); 
+        Delegate CreateDelegate(Type delegateType);
     }
 
     /// <summary>
     /// Represents a class that is capable of providing the current <see cref="ScopeManager"/>.
     /// </summary>
-    internal interface IScopeManagerProvider
+    public interface IScopeManagerProvider
     {
         /// <summary>
         /// Returns the <see cref="ScopeManager"/> that is responsible for managing scopes.
@@ -975,45 +1068,111 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// Extends the <see cref="Expression"/> class.
+    /// This class is not for public use and is used internally
+    /// to load runtime arguments onto the evaluation stack.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class ExpressionExtensions
+    public static class RuntimeArgumentsLoader
     {
         /// <summary>
-        /// Flattens the <paramref name="expression"/> into an <see cref="IEnumerable{T}"/>.
+        /// Loads the runtime arguments onto the evaluation stack.
         /// </summary>
-        /// <param name="expression">The target <see cref="Expression"/>.</param>
-        /// <returns>The <see cref="Expression"/> represented as a list of sub expressions.</returns>
-        public static IEnumerable<Expression> AsEnumerable(this Expression expression)
+        /// <param name="constants">A object array representing the dynamic method context.</param>
+        /// <returns>An array containing the runtime arguments supplied when resolving the service.</returns>
+        public static object[] Load(object[] constants)
         {
-            var flattener = new ExpressionTreeFlattener();
-            return flattener.Flatten(expression);
+            if (constants.Length == 0)
+            {
+                return new object[] { };
+            }
+
+            object[] arguments = constants[constants.Length - 1] as object[];
+            if (arguments == null)
+            {
+                return new object[] { };
+            }
+
+            return arguments;
+        }
+    }
+
+    /// <summary>
+    /// Contains a set of helper method related to validating
+    /// user input.
+    /// </summary>
+    public static class Ensure
+    {
+        /// <summary>
+        /// Ensures that the given <paramref name="value"/> is not null.
+        /// </summary>
+        /// <typeparam name="T">The type of value to be validated.</typeparam>
+        /// <param name="value">The value to be validated.</param>
+        /// <param name="paramName">The name of the parameter from which the <paramref name="value"/> comes from.</param>
+        public static void IsNotNull<T>(T value, string paramName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(paramName);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Extends the <see cref="ImmutableHashTable{TKey,TValue}"/> class.
+    /// </summary>
+    public static class ImmutableHashTableExtensions
+    {
+        /// <summary>
+        /// Searches for a value using the given <paramref name="key"/>.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="hashTable">The target <see cref="ImmutableHashTable{TKey,TValue}"/> instance.</param>
+        /// <param name="key">The key for which to search for a value.</param>
+        /// <returns>If found, the <typeparamref name="TValue"/> with the given <paramref name="key"/>, otherwise the default <typeparamref name="TValue"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TValue Search<TKey, TValue>(this ImmutableHashTable<TKey, TValue> hashTable, TKey key)
+        {
+            var hashCode = key.GetHashCode();
+            var bucketIndex = hashCode & (hashTable.Divisor - 1);
+            ImmutableHashTree<TKey, TValue> tree = hashTable.Buckets[bucketIndex];
+            return tree.Search(key);
         }
 
-        private class ExpressionTreeFlattener : ExpressionVisitor
+        /// <summary>
+        /// Searches for a value using the given <paramref name="key"/>.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="hashTable">The target <see cref="ImmutableHashTable{TKey,TValue}"/> instance.</param>
+        /// <param name="key">The key for which to search for a value.</param>
+        /// <returns>If found, the <typeparamref name="TValue"/> with the given <paramref name="key"/>, otherwise the default <typeparamref name="TValue"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TValue Search<TValue>(this ImmutableHashTable<Type, TValue> hashTable, Type key)
         {
-            private readonly ICollection<Expression> nodes = new Collection<Expression>();
+            var hashCode = key.GetHashCode();
+            var bucketIndex = hashCode & (hashTable.Divisor - 1);
+            ImmutableHashTree<Type, TValue> tree = hashTable.Buckets[bucketIndex];
+            return tree.Search(key);
+        }
 
-            public IEnumerable<Expression> Flatten(Expression expression)
-            {
-                Visit(expression);
-                return nodes;
-            }
-
-            public override Expression Visit(Expression node)
-            {
-                nodes.Add(node);
-                return base.Visit(node);
-            }
+        /// <summary>
+        /// Adds a new element to the <see cref="ImmutableHashTree{TKey,TValue}"/>.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="hashTable">The target <see cref="ImmutableHashTable{TKey,TValue}"/>.</param>
+        /// <param name="key">The key to be associated with the value.</param>
+        /// <param name="value">The value to be added to the tree.</param>
+        /// <returns>A new <see cref="ImmutableHashTree{TKey,TValue}"/> that contains the new key/value pair.</returns>
+        public static ImmutableHashTable<TKey, TValue> Add<TKey, TValue>(this ImmutableHashTable<TKey, TValue> hashTable, TKey key, TValue value)
+        {
+            return new ImmutableHashTable<TKey, TValue>(hashTable, key, value);
         }
     }
 
     /// <summary>
     /// Extends the <see cref="ImmutableHashTree{TKey,TValue}"/> class.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class ImmutableHashTreeExtensions
+    public static class ImmutableHashTreeExtensions
     {
         /// <summary>
         /// Searches for a <typeparamref name="TValue"/> using the given <paramref name="key"/>.
@@ -1023,6 +1182,7 @@ namespace RomanticWeb.LightInject
         /// <param name="tree">The target <see cref="ImmutableHashTree{TKey,TValue}"/>.</param>
         /// <param name="key">The key of the <see cref="ImmutableHashTree{TKey,TValue}"/> to get.</param>
         /// <returns>If found, the <typeparamref name="TValue"/> with the given <paramref name="key"/>, otherwise the default <typeparamref name="TValue"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TValue Search<TKey, TValue>(this ImmutableHashTree<TKey, TValue> tree, TKey key)
         {
             int hashCode = key.GetHashCode();
@@ -1047,12 +1207,12 @@ namespace RomanticWeb.LightInject
                     }
                 }
             }
-            
+
             return default(TValue);
         }
 
         /// <summary>
-        /// Adds a new element to the <see cref="ImmutableHashTree{TKey,TValue}"/>. 
+        /// Adds a new element to the <see cref="ImmutableHashTree{TKey,TValue}"/>.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
         /// <typeparam name="TValue">The type of the value.</typeparam>
@@ -1082,6 +1242,37 @@ namespace RomanticWeb.LightInject
             return new ImmutableHashTree<TKey, TValue>(key, value, tree);
         }
 
+        /// <summary>
+        /// Returns the nodes in the tree using in order traversal.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="hashTree">The target <see cref="ImmutableHashTree{TKey,TValue}"/>.</param>
+        /// <returns>The nodes using in order traversal.</returns>
+        public static IEnumerable<KeyValue<TKey, TValue>> InOrder<TKey, TValue>(
+            this ImmutableHashTree<TKey, TValue> hashTree)
+        {
+            if (!hashTree.IsEmpty)
+            {
+                foreach (var left in InOrder(hashTree.Left))
+                {
+                    yield return new KeyValue<TKey, TValue>(left.Key, left.Value);
+                }
+
+                yield return new KeyValue<TKey, TValue>(hashTree.Key, hashTree.Value);
+
+                for (int i = 0; i < hashTree.Duplicates.Items.Length; i++)
+                {
+                    yield return hashTree.Duplicates.Items[i];
+                }
+
+                foreach (var right in InOrder(hashTree.Right))
+                {
+                    yield return new KeyValue<TKey, TValue>(right.Key, right.Value);
+                }
+            }
+        }
+
         private static ImmutableHashTree<TKey, TValue> AddToLeftBranch<TKey, TValue>(ImmutableHashTree<TKey, TValue> tree, TKey key, TValue value)
         {
             return new ImmutableHashTree<TKey, TValue>(tree.Key, tree.Value, tree.Left.Add(key, value), tree.Right);
@@ -1093,360 +1284,23 @@ namespace RomanticWeb.LightInject
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class LazyTypeExtensions
-    {
-        private static readonly ThreadSafeDictionary<Type, ConstructorInfo> Constructors = new ThreadSafeDictionary<Type, ConstructorInfo>();
-
-        public static ConstructorInfo GetLazyConstructor(this Type type)
-        {
-            return Constructors.GetOrAdd(type, GetConstructor);
-        }
-
-        private static ConstructorInfo GetConstructor(Type type)
-        {
-            Type closedGenericLazyType = typeof(Lazy<>).MakeGenericType(type);
-            return closedGenericLazyType.GetConstructor(new[] { type.GetFuncType() });
-        }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class EnumerableTypeExtensions
-    {
-        private static readonly ThreadSafeDictionary<Type, Type> EnumerableTypes = new ThreadSafeDictionary<Type, Type>();
-
-        public static Type GetEnumerableType(this Type returnType)
-        {
-            return EnumerableTypes.GetOrAdd(returnType, CreateEnumerableType);
-        }
-
-        private static Type CreateEnumerableType(Type type)
-        {
-            return typeof(IEnumerable<>).MakeGenericType(type);
-        }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class FuncTypeExtensions
-    {
-        private static readonly ThreadSafeDictionary<Type, Type> FuncTypes = new ThreadSafeDictionary<Type, Type>();
-            
-        public static Type GetFuncType(this Type returnType)
-        {
-            return FuncTypes.GetOrAdd(returnType, CreateFuncType);
-        }
-
-        private static Type CreateFuncType(Type type)
-        {
-            return typeof(Func<>).MakeGenericType(type);
-        }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class LifetimeHelper
-    {        
-        static LifetimeHelper()
-        {
-            GetInstanceMethod = typeof(ILifetime).GetMethod("GetInstance");
-            GetCurrentScopeMethod = typeof(ScopeManager).GetProperty("CurrentScope").GetGetMethod();
-            GetScopeManagerMethod = typeof(IScopeManagerProvider).GetMethod("GetScopeManager");
-        }
-
-        public static MethodInfo GetInstanceMethod { get; private set; }
-
-        public static MethodInfo GetCurrentScopeMethod { get; private set; }
-
-        public static MethodInfo GetScopeManagerMethod { get; private set; }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class DelegateTypeExtensions
-    {
-        private static readonly MethodInfo OpenGenericGetInstanceMethodInfo =
-            typeof(IServiceFactory).GetMethod("GetInstance", new Type[] { });
-
-        private static readonly ThreadSafeDictionary<Type, MethodInfo> GetInstanceMethods =
-            new ThreadSafeDictionary<Type, MethodInfo>();
-                
-        public static Delegate CreateGetInstanceDelegate(this Type serviceType, IServiceFactory serviceFactory)
-        {
-            Type delegateType = serviceType.GetFuncType();
-            MethodInfo getInstanceMethod = GetInstanceMethods.GetOrAdd(serviceType, CreateGetInstanceMethod);
-            return getInstanceMethod.CreateDelegate(delegateType, serviceFactory);
-        }
-
-        private static MethodInfo CreateGetInstanceMethod(Type type)
-        {
-            return OpenGenericGetInstanceMethodInfo.MakeGenericMethod(type);
-        }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class NamedDelegateTypeExtensions
-    {        
-        private static readonly MethodInfo CreateInstanceDelegateMethodInfo =
-            typeof(NamedDelegateTypeExtensions).GetPrivateStaticMethod("CreateInstanceDelegate");
-
-        private static readonly ThreadSafeDictionary<Type, MethodInfo> CreateInstanceDelegateMethods =
-            new ThreadSafeDictionary<Type, MethodInfo>();
-       
-        public static Delegate CreateNamedGetInstanceDelegate(this Type serviceType, string serviceName, IServiceFactory factory)
-        {                        
-            MethodInfo createInstanceDelegateMethodInfo = CreateInstanceDelegateMethods.GetOrAdd(
-                serviceType,
-                CreateClosedGenericCreateInstanceDelegateMethod);
-
-            return (Delegate)createInstanceDelegateMethodInfo.Invoke(null, new object[] { factory, serviceName });                        
-        }
-
-        private static MethodInfo CreateClosedGenericCreateInstanceDelegateMethod(Type type)
-        {
-            return CreateInstanceDelegateMethodInfo.MakeGenericMethod(type);
-        }
-
-        // ReSharper disable UnusedMember.Local
-        private static Func<TService> CreateInstanceDelegate<TService>(IServiceFactory factory, string serviceName)
-        // ReSharper restore UnusedMember.Local
-        {
-            return () => factory.GetInstance<TService>(serviceName);
-        }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class ReflectionHelper
-    {                                        
-        private static readonly Lazy<ThreadSafeDictionary<Type, MethodInfo>> GetInstanceWithParametersMethods;        
-        
-        static ReflectionHelper()
-        {                                    
-            GetInstanceWithParametersMethods = CreateLazyGetInstanceWithParametersMethods();            
-        }
-                               
-        public static MethodInfo GetGetInstanceWithParametersMethod(Type serviceType)
-        {
-            return GetInstanceWithParametersMethods.Value.GetOrAdd(serviceType, CreateGetInstanceWithParametersMethod);
-        }
-                                                     
-        public static Delegate CreateGetNamedInstanceWithParametersDelegate(IServiceFactory factory, Type delegateType, string serviceName)
-        {
-            Type[] genericTypeArguments = delegateType.GetGenericTypeArguments();
-            var openGenericMethod =
-                typeof(ReflectionHelper).GetPrivateStaticMethods()
-                    .Single(
-                        m =>
-                        m.GetGenericArguments().Length == genericTypeArguments.Length
-                        && m.Name == "CreateGenericGetNamedParameterizedInstanceDelegate");
-            var closedGenericMethod = openGenericMethod.MakeGenericMethod(genericTypeArguments);
-            return (Delegate)closedGenericMethod.Invoke(null, new object[] { factory, serviceName });
-        }
-        
-        private static Lazy<ThreadSafeDictionary<Type, MethodInfo>> CreateLazyGetInstanceWithParametersMethods()
-        {
-            return new Lazy<ThreadSafeDictionary<Type, MethodInfo>>(
-                () => new ThreadSafeDictionary<Type, MethodInfo>());
-        }
-                                         
-        private static MethodInfo CreateGetInstanceWithParametersMethod(Type serviceType)
-        {
-            Type[] genericTypeArguments = serviceType.GetGenericTypeArguments();
-            MethodInfo openGenericMethod =
-                typeof(IServiceFactory).GetMethods().Single(m => m.Name == "GetInstance"
-                    && m.GetGenericArguments().Length == genericTypeArguments.Length && m.GetParameters().All(p => p.Name != "serviceName"));
-
-            MethodInfo closedGenericMethod = openGenericMethod.MakeGenericMethod(genericTypeArguments);
-
-            return closedGenericMethod;
-        }
-                                                                           
-        // ReSharper disable UnusedMember.Local
-        private static Func<TArg, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg, TService>(IServiceFactory factory, string serviceName)
-        // ReSharper restore UnusedMember.Local
-        {
-            return arg => factory.GetInstance<TArg, TService>(arg, serviceName);
-        }
-
-        // ReSharper disable UnusedMember.Local
-        private static Func<TArg1, TArg2, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg1, TArg2, TService>(IServiceFactory factory, string serviceName)
-        // ReSharper restore UnusedMember.Local
-        {
-            return (arg1, arg2) => factory.GetInstance<TArg1, TArg2, TService>(arg1, arg2, serviceName);
-        }
-
-        // ReSharper disable UnusedMember.Local
-        private static Func<TArg1, TArg2, TArg3, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg1, TArg2, TArg3, TService>(IServiceFactory factory, string serviceName)
-        // ReSharper restore UnusedMember.Local
-        {
-            return (arg1, arg2, arg3) => factory.GetInstance<TArg1, TArg2, TArg3, TService>(arg1, arg2, arg3, serviceName);
-        }
-
-        // ReSharper disable UnusedMember.Local
-        private static Func<TArg1, TArg2, TArg3, TArg4, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg1, TArg2, TArg3, TArg4, TService>(IServiceFactory factory, string serviceName)
-        // ReSharper restore UnusedMember.Local
-        {
-            return (arg1, arg2, arg3, arg4) => factory.GetInstance<TArg1, TArg2, TArg3, TArg4, TService>(arg1, arg2, arg3, arg4, serviceName);
-        }
-    }
-
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class TypeHelper
-    {
-        public static Type[] GetGenericTypeArguments(this Type type)
-        {
-            return type.GetGenericArguments();
-        }        
-        
-        public static bool IsClass(this Type type)
-        {
-            return type.IsClass;
-        }
-
-        public static bool IsAbstract(this Type type)
-        {
-            return type.IsAbstract;
-        }
-
-        public static bool IsNestedPrivate(this Type type)
-        {
-            return type.IsNestedPrivate;
-        }
-
-        public static bool IsGenericType(this Type type)
-        {
-            return type.IsGenericType;
-        }
-
-        public static bool ContainsGenericParameters(this Type type)
-        {
-            return type.ContainsGenericParameters;
-        }
-
-        public static Type GetBaseType(this Type type)
-        {
-            return type.BaseType;
-        }
-
-        public static bool IsGenericTypeDefinition(this Type type)
-        {
-            return type.IsGenericTypeDefinition;
-        }
-   
-        public static Assembly GetAssembly(this Type type)
-        {
-            return type.Assembly;
-        }
-
-        public static bool IsValueType(this Type type)
-        {
-            return type.IsValueType;
-        }        
-
-        public static MethodInfo GetMethodInfo(this Delegate del)
-        {
-            return del.Method;
-        }
-
-        public static MethodInfo GetPrivateMethod(this Type type, string name)
-        {            
-            return type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
-        }
-
-        public static MethodInfo GetPrivateStaticMethod(this Type type, string name)
-        {
-            return type.GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic);
-        }
-
-        public static MethodInfo[] GetPrivateStaticMethods(this Type type)
-        {
-            return type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
-        }
-
-        public static IEnumerable<Attribute> GetCustomAttributes(this Assembly assembly, Type attributeType)
-        {
-            return assembly.GetCustomAttributes(attributeType, false).Cast<Attribute>();
-        }
-        
-        public static bool IsEnumerableOfT(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(IEnumerable<>);
-        }
-
-        public static bool IsListOfT(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(IList<>);
-        }
-
-        public static bool IsCollectionOfT(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(ICollection<>);
-        }
-        
-        public static bool IsReadOnlyCollectionOfT(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>);
-        }
-
-        public static bool IsReadOnlyListOfT(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>);
-        }
-        
-        public static bool IsLazy(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(Lazy<>);
-        }
-
-        public static bool IsFunc(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && serviceType.GetGenericTypeDefinition() == typeof(Func<>);
-        }
-
-        public static bool IsFuncWithParameters(this Type serviceType)
-        {
-            if (!serviceType.IsGenericType())
-            {
-                return false;
-            }
-
-            Type genericTypeDefinition = serviceType.GetGenericTypeDefinition();
-
-            return genericTypeDefinition == typeof(Func<,>) || genericTypeDefinition == typeof(Func<,,>)
-                || genericTypeDefinition == typeof(Func<,,,>) || genericTypeDefinition == typeof(Func<,,,,>);
-        }
-
-        public static bool IsClosedGeneric(this Type serviceType)
-        {
-            return serviceType.IsGenericType() && !serviceType.IsGenericTypeDefinition();
-        }
-      
-        public static Type GetElementType(Type type)
-        {
-            if (type.IsGenericType() && type.GetGenericTypeArguments().Count() == 1)
-            {
-                return type.GetGenericTypeArguments()[0];
-            }
-           
-            return type.GetElementType();
-        }
-    }
-
     /// <summary>
-    /// Extends the <see cref="IEmitter"/> interface with a set of methods 
+    /// Extends the <see cref="IEmitter"/> interface with a set of methods
     /// that optimizes and simplifies emitting MSIL instructions.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal static class EmitterExtensions
+    public static class EmitterExtensions
     {
         /// <summary>
-        /// Performs a cast or unbox operation if the current <see cref="IEmitter.StackType"/> is 
+        /// Performs a cast or unbox operation if the current <see cref="IEmitter.StackType"/> is
         /// different from the given <paramref name="type"/>.
         /// </summary>
         /// <param name="emitter">The target <see cref="IEmitter"/>.</param>
         /// <param name="type">The requested stack type.</param>
         public static void UnboxOrCast(this IEmitter emitter, Type type)
         {
-            if (!type.IsAssignableFrom(emitter.StackType))
+            if (!type.GetTypeInfo().IsAssignableFrom(emitter.StackType.GetTypeInfo()))
             {
-                emitter.Emit(type.IsValueType() ? OpCodes.Unbox_Any : OpCodes.Castclass, type);
+                emitter.Emit(type.GetTypeInfo().IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, type);
             }
         }
 
@@ -1458,7 +1312,7 @@ namespace RomanticWeb.LightInject
         /// <param name="type">The requested stack type.</param>
         public static void PushConstant(this IEmitter emitter, int index, Type type)
         {
-            emitter.PushConstant(index);           
+            emitter.PushConstant(index);
             emitter.UnboxOrCast(type);
         }
 
@@ -1489,7 +1343,7 @@ namespace RomanticWeb.LightInject
         /// that is passed into the dynamic method.
         /// </summary>
         /// <param name="emitter">The target <see cref="IEmitter"/>.</param>
-        /// <param name="parameters">A list of <see cref="ParameterInfo"/> instances that 
+        /// <param name="parameters">A list of <see cref="ParameterInfo"/> instances that
         /// represent the arguments to be pushed onto the stack.</param>
         public static void PushArguments(this IEmitter emitter, ParameterInfo[] parameters)
         {
@@ -1510,11 +1364,11 @@ namespace RomanticWeb.LightInject
                 emitter.Emit(OpCodes.Ldc_I4, i);
                 emitter.Emit(OpCodes.Ldelem_Ref);
                 emitter.Emit(
-                    parameters[i].ParameterType.IsValueType() ? OpCodes.Unbox_Any : OpCodes.Castclass,
+                    parameters[i].ParameterType.GetTypeInfo().IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass,
                     parameters[i].ParameterType);
             }
         }
-       
+
         /// <summary>
         /// Calls a late-bound method on an object, pushing the return value onto the stack.
         /// </summary>
@@ -1566,9 +1420,9 @@ namespace RomanticWeb.LightInject
             else
             {
                 emitter.Emit(OpCodes.Ldloc, index);
-            }                
+            }
         }
-        
+
         /// <summary>
         /// Pushes an argument with the given <paramref name="index"/> onto the stack.
         /// </summary>
@@ -1589,7 +1443,7 @@ namespace RomanticWeb.LightInject
                     return;
                 case 3:
                     emitter.Emit(OpCodes.Ldarg_3);
-                    return;                
+                    return;
             }
 
             if (index <= 255)
@@ -1599,7 +1453,7 @@ namespace RomanticWeb.LightInject
             else
             {
                 emitter.Emit(OpCodes.Ldarg, index);
-            }           
+            }
         }
 
         /// <summary>
@@ -1633,9 +1487,9 @@ namespace RomanticWeb.LightInject
             else
             {
                 emitter.Emit(OpCodes.Stloc, index);
-            }                                                    
+            }
         }
-        
+
         /// <summary>
         /// Pushes a new array of the given <paramref name="elementType"/> onto the stack.
         /// </summary>
@@ -1654,7 +1508,7 @@ namespace RomanticWeb.LightInject
         public static void Push(this IEmitter emitter, int value)
         {
             switch (value)
-            {                
+            {
                 case 0:
                     emitter.Emit(OpCodes.Ldc_I4_0);
                     return;
@@ -1713,80 +1567,163 @@ namespace RomanticWeb.LightInject
             emitter.Emit(OpCodes.Ret);
         }
     }
- 
+
+    /// <summary>
+    /// Represents a set of configurable options when creating a new instance of the container.
+    /// </summary>
+    public class ContainerOptions
+    {
+        private static readonly Lazy<ContainerOptions> DefaultOptions =
+            new Lazy<ContainerOptions>(CreateDefaultContainerOptions);
+
+        /// <summary>
+        /// Gets the default <see cref="ContainerOptions"/> used across all <see cref="ServiceContainer"/> instances.
+        /// </summary>
+        public static ContainerOptions Default
+        {
+            get
+            {
+                return DefaultOptions.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether variance is applied when resolving an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is true.
+        /// </remarks>
+        public bool EnableVariance { get; set; }
+
+        private static ContainerOptions CreateDefaultContainerOptions()
+        {
+            return new ContainerOptions { EnableVariance = true };
+        }
+    }
+
     /// <summary>
     /// An ultra lightweight service container.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ServiceContainer : IServiceContainer
+    public class ServiceContainer : IServiceContainer
     {
         private const string UnresolvedDependencyError = "Unresolved dependency {0}";
         private readonly Func<Type, Type[], IMethodSkeleton> methodSkeletonFactory;
         private readonly ServiceRegistry<Action<IEmitter>> emitters = new ServiceRegistry<Action<IEmitter>>();
-        private readonly object lockObject = new object();
-
-        private readonly Storage<object> constants = new Storage<object>();
-        
-        private readonly Storage<FactoryRule> factoryRules = new Storage<FactoryRule>();
-        private readonly Stack<Action<IEmitter>> dependencyStack = new Stack<Action<IEmitter>>();
-
+        private readonly ServiceRegistry<Delegate> constructorDependencyFactories = new ServiceRegistry<Delegate>();
+        private readonly ServiceRegistry<Delegate> propertyDependencyFactories = new ServiceRegistry<Delegate>();
         private readonly ServiceRegistry<ServiceRegistration> availableServices = new ServiceRegistry<ServiceRegistration>();
 
+        private readonly object lockObject = new object();
+        private readonly ContainerOptions options;
+        private readonly Storage<object> constants = new Storage<object>();
         private readonly Storage<DecoratorRegistration> decorators = new Storage<DecoratorRegistration>();
         private readonly Storage<ServiceOverride> overrides = new Storage<ServiceOverride>();
+        private readonly Storage<FactoryRule> factoryRules = new Storage<FactoryRule>();
+        private readonly Storage<Initializer> initializers = new Storage<Initializer>();
+
+        private readonly Stack<Action<IEmitter>> dependencyStack = new Stack<Action<IEmitter>>();
 
         private readonly Lazy<IConstructionInfoProvider> constructionInfoProvider;
-        private readonly ICompositionRootExecutor compositionRootExecutor;
 
-        private ImmutableHashTree<Type, Func<object[], object>> delegates =
-            ImmutableHashTree<Type, Func<object[], object>>.Empty;        
-        
-        private ImmutableHashTree<Tuple<Type, string>, Func<object[], object>> namedDelegates =
-            ImmutableHashTree<Tuple<Type, string>, Func<object[], object>>.Empty;
+        private ImmutableHashTable<Type, GetInstanceDelegate> delegates =
+            ImmutableHashTable<Type, GetInstanceDelegate>.Empty;
+
+        private ImmutableHashTable<Tuple<Type, string>, GetInstanceDelegate> namedDelegates =
+            ImmutableHashTable<Tuple<Type, string>, GetInstanceDelegate>.Empty;
 
         private ImmutableHashTree<Type, Func<object[], object, object>> propertyInjectionDelegates =
             ImmutableHashTree<Type, Func<object[], object, object>>.Empty;
 
         private bool isLocked;
-                
+        private Type defaultLifetimeType;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceContainer"/> class.
         /// </summary>
         public ServiceContainer()
-        {            
+        {
+            options = ContainerOptions.Default;
             var concreteTypeExtractor = new CachedTypeExtractor(new ConcreteTypeExtractor());
-            var compositionRootTypeExtractor = new CachedTypeExtractor(new CompositionRootTypeExtractor());
-            compositionRootExecutor = new CompositionRootExecutor(this);
-            AssemblyScanner = new AssemblyScanner(concreteTypeExtractor, compositionRootTypeExtractor, compositionRootExecutor);
+            CompositionRootTypeExtractor = new CachedTypeExtractor(new CompositionRootTypeExtractor(new CompositionRootAttributeExtractor()));
+            CompositionRootExecutor = new CompositionRootExecutor(this, type => (ICompositionRoot)Activator.CreateInstance(type));
+            AssemblyScanner = new AssemblyScanner(concreteTypeExtractor, CompositionRootTypeExtractor, CompositionRootExecutor);
             PropertyDependencySelector = new PropertyDependencySelector(new PropertySelector());
             ConstructorDependencySelector = new ConstructorDependencySelector();
             ConstructorSelector = new MostResolvableConstructorSelector(CanGetInstance);
             constructionInfoProvider = new Lazy<IConstructionInfoProvider>(CreateConstructionInfoProvider);
             methodSkeletonFactory = (returnType, parameterTypes) => new DynamicMethodSkeleton(returnType, parameterTypes);
             ScopeManagerProvider = new PerThreadScopeManagerProvider();
-            AssemblyLoader = new AssemblyLoader();            
+#if NET45 || NET46
+            AssemblyLoader = new AssemblyLoader();
+#endif
         }
- 
+
         /// <summary>
-        /// Gets or sets the <see cref="IScopeManagerProvider"/> that is responsible 
+        /// Initializes a new instance of the <see cref="ServiceContainer"/> class.
+        /// </summary>
+        /// <param name="options">The <see cref="ContainerOptions"/> instances that represents the configurable options.</param>
+        public ServiceContainer(ContainerOptions options)
+            : this()
+        {
+            this.options = options;
+        }
+
+        private ServiceContainer(
+          ContainerOptions options,
+          ServiceRegistry<Delegate> constructorDependencyFactories,
+          ServiceRegistry<Delegate> propertyDependencyFactories,
+          ServiceRegistry<ServiceRegistration> availableServices,
+          Storage<DecoratorRegistration> decorators,
+          Storage<ServiceOverride> overrides,
+          Storage<FactoryRule> factoryRules,
+          Storage<Initializer> initializers)
+            : this(options)
+        {
+            this.options = options;
+            this.constructorDependencyFactories = constructorDependencyFactories;
+            this.propertyDependencyFactories = propertyDependencyFactories;
+            this.decorators = decorators;
+            this.overrides = overrides;
+            this.factoryRules = factoryRules;
+            this.initializers = initializers;
+            foreach (var availableService in availableServices.Values.SelectMany(t => t.Values))
+            {
+                Register(availableService);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IScopeManagerProvider"/> that is responsible
         /// for providing the <see cref="ScopeManager"/> used to manage scopes.
         /// </summary>
         public IScopeManagerProvider ScopeManagerProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IPropertyDependencySelector"/> instance that 
+        /// Gets or sets the <see cref="IPropertyDependencySelector"/> instance that
         /// is responsible for selecting the property dependencies for a given type.
         /// </summary>
         public IPropertyDependencySelector PropertyDependencySelector { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IConstructorDependencySelector"/> instance that 
+        /// Gets or sets the <see cref="ITypeExtractor"/> that is responsible
+        /// for extracting composition roots types from an assembly.
+        /// </summary>
+        public ITypeExtractor CompositionRootTypeExtractor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="ICompositionRootExecutor"/> that is responsible
+        /// for executing composition roots.
+        /// </summary>
+        public ICompositionRootExecutor CompositionRootExecutor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IConstructorDependencySelector"/> instance that
         /// is responsible for selecting the constructor dependencies for a given constructor.
         /// </summary>
         public IConstructorDependencySelector ConstructorDependencySelector { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IConstructorSelector"/> instance that is responsible 
+        /// Gets or sets the <see cref="IConstructorSelector"/> instance that is responsible
         /// for selecting the constructor to be used when creating new service instances.
         /// </summary>
         public IConstructorSelector ConstructorSelector { get; set; }
@@ -1795,22 +1732,26 @@ namespace RomanticWeb.LightInject
         /// Gets or sets the <see cref="IAssemblyScanner"/> instance that is responsible for scanning assemblies.
         /// </summary>
         public IAssemblyScanner AssemblyScanner { get; set; }
+#if NET45 || NETSTANDARD11 || NET46
 
         /// <summary>
-        /// Gets or sets the <see cref="IAssemblyLoader"/> instance that is responsible for loading assemblies during assembly scanning. 
+        /// Gets or sets the <see cref="IAssemblyLoader"/> instance that is responsible for loading assemblies during assembly scanning.
         /// </summary>
         public IAssemblyLoader AssemblyLoader { get; set; }
+#endif
 
         /// <summary>
-        /// Gets a list of <see cref="ServiceRegistration"/> instances that represents the registered services.           
-        /// </summary>                  
+        /// Gets a list of <see cref="ServiceRegistration"/> instances that represents the registered services.
+        /// </summary>
         public IEnumerable<ServiceRegistration> AvailableServices
         {
             get
             {
-                return availableServices.Values.SelectMany(t => t.Values);                
+                return availableServices.Values.SelectMany(t => t.Values);
             }
         }
+
+        private ILifetime DefaultLifetime => (ILifetime)(defaultLifetimeType != null ? Activator.CreateInstance(defaultLifetimeType) : null);
 
         /// <summary>
         /// Returns <b>true</b> if the container can create the requested service, otherwise <b>false</b>.
@@ -1847,7 +1788,7 @@ namespace RomanticWeb.LightInject
         /// <param name="instance">The target instance for which to inject its property dependencies.</param>
         /// <returns>The <paramref name="instance"/> with its property dependencies injected.</returns>
         public object InjectProperties(object instance)
-        {            
+        {
             var type = instance.GetType();
 
             var del = propertyInjectionDelegates.Search(type);
@@ -1858,18 +1799,18 @@ namespace RomanticWeb.LightInject
                 propertyInjectionDelegates = propertyInjectionDelegates.Add(type, del);
             }
 
-            return del(constants.Items, instance);            
+            return del(constants.Items, instance);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
-        /// <param name="serviceName">The name of the service.</param>        
+        /// <param name="serviceName">The name of the service.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        public void Register<TService>(Expression<Func<IServiceFactory, TService>> factory, string serviceName, ILifetime lifetime)
+        public void Register<TService>(Func<IServiceFactory, TService> factory, string serviceName, ILifetime lifetime)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, lifetime, serviceName);
         }
@@ -1900,26 +1841,34 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <param name="serviceRegistration">The <see cref="ServiceRegistration"/> instance that contains service metadata.</param>
         public void Register(ServiceRegistration serviceRegistration)
-        {            
-            var services = GetAvailableServices(serviceRegistration.ServiceType);            
+        {
+            var services = GetAvailableServices(serviceRegistration.ServiceType);
             var sr = serviceRegistration;
             services.AddOrUpdate(
                 serviceRegistration.ServiceName,
                 s => AddServiceRegistration(sr),
-                (k, existing) => UpdateServiceRegistration(existing, sr));            
+                (k, existing) => UpdateServiceRegistration(existing, sr));
         }
-      
+
         /// <summary>
-        /// Registers services from the given <paramref name="assembly"/>.
+        /// Registers composition roots from the given <paramref name="assembly"/>.
         /// </summary>
-        /// <param name="assembly">The assembly to be scanned for services.</param>        
+        /// <param name="assembly">The assembly to be scanned for services.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>             
+        /// </remarks>
         public void RegisterAssembly(Assembly assembly)
         {
-            RegisterAssembly(assembly, (serviceType, implementingType) => true);
+            Type[] compositionRootTypes = CompositionRootTypeExtractor.Execute(assembly);
+            if (compositionRootTypes.Length == 0)
+            {
+                RegisterAssembly(assembly, (serviceType, implementingType) => true);
+            }
+            else
+            {
+                AssemblyScanner.Scan(assembly, this);
+            }
         }
 
         /// <summary>
@@ -1928,12 +1877,12 @@ namespace RomanticWeb.LightInject
         /// <param name="assembly">The assembly to be scanned for services.</param>
         /// <param name="shouldRegister">A function delegate that determines if a service implementation should be registered.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
+        /// </remarks>
         public void RegisterAssembly(Assembly assembly, Func<Type, Type, bool> shouldRegister)
         {
-            AssemblyScanner.Scan(assembly, this, () => null, shouldRegister);
+            AssemblyScanner.Scan(assembly, this, () => DefaultLifetime, shouldRegister);
         }
 
         /// <summary>
@@ -1942,9 +1891,9 @@ namespace RomanticWeb.LightInject
         /// <param name="assembly">The assembly to be scanned for services.</param>
         /// <param name="lifetimeFactory">The <see cref="ILifetime"/> factory that controls the lifetime of the registered service.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
+        /// </remarks>
         public void RegisterAssembly(Assembly assembly, Func<ILifetime> lifetimeFactory)
         {
             AssemblyScanner.Scan(assembly, this, lifetimeFactory, (serviceType, implementingType) => true);
@@ -1957,9 +1906,9 @@ namespace RomanticWeb.LightInject
         /// <param name="lifetimeFactory">The <see cref="ILifetime"/> factory that controls the lifetime of the registered service.</param>
         /// <param name="shouldRegister">A function delegate that determines if a service implementation should be registered.</param>
         /// <remarks>
-        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this 
+        /// If the target <paramref name="assembly"/> contains an implementation of the <see cref="ICompositionRoot"/> interface, this
         /// will be used to configure the container.
-        /// </remarks>     
+        /// </remarks>
         public void RegisterAssembly(Assembly assembly, Func<ILifetime> lifetimeFactory, Func<Type, Type, bool> shouldRegister)
         {
             AssemblyScanner.Scan(assembly, this, lifetimeFactory, shouldRegister);
@@ -1969,11 +1918,55 @@ namespace RomanticWeb.LightInject
         /// Registers services from the given <typeparamref name="TCompositionRoot"/> type.
         /// </summary>
         /// <typeparam name="TCompositionRoot">The type of <see cref="ICompositionRoot"/> to register from.</typeparam>
-        public void RegisterFrom<TCompositionRoot>() where TCompositionRoot : ICompositionRoot, new()
+        public void RegisterFrom<TCompositionRoot>()
+            where TCompositionRoot : ICompositionRoot, new()
         {
-            compositionRootExecutor.Execute(typeof(TCompositionRoot));
+            CompositionRootExecutor.Execute(typeof(TCompositionRoot));
         }
 
+        /// <summary>
+        /// Registers a factory delegate to be used when resolving a constructor dependency for
+        /// a implicitly registered service.
+        /// </summary>
+        /// <typeparam name="TDependency">The dependency type.</typeparam>
+        /// <param name="factory">The factory delegate used to create an instance of the dependency.</param>
+        public void RegisterConstructorDependency<TDependency>(Func<IServiceFactory, ParameterInfo, TDependency> factory)
+        {
+            GetConstructorDependencyFactories(typeof(TDependency)).AddOrUpdate(
+                string.Empty,
+                s => factory,
+                (s, e) => isLocked ? e : factory);
+        }
+
+        /// <summary>
+        /// Registers a factory delegate to be used when resolving a constructor dependency for
+        /// a implicitly registered service.
+        /// </summary>
+        /// <typeparam name="TDependency">The dependency type.</typeparam>
+        /// <param name="factory">The factory delegate used to create an instance of the dependency.</param>
+        public void RegisterConstructorDependency<TDependency>(Func<IServiceFactory, ParameterInfo, object[], TDependency> factory)
+        {
+            GetConstructorDependencyFactories(typeof(TDependency)).AddOrUpdate(
+                string.Empty,
+                s => factory,
+                (s, e) => isLocked ? e : factory);
+        }
+
+        /// <summary>
+        /// Registers a factory delegate to be used when resolving a constructor dependency for
+        /// a implicitly registered service.
+        /// </summary>
+        /// <typeparam name="TDependency">The dependency type.</typeparam>
+        /// <param name="factory">The factory delegate used to create an instance of the dependency.</param>
+        public void RegisterPropertyDependency<TDependency>(Func<IServiceFactory, PropertyInfo, TDependency> factory)
+        {
+            GetPropertyDependencyFactories(typeof(TDependency)).AddOrUpdate(
+                string.Empty,
+                s => factory,
+                (s, e) => isLocked ? e : factory);
+        }
+
+#if NET45 || NETSTANDARD11 || NET46
         /// <summary>
         /// Registers composition roots from assemblies in the base directory that matches the <paramref name="searchPattern"/>.
         /// </summary>
@@ -1981,11 +1974,12 @@ namespace RomanticWeb.LightInject
         public void RegisterAssembly(string searchPattern)
         {
             foreach (Assembly assembly in AssemblyLoader.Load(searchPattern))
-            {                
-                AssemblyScanner.Scan(assembly, this);               
+            {
+                RegisterAssembly(assembly);
             }
-        }    
-    
+        }
+#endif
+
         /// <summary>
         /// Decorates the <paramref name="serviceType"/> with the given <paramref name="decoratorType"/>.
         /// </summary>
@@ -2003,7 +1997,7 @@ namespace RomanticWeb.LightInject
         /// Decorates the <paramref name="serviceType"/> with the given <paramref name="decoratorType"/>.
         /// </summary>
         /// <param name="serviceType">The target service type.</param>
-        /// <param name="decoratorType">The decorator type used to decorate the <paramref name="serviceType"/>.</param>        
+        /// <param name="decoratorType">The decorator type used to decorate the <paramref name="serviceType"/>.</param>
         public void Decorate(Type serviceType, Type decoratorType)
         {
             Decorate(serviceType, decoratorType, si => true);
@@ -2014,7 +2008,8 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The target service type.</typeparam>
         /// <typeparam name="TDecorator">The decorator type used to decorate the <typeparamref name="TService"/>.</typeparam>
-        public void Decorate<TService, TDecorator>() where TDecorator : TService
+        public void Decorate<TService, TDecorator>()
+            where TDecorator : TService
         {
             Decorate(typeof(TService), typeof(TDecorator));
         }
@@ -2024,10 +2019,10 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The target service type.</typeparam>
         /// <param name="factory">A factory delegate used to create a decorator instance.</param>
-        public void Decorate<TService>(Expression<Func<IServiceFactory, TService, TService>> factory)
+        public void Decorate<TService>(Func<IServiceFactory, TService, TService> factory)
         {
             var decoratorRegistration = new DecoratorRegistration { FactoryExpression = factory, ServiceType = typeof(TService), CanDecorate = si => true };
-            Decorate(decoratorRegistration);            
+            Decorate(decoratorRegistration);
         }
 
         /// <summary>
@@ -2037,7 +2032,7 @@ namespace RomanticWeb.LightInject
         public void Decorate(DecoratorRegistration decoratorRegistration)
         {
             int index = decorators.Add(decoratorRegistration);
-            decoratorRegistration.Index = index;            
+            decoratorRegistration.Index = index;
         }
 
         /// <summary>
@@ -2050,11 +2045,21 @@ namespace RomanticWeb.LightInject
         public void Override(Func<ServiceRegistration, bool> serviceSelector, Func<IServiceFactory, ServiceRegistration, ServiceRegistration> serviceRegistrationFactory)
         {
             var serviceOverride = new ServiceOverride
-                                      {
-                                          CanOverride = serviceSelector,
-                                          ServiceRegistrationFactory = serviceRegistrationFactory
-                                      };
+            {
+                CanOverride = serviceSelector,
+                ServiceRegistrationFactory = serviceRegistrationFactory
+            };
             overrides.Add(serviceOverride);
+        }
+
+        /// <summary>
+        /// Allows post-processing of a service instance.
+        /// </summary>
+        /// <param name="predicate">A function delegate that determines if the given service can be post-processed.</param>
+        /// <param name="processor">An action delegate that exposes the created service instance.</param>
+        public void Initialize(Func<ServiceRegistration, bool> predicate, Action<IServiceFactory, object> processor)
+        {
+            initializers.Add(new Initializer { Predicate = predicate, Initialize = processor });
         }
 
         /// <summary>
@@ -2085,7 +2090,8 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
-        public void Register<TService, TImplementation>() where TImplementation : TService
+        public void Register<TService, TImplementation>()
+            where TImplementation : TService
         {
             Register(typeof(TService), typeof(TImplementation));
         }
@@ -2096,7 +2102,8 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        public void Register<TService, TImplementation>(ILifetime lifetime) where TImplementation : TService
+        public void Register<TService, TImplementation>(ILifetime lifetime)
+            where TImplementation : TService
         {
             Register(typeof(TService), typeof(TImplementation), lifetime);
         }
@@ -2107,7 +2114,8 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
         /// <param name="serviceName">The name of the service.</param>
-        public void Register<TService, TImplementation>(string serviceName) where TImplementation : TService
+        public void Register<TService, TImplementation>(string serviceName)
+            where TImplementation : TService
         {
             Register<TService, TImplementation>(serviceName, lifetime: null);
         }
@@ -2119,31 +2127,32 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="TImplementation">The implementing type.</typeparam>
         /// <param name="serviceName">The name of the service.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        public void Register<TService, TImplementation>(string serviceName, ILifetime lifetime) where TImplementation : TService
+        public void Register<TService, TImplementation>(string serviceName, ILifetime lifetime)
+            where TImplementation : TService
         {
             Register(typeof(TService), typeof(TImplementation), serviceName, lifetime);
         }
-       
+
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
         /// <param name="lifetime">The <see cref="ILifetime"/> instance that controls the lifetime of the registered service.</param>
-        public void Register<TService>(Expression<Func<IServiceFactory, TService>> factory, ILifetime lifetime)
+        public void Register<TService>(Func<IServiceFactory, TService> factory, ILifetime lifetime)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, lifetime, string.Empty);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
-        /// <param name="serviceName">The name of the service.</param>        
-        public void Register<TService>(Expression<Func<IServiceFactory, TService>> factory, string serviceName)
+        /// <param name="serviceName">The name of the service.</param>
+        public void Register<TService>(Func<IServiceFactory, TService> factory, string serviceName)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, serviceName);
         }
@@ -2187,7 +2196,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>. 
+        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="instance">The instance returned when this service is requested.</param>
@@ -2198,7 +2207,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>. 
+        /// Registers the <typeparamref name="TService"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
         /// <param name="instance">The instance returned when this service is requested.</param>
@@ -2208,7 +2217,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>. 
+        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <param name="serviceType">The service type to register.</param>
         /// <param name="instance">The instance returned when this service is requested.</param>
@@ -2216,137 +2225,140 @@ namespace RomanticWeb.LightInject
         {
             RegisterInstance(serviceType, instance, string.Empty);
         }
-       
+
         /// <summary>
-        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>. 
+        /// Registers the <paramref name="serviceType"/> with the given <paramref name="instance"/>.
         /// </summary>
         /// <param name="serviceType">The service type to register.</param>
         /// <param name="instance">The instance returned when this service is requested.</param>
         /// <param name="serviceName">The name of the service.</param>
         public void RegisterInstance(Type serviceType, object instance, string serviceName)
         {
+            Ensure.IsNotNull(instance, "instance");
+            Ensure.IsNotNull(serviceType, "type");
+            Ensure.IsNotNull(serviceName, "serviceName");
             RegisterValue(serviceType, instance, serviceName);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="TService">The service type to register.</typeparam>
-        /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>       
-        public void Register<TService>(Expression<Func<IServiceFactory, TService>> factory)
+        /// <param name="factory">The lambdaExpression that describes the dependencies of the service.</param>
+        public void Register<TService>(Func<IServiceFactory, TService> factory)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, string.Empty);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T">The parameter type.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        public void Register<T, TService>(Expression<Func<IServiceFactory, T, TService>> factory)
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        public void Register<T, TService>(Func<IServiceFactory, T, TService> factory)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, string.Empty);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T">The parameter type.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param> 
-        /// <param name="serviceName">The name of the service.</param>        
-        public void Register<T, TService>(Expression<Func<IServiceFactory, T, TService>> factory, string serviceName)
-        {
-            RegisterServiceFromLambdaExpression<TService>(factory, null, serviceName);
-        }
-
-        /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
-        /// </summary>
-        /// <typeparam name="T1">The type of the first parameter.</typeparam>
-        /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        public void Register<T1, T2, TService>(Expression<Func<IServiceFactory, T1, T2, TService>> factory)
-        {
-            RegisterServiceFromLambdaExpression<TService>(factory, null, string.Empty);
-        }
-
-        /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
-        /// </summary>
-        /// <typeparam name="T1">The type of the first parameter.</typeparam>
-        /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
         /// <param name="serviceName">The name of the service.</param>
-        public void Register<T1, T2, TService>(Expression<Func<IServiceFactory, T1, T2, TService>> factory, string serviceName)
+        public void Register<T, TService>(Func<IServiceFactory, T, TService> factory, string serviceName)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, serviceName);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        public void Register<T1, T2, TService>(Func<IServiceFactory, T1, T2, TService> factory)
+        {
+            RegisterServiceFromLambdaExpression<TService>(factory, null, string.Empty);
+        }
+
+        /// <summary>
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        /// <param name="serviceName">The name of the service.</param>
+        public void Register<T1, T2, TService>(Func<IServiceFactory, T1, T2, TService> factory, string serviceName)
+        {
+            RegisterServiceFromLambdaExpression<TService>(factory, null, serviceName);
+        }
+
+        /// <summary>
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        public void Register<T1, T2, T3, TService>(Expression<Func<IServiceFactory, T1, T2, T3, TService>> factory)
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        public void Register<T1, T2, T3, TService>(Func<IServiceFactory, T1, T2, T3, TService> factory)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, string.Empty);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
         /// <param name="serviceName">The name of the service.</param>
-        public void Register<T1, T2, T3, TService>(Expression<Func<IServiceFactory, T1, T2, T3, TService>> factory, string serviceName)
+        public void Register<T1, T2, T3, TService>(Func<IServiceFactory, T1, T2, T3, TService> factory, string serviceName)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, serviceName);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
-        public void Register<T1, T2, T3, T4, TService>(Expression<Func<IServiceFactory, T1, T2, T3, T4, TService>> factory)
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
+        public void Register<T1, T2, T3, T4, TService>(Func<IServiceFactory, T1, T2, T3, T4, TService> factory)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, string.Empty);
         }
 
         /// <summary>
-        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that 
-        /// describes the dependencies of the service. 
+        /// Registers the <typeparamref name="TService"/> with the <paramref name="factory"/> that
+        /// describes the dependencies of the service.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The service type to register.</typeparam>        
-        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>    
+        /// <typeparam name="TService">The service type to register.</typeparam>
+        /// <param name="factory">A factory delegate used to create the <typeparamref name="TService"/> instance.</param>
         /// <param name="serviceName">The name of the service.</param>
-        public void Register<T1, T2, T3, T4, TService>(Expression<Func<IServiceFactory, T1, T2, T3, T4, TService>> factory, string serviceName)
+        public void Register<T1, T2, T3, T4, TService>(Func<IServiceFactory, T1, T2, T3, T4, TService> factory, string serviceName)
         {
             RegisterServiceFromLambdaExpression<TService>(factory, null, serviceName);
         }
@@ -2385,7 +2397,7 @@ namespace RomanticWeb.LightInject
                 instanceDelegate = CreateDefaultDelegate(serviceType, throwError: true);
             }
 
-            return instanceDelegate(constants.Items);            
+            return instanceDelegate(constants.Items);
         }
 
         /// <summary>
@@ -2404,7 +2416,7 @@ namespace RomanticWeb.LightInject
 
             object[] constantsWithArguments = constants.Items.Concat(new object[] { arguments }).ToArray();
 
-            return instanceDelegate(constantsWithArguments);                         
+            return instanceDelegate(constantsWithArguments);
         }
 
         /// <summary>
@@ -2412,7 +2424,7 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <param name="serviceType">The type of the requested service.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <param name="arguments">The arguments to be passed to the target instance.</param>        
+        /// <param name="arguments">The arguments to be passed to the target instance.</param>
         /// <returns>The requested service instance.</returns>
         public object GetInstance(Type serviceType, string serviceName, object[] arguments)
         {
@@ -2422,10 +2434,10 @@ namespace RomanticWeb.LightInject
             {
                 instanceDelegate = CreateNamedDelegate(key, throwError: true);
             }
-            
+
             object[] constantsWithArguments = constants.Items.Concat(new object[] { arguments }).ToArray();
 
-            return instanceDelegate(constantsWithArguments);                                    
+            return instanceDelegate(constantsWithArguments);
         }
 
         /// <summary>
@@ -2443,7 +2455,7 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<TService>(string serviceName)
         {
             return (TService)GetInstance(typeof(TService), serviceName);
@@ -2453,9 +2465,9 @@ namespace RomanticWeb.LightInject
         /// Gets an instance of the given <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="T">The type of the argument.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="value">The argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T, TService>(T value)
         {
             return (TService)GetInstance(typeof(TService), new object[] { value });
@@ -2465,10 +2477,10 @@ namespace RomanticWeb.LightInject
         /// Gets an instance of the given <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="T">The type of the parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="value">The argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T, TService>(T value, string serviceName)
         {
             return (TService)GetInstance(typeof(TService), serviceName, new object[] { value });
@@ -2479,10 +2491,10 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T1, T2, TService>(T1 arg1, T2 arg2)
         {
             return (TService)GetInstance(typeof(TService), new object[] { arg1, arg2 });
@@ -2493,11 +2505,11 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T1, T2, TService>(T1 arg1, T2 arg2, string serviceName)
         {
             return (TService)GetInstance(typeof(TService), serviceName, new object[] { arg1, arg2 });
@@ -2509,11 +2521,11 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T1, T2, T3, TService>(T1 arg1, T2 arg2, T3 arg3)
         {
             return (TService)GetInstance(typeof(TService), new object[] { arg1, arg2, arg3 });
@@ -2525,12 +2537,12 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T1">The type of the first parameter.</typeparam>
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T1, T2, T3, TService>(T1 arg1, T2 arg2, T3 arg3, string serviceName)
         {
             return (TService)GetInstance(typeof(TService), serviceName, new object[] { arg1, arg2, arg3 });
@@ -2543,12 +2555,12 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
         /// <param name="arg4">The fourth argument value.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T1, T2, T3, T4, TService>(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             return (TService)GetInstance(typeof(TService), new object[] { arg1, arg2, arg3, arg4 });
@@ -2561,13 +2573,13 @@ namespace RomanticWeb.LightInject
         /// <typeparam name="T2">The type of the second parameter.</typeparam>
         /// <typeparam name="T3">The type of the third parameter.</typeparam>
         /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
-        /// <typeparam name="TService">The type of the requested service.</typeparam>        
+        /// <typeparam name="TService">The type of the requested service.</typeparam>
         /// <param name="arg1">The first argument value.</param>
         /// <param name="arg2">The second argument value.</param>
         /// <param name="arg3">The third argument value.</param>
         /// <param name="arg4">The fourth argument value.</param>
         /// <param name="serviceName">The name of the requested service.</param>
-        /// <returns>The requested service instance.</returns>    
+        /// <returns>The requested service instance.</returns>
         public TService GetInstance<T1, T2, T3, T4, TService>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, string serviceName)
         {
             return (TService)GetInstance(typeof(TService), serviceName, new object[] { arg1, arg2, arg3, arg4 });
@@ -2586,7 +2598,7 @@ namespace RomanticWeb.LightInject
                 instanceDelegate = CreateDefaultDelegate(serviceType, throwError: false);
             }
 
-            return instanceDelegate(constants.Items); 
+            return instanceDelegate(constants.Items);
         }
 
         /// <summary>
@@ -2604,7 +2616,7 @@ namespace RomanticWeb.LightInject
                 instanceDelegate = CreateNamedDelegate(key, throwError: false);
             }
 
-            return instanceDelegate(constants.Items);       
+            return instanceDelegate(constants.Items);
         }
 
         /// <summary>
@@ -2643,7 +2655,7 @@ namespace RomanticWeb.LightInject
                 instanceDelegate = CreateNamedDelegate(key, throwError: true);
             }
 
-            return instanceDelegate(constants.Items);              
+            return instanceDelegate(constants.Items);
         }
 
         /// <summary>
@@ -2667,6 +2679,37 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
+        /// Creates an instance of a concrete class.
+        /// </summary>
+        /// <typeparam name="TService">The type of class for which to create an instance.</typeparam>
+        /// <returns>An instance of <typeparamref name="TService"/>.</returns>
+        /// <remarks>The concrete type will be registered if not already registered with the container.</remarks>
+        public TService Create<TService>()
+            where TService : class
+        {
+            Register(typeof(TService));
+            return GetInstance<TService>();
+        }
+
+        /// <summary>
+        /// Creates an instance of a concrete class.
+        /// </summary>
+        /// <param name="serviceType">The type of class for which to create an instance.</param>
+        /// <returns>An instance of the <paramref name="serviceType"/>.</returns>
+        public object Create(Type serviceType)
+        {
+            Register(serviceType);
+            return GetInstance(serviceType);
+        }
+
+        /// <summary>
+        /// Sets the default lifetime for types registered without an explicit lifetime. Will only affect new registrations (after this call).
+        /// </summary>
+        /// <typeparam name="T">The default lifetime type</typeparam>
+        public void SetDefaultLifetime<T>()
+            where T : ILifetime, new() => defaultLifetimeType = typeof(T);
+
+        /// <summary>
         /// Disposes any services registered using the <see cref="PerContainerLifetime"/>.
         /// </summary>
         public void Dispose()
@@ -2678,7 +2721,24 @@ namespace RomanticWeb.LightInject
             foreach (var disposableLifetimeInstance in disposableLifetimeInstances)
             {
                 disposableLifetimeInstance.Dispose();
-            }            
+            }
+        }
+
+        /// <summary>
+        /// Creates a clone of the current <see cref="IServiceContainer"/>.
+        /// </summary>
+        /// <returns>A new <see cref="IServiceContainer"/> instance.</returns>
+        public IServiceContainer Clone()
+        {
+            return new ServiceContainer(
+                options,
+                constructorDependencyFactories,
+                propertyDependencyFactories,
+                availableServices,
+                decorators,
+                overrides,
+                factoryRules,
+                initializers);
         }
 
         /// <summary>
@@ -2686,8 +2746,8 @@ namespace RomanticWeb.LightInject
         /// </summary>
         public void Invalidate()
         {
-            Interlocked.Exchange(ref delegates, ImmutableHashTree<Type, Func<object[], object>>.Empty);
-            Interlocked.Exchange(ref namedDelegates, ImmutableHashTree<Tuple<Type, string>, Func<object[], object>>.Empty);
+            Interlocked.Exchange(ref delegates, ImmutableHashTable<Type, GetInstanceDelegate>.Empty);
+            Interlocked.Exchange(ref namedDelegates, ImmutableHashTable<Tuple<Type, string>, GetInstanceDelegate>.Empty);
             Interlocked.Exchange(ref propertyInjectionDelegates, ImmutableHashTree<Type, Func<object[], object, object>>.Empty);
             constants.Clear();
             constructionInfoProvider.Value.Invalidate();
@@ -2697,22 +2757,22 @@ namespace RomanticWeb.LightInject
         private static void EmitNewArray(IList<Action<IEmitter>> emitMethods, Type elementType, IEmitter emitter)
         {
             LocalBuilder array = emitter.DeclareLocal(elementType.MakeArrayType());
-            emitter.Push(emitMethods.Count);            
+            emitter.Push(emitMethods.Count);
             emitter.PushNewArray(elementType);
-            emitter.Store(array);            
+            emitter.Store(array);
 
             for (int index = 0; index < emitMethods.Count; index++)
-            {                
+            {
                 emitter.Push(array);
                 emitter.Push(index);
-                emitMethods[index](emitter);                
-                emitter.UnboxOrCast(elementType);                                    
+                emitMethods[index](emitter);
+                emitter.UnboxOrCast(elementType);
                 emitter.Emit(OpCodes.Stelem, elementType);
             }
 
             emitter.Push(array);
         }
-        
+
         private static ILifetime CloneLifeTime(ILifetime lifetime)
         {
             return lifetime == null ? null : (ILifetime)Activator.CreateInstance(lifetime.GetType());
@@ -2726,7 +2786,7 @@ namespace RomanticWeb.LightInject
                     cd =>
                     cd.ServiceType == decoratorRegistration.ServiceType
                     || (cd.ServiceType.IsLazy()
-                        && cd.ServiceType.GetGenericTypeArguments()[0] == decoratorRegistration.ServiceType));
+                        && cd.ServiceType.GetTypeInfo().GenericTypeArguments[0] == decoratorRegistration.ServiceType));
             return constructorDependency;
         }
 
@@ -2734,9 +2794,9 @@ namespace RomanticWeb.LightInject
             ServiceRegistration serviceRegistration, DecoratorRegistration openGenericDecorator)
         {
             Type implementingType = openGenericDecorator.ImplementingType;
-            Type[] genericTypeArguments = serviceRegistration.ServiceType.GetGenericTypeArguments();
+            Type[] genericTypeArguments = serviceRegistration.ServiceType.GenericTypeArguments;
             Type closedGenericDecoratorType = implementingType.MakeGenericType(genericTypeArguments);
-                               
+
             var decoratorInfo = new DecoratorRegistration
             {
                 ServiceType = serviceRegistration.ServiceType,
@@ -2758,10 +2818,17 @@ namespace RomanticWeb.LightInject
                 return null;
             }
         }
-       
-        private void EmitEnumerable(IList<Action<IEmitter>> serviceEmitters, Type elementType, IEmitter emitter)
+
+        private static void PushRuntimeArguments(IEmitter emitter)
         {
-            EmitNewArray(serviceEmitters, elementType, emitter);                       
+            MethodInfo loadMethod = typeof(RuntimeArgumentsLoader).GetTypeInfo().GetDeclaredMethod("Load");
+            emitter.Emit(OpCodes.Ldarg_0);
+            emitter.Emit(OpCodes.Call, loadMethod);
+        }
+
+        private static void EmitEnumerable(IList<Action<IEmitter>> serviceEmitters, Type elementType, IEmitter emitter)
+        {
+            EmitNewArray(serviceEmitters, elementType, emitter);
         }
 
         private Func<object[], object, object> CreatePropertyInjectionDelegate(Type concreteType)
@@ -2769,10 +2836,14 @@ namespace RomanticWeb.LightInject
             lock (lockObject)
             {
                 IMethodSkeleton methodSkeleton = methodSkeletonFactory(typeof(object), new[] { typeof(object[]), typeof(object) });
-                ConstructionInfo constructionInfo = GetContructionInfoForConcreteType(concreteType);                
+
+                ConstructionInfo constructionInfo = new ConstructionInfo();
+                constructionInfo.PropertyDependencies.AddRange(PropertyDependencySelector.Execute(concreteType));
+                constructionInfo.ImplementingType = concreteType;
+
                 var emitter = methodSkeleton.GetEmitter();
                 emitter.PushArgument(1);
-                emitter.Cast(concreteType);                
+                emitter.Cast(concreteType);
                 try
                 {
                     EmitPropertyDependencies(constructionInfo, emitter);
@@ -2787,55 +2858,45 @@ namespace RomanticWeb.LightInject
 
                 isLocked = true;
 
-                return (Func<object[], object, object>)methodSkeleton.CreateDelegate(typeof(Func<object[], object, object>));                                        
-            }            
-        }
-
-        private ConstructionInfo GetContructionInfoForConcreteType(Type concreteType)
-        {
-            var serviceRegistration = GetServiceRegistrationForConcreteType(concreteType);                        
-            return GetConstructionInfo(serviceRegistration);
-        }
-
-        private ServiceRegistration GetServiceRegistrationForConcreteType(Type concreteType)
-        {
-            var services = GetAvailableServices(concreteType);            
-            return services.GetOrAdd(string.Empty, s => CreateServiceRegistrationBasedOnConcreteType(concreteType));            
-        }
-
-        private ServiceRegistration CreateServiceRegistrationBasedOnConcreteType(Type type)
-        {
-            var serviceRegistration = new ServiceRegistration
-            {
-                ServiceType = type,
-                ImplementingType = type,
-                ServiceName = string.Empty,
-                IgnoreConstructorDependencies = true
-            };
-            return serviceRegistration;
+                return (Func<object[], object, object>)methodSkeleton.CreateDelegate(typeof(Func<object[], object, object>));
+            }
         }
 
         private ConstructionInfoProvider CreateConstructionInfoProvider()
         {
-            return new ConstructionInfoProvider(CreateConstructionInfoBuilder());
-        }
-
-        private ConstructionInfoBuilder CreateConstructionInfoBuilder()
-        {
-            return new ConstructionInfoBuilder(() => new LambdaConstructionInfoBuilder(), CreateTypeConstructionInfoBuilder);
+            return new ConstructionInfoProvider(CreateTypeConstructionInfoBuilder());
         }
 
         private TypeConstructionInfoBuilder CreateTypeConstructionInfoBuilder()
         {
-            return new TypeConstructionInfoBuilder(ConstructorSelector, ConstructorDependencySelector, PropertyDependencySelector);
+            return new TypeConstructionInfoBuilder(
+                ConstructorSelector,
+                ConstructorDependencySelector,
+                PropertyDependencySelector,
+                GetConstructorDependencyDelegate,
+                GetPropertyDependencyExpression);
         }
 
-        private Func<object[], object> CreateDynamicMethodDelegate(Action<IEmitter> serviceEmitter)
+        private Delegate GetConstructorDependencyDelegate(Type type, string serviceName)
+        {
+            Delegate dependencyDelegate;
+            GetConstructorDependencyFactories(type).TryGetValue(serviceName, out dependencyDelegate);
+            return dependencyDelegate;
+        }
+
+        private Delegate GetPropertyDependencyExpression(Type type, string serviceName)
+        {
+            Delegate dependencyDelegate;
+            GetPropertyDependencyFactories(type).TryGetValue(serviceName, out dependencyDelegate);
+            return dependencyDelegate;
+        }
+
+        private GetInstanceDelegate CreateDynamicMethodDelegate(Action<IEmitter> serviceEmitter)
         {
             var methodSkeleton = methodSkeletonFactory(typeof(object), new[] { typeof(object[]) });
             IEmitter emitter = methodSkeleton.GetEmitter();
             serviceEmitter(emitter);
-            if (emitter.StackType.IsValueType())
+            if (emitter.StackType.GetTypeInfo().IsValueType)
             {
                 emitter.Emit(OpCodes.Box, emitter.StackType);
             }
@@ -2851,16 +2912,16 @@ namespace RomanticWeb.LightInject
 
             isLocked = true;
 
-            return (Func<object[], object>)methodSkeleton.CreateDelegate(typeof(Func<object[], object>));                                    
+            return (GetInstanceDelegate)methodSkeleton.CreateDelegate(typeof(GetInstanceDelegate));
         }
 
-        private Func<object> WrapAsFuncDelegate(Func<object[], object> instanceDelegate)
+        private Func<object> WrapAsFuncDelegate(GetInstanceDelegate instanceDelegate)
         {
             return () => instanceDelegate(constants.Items);
         }
-       
+
         private Action<IEmitter> GetEmitMethod(Type serviceType, string serviceName)
-        {           
+        {
             Action<IEmitter> emitMethod = GetRegisteredEmitMethod(serviceType, serviceName);
 
             if (emitMethod == null)
@@ -2870,8 +2931,8 @@ namespace RomanticWeb.LightInject
 
             if (emitMethod == null)
             {
-                AssemblyScanner.Scan(serviceType.GetAssembly(), this);                
-                emitMethod = GetRegisteredEmitMethod(serviceType, serviceName);                
+                AssemblyScanner.Scan(serviceType.GetTypeInfo().Assembly, this);
+                emitMethod = GetRegisteredEmitMethod(serviceType, serviceName);
             }
 
             if (emitMethod == null)
@@ -2889,6 +2950,7 @@ namespace RomanticWeb.LightInject
             if (rule != null)
             {
                 emitMethod = CreateServiceEmitterBasedOnFactoryRule(rule, serviceType, serviceName);
+                UpdateEmitMethod(serviceType, serviceName, emitMethod);
             }
 
             return emitMethod;
@@ -2929,6 +2991,11 @@ namespace RomanticWeb.LightInject
             Action<IEmitter> emitMethod;
             var registrations = GetEmitMethods(serviceType);
             registrations.TryGetValue(serviceName, out emitMethod);
+            if (emitMethod == null && serviceType.IsClosedGeneric())
+            {
+                emitMethod = CreateEmitMethodBasedOnClosedGenericServiceRequest(serviceType, serviceName);
+            }
+
             return emitMethod ?? CreateEmitMethodForUnknownService(serviceType, serviceName);
         }
 
@@ -2939,11 +3006,11 @@ namespace RomanticWeb.LightInject
                 GetEmitMethods(serviceType).AddOrUpdate(serviceName, s => emitMethod, (s, m) => emitMethod);
             }
         }
-        
+
         private ServiceRegistration AddServiceRegistration(ServiceRegistration serviceRegistration)
         {
             var emitDelegate = ResolveEmitMethod(serviceRegistration);
-            GetEmitMethods(serviceRegistration.ServiceType).TryAdd(serviceRegistration.ServiceName, emitDelegate);                
+            GetEmitMethods(serviceRegistration.ServiceType).TryAdd(serviceRegistration.ServiceName, emitDelegate);
             return serviceRegistration;
         }
 
@@ -2955,10 +3022,10 @@ namespace RomanticWeb.LightInject
             }
 
             Invalidate();
-            Action<IEmitter> emitMethod = ResolveEmitMethod(newRegistration);            
-            
+            Action<IEmitter> emitMethod = ResolveEmitMethod(newRegistration);
+
             var serviceEmitters = GetEmitMethods(newRegistration.ServiceType);
-            serviceEmitters[newRegistration.ServiceName] = emitMethod;                                               
+            serviceEmitters[newRegistration.ServiceName] = emitMethod;
             return newRegistration;
         }
 
@@ -2969,7 +3036,7 @@ namespace RomanticWeb.LightInject
             {
                 serviceRegistration = serviceOverride.ServiceRegistrationFactory(this, serviceRegistration);
             }
-                                   
+
             var serviceDecorators = GetDecorators(serviceRegistration);
             if (serviceDecorators.Length > 0)
             {
@@ -2983,10 +3050,10 @@ namespace RomanticWeb.LightInject
 
         private DecoratorRegistration[] GetDecorators(ServiceRegistration serviceRegistration)
         {
-            var registeredDecorators = decorators.Items.Where(d => d.ServiceType == serviceRegistration.ServiceType).ToList();            
+            var registeredDecorators = decorators.Items.Where(d => d.ServiceType == serviceRegistration.ServiceType).ToList();
 
-            registeredDecorators.AddRange(GetOpenGenericDecoratorRegistrations(serviceRegistration));            
-            registeredDecorators.AddRange(GetDeferredDecoratorRegistrations(serviceRegistration));                      
+            registeredDecorators.AddRange(GetOpenGenericDecoratorRegistrations(serviceRegistration));
+            registeredDecorators.AddRange(GetDeferredDecoratorRegistrations(serviceRegistration));
             return registeredDecorators.OrderBy(d => d.Index).ToArray();
         }
 
@@ -2994,9 +3061,10 @@ namespace RomanticWeb.LightInject
             ServiceRegistration serviceRegistration)
         {
             var registrations = new List<DecoratorRegistration>();
-            if (serviceRegistration.ServiceType.IsGenericType())
+            var serviceTypeInfo = serviceRegistration.ServiceType.GetTypeInfo();
+            if (serviceTypeInfo.IsGenericType)
             {
-                var openGenericServiceType = serviceRegistration.ServiceType.GetGenericTypeDefinition();
+                var openGenericServiceType = serviceTypeInfo.GetGenericTypeDefinition();
                 var openGenericDecorators = decorators.Items.Where(d => d.ServiceType == openGenericServiceType);
                 registrations.AddRange(
                     openGenericDecorators.Select(
@@ -3011,9 +3079,9 @@ namespace RomanticWeb.LightInject
             ServiceRegistration serviceRegistration)
         {
             var registrations = new List<DecoratorRegistration>();
-            
+
             var deferredDecorators =
-                decorators.Items.Where(ds => ds.CanDecorate(serviceRegistration) && ds.HasDeferredImplementingType);            
+                decorators.Items.Where(ds => ds.CanDecorate(serviceRegistration) && ds.HasDeferredImplementingType);
             foreach (var deferredDecorator in deferredDecorators)
             {
                 var decoratorRegistration = new DecoratorRegistration
@@ -3021,7 +3089,7 @@ namespace RomanticWeb.LightInject
                     ServiceType = serviceRegistration.ServiceType,
                     ImplementingType =
                         deferredDecorator.ImplementingTypeFactory(this, serviceRegistration),
-                    CanDecorate = sr => true, 
+                    CanDecorate = sr => true,
                     Index = deferredDecorator.Index
                 };
                 registrations.Add(decoratorRegistration);
@@ -3035,7 +3103,7 @@ namespace RomanticWeb.LightInject
             ConstructionInfo constructionInfo = GetConstructionInfo(decoratorRegistration);
             var constructorDependency = GetConstructorDependencyThatRepresentsDecoratorTarget(
                 decoratorRegistration, constructionInfo);
-                
+
             if (constructorDependency != null)
             {
                 constructorDependency.IsDecoratorTarget = true;
@@ -3057,9 +3125,9 @@ namespace RomanticWeb.LightInject
             var serviceFactoryIndex = constants.Add(this);
             Type funcType = factoryDelegate.GetType();
             emitter.PushConstant(factoryDelegateIndex, funcType);
-            emitter.PushConstant(serviceFactoryIndex, typeof(IServiceFactory));            
-            pushInstance(emitter);            
-            MethodInfo invokeMethod = funcType.GetMethod("Invoke");
+            emitter.PushConstant(serviceFactoryIndex, typeof(IServiceFactory));
+            pushInstance(emitter);
+            MethodInfo invokeMethod = funcType.GetTypeInfo().GetDeclaredMethod("Invoke");
             emitter.Emit(OpCodes.Callvirt, invokeMethod);
         }
 
@@ -3069,21 +3137,43 @@ namespace RomanticWeb.LightInject
             {
                 int index = constants.Add(serviceRegistration.Value);
                 Type serviceType = serviceRegistration.ServiceType;
-                emitter.PushConstant(index, serviceType);                
+                emitter.PushConstant(index, serviceType);
             }
             else
             {
                 var constructionInfo = GetConstructionInfo(serviceRegistration);
 
-                if (constructionInfo.FactoryDelegate != null)
+                if (serviceRegistration.FactoryExpression != null)
                 {
-                    EmitNewInstanceUsingFactoryDelegate(constructionInfo.FactoryDelegate, emitter);
+                    EmitNewInstanceUsingFactoryDelegate(serviceRegistration, emitter);
                 }
                 else
                 {
                     EmitNewInstanceUsingImplementingType(emitter, constructionInfo, null);
-                }    
-            }                        
+                }
+            }
+
+            var processors = initializers.Items.Where(i => i.Predicate(serviceRegistration)).ToArray();
+            if (processors.Length == 0)
+            {
+                return;
+            }
+
+            LocalBuilder instanceVariable = emitter.DeclareLocal(serviceRegistration.ServiceType);
+            emitter.Store(instanceVariable);
+            foreach (var postProcessor in processors)
+            {
+                Type delegateType = postProcessor.Initialize.GetType();
+                var delegateIndex = constants.Add(postProcessor.Initialize);
+                emitter.PushConstant(delegateIndex, delegateType);
+                var serviceFactoryIndex = constants.Add(this);
+                emitter.PushConstant(serviceFactoryIndex, typeof(IServiceFactory));
+                emitter.Push(instanceVariable);
+                MethodInfo invokeMethod = delegateType.GetTypeInfo().GetDeclaredMethod("Invoke");
+                emitter.Call(invokeMethod);
+            }
+
+            emitter.Push(instanceVariable);
         }
 
         private void EmitDecorators(ServiceRegistration serviceRegistration, IEnumerable<DecoratorRegistration> serviceDecorators, IEmitter emitter, Action<IEmitter> decoratorTargetEmitMethod)
@@ -3094,13 +3184,13 @@ namespace RomanticWeb.LightInject
                 {
                     continue;
                 }
-                
+
                 Action<IEmitter> currentDecoratorTargetEmitter = decoratorTargetEmitMethod;
-                DecoratorRegistration currentDecorator = decorator;                
+                DecoratorRegistration currentDecorator = decorator;
                 decoratorTargetEmitMethod = e => EmitNewDecoratorInstance(currentDecorator, e, currentDecoratorTargetEmitter);
             }
 
-            decoratorTargetEmitMethod(emitter);            
+            decoratorTargetEmitMethod(emitter);
         }
 
         private void EmitNewInstanceUsingImplementingType(IEmitter emitter, ConstructionInfo constructionInfo, Action<IEmitter> decoratorTargetEmitMethod)
@@ -3110,21 +3200,33 @@ namespace RomanticWeb.LightInject
             EmitPropertyDependencies(constructionInfo, emitter);
         }
 
-        private void EmitNewInstanceUsingFactoryDelegate(Delegate factoryDelegate, IEmitter emitter)
-        {                        
-            var factoryDelegateIndex = constants.Add(factoryDelegate);
-            var serviceFactoryIndex = constants.Add(this);
-            Type funcType = factoryDelegate.GetType();
+        private void EmitNewInstanceUsingFactoryDelegate(ServiceRegistration serviceRegistration, IEmitter emitter)
+        {
+            var factoryDelegateIndex = constants.Add(serviceRegistration.FactoryExpression);
+            Type funcType = serviceRegistration.FactoryExpression.GetType();
+            MethodInfo invokeMethod = funcType.GetTypeInfo().GetDeclaredMethod("Invoke");
             emitter.PushConstant(factoryDelegateIndex, funcType);
-            emitter.PushConstant(serviceFactoryIndex, typeof(IServiceFactory));            
-            if (factoryDelegate.GetMethodInfo().GetParameters().Length > 2)
+            var parameters = invokeMethod.GetParameters();
+            if (parameters.Length == 1 && parameters[0].ParameterType == typeof(ServiceRequest))
             {
-                var parameters = factoryDelegate.GetMethodInfo().GetParameters().Skip(2).ToArray();
-                emitter.PushArguments(parameters);                
+                var serviceRequest = new ServiceRequest(serviceRegistration.ServiceType, serviceRegistration.ServiceName, this);
+                var serviceRequestIndex = constants.Add(serviceRequest);
+                emitter.PushConstant(serviceRequestIndex, typeof(ServiceRequest));
+                emitter.Call(invokeMethod);
+                emitter.UnboxOrCast(serviceRegistration.ServiceType);
             }
-                                   
-            MethodInfo invokeMethod = funcType.GetMethod("Invoke");            
-            emitter.Call(invokeMethod);
+            else
+            {
+                var serviceFactoryIndex = constants.Add(this);
+                emitter.PushConstant(serviceFactoryIndex, typeof(IServiceFactory));
+
+                if (parameters.Length > 1)
+                {
+                    emitter.PushArguments(parameters.Skip(1).ToArray());
+                }
+
+                emitter.Call(invokeMethod);
+            }
         }
 
         private void EmitConstructorDependencies(ConstructionInfo constructionInfo, IEmitter emitter, Action<IEmitter> decoratorTargetEmitter)
@@ -3136,10 +3238,10 @@ namespace RomanticWeb.LightInject
                     EmitConstructorDependency(emitter, dependency);
                 }
                 else
-                {                    
+                {
                     if (dependency.ServiceType.IsLazy())
                     {
-                        Action<IEmitter> instanceEmitter = decoratorTargetEmitter;                        
+                        Action<IEmitter> instanceEmitter = decoratorTargetEmitter;
                         decoratorTargetEmitter = CreateEmitMethodBasedOnLazyServiceRequest(
                             dependency.ServiceType, t => CreateTypedInstanceDelegate(instanceEmitter, t));
                     }
@@ -3150,8 +3252,8 @@ namespace RomanticWeb.LightInject
         }
 
         private Delegate CreateTypedInstanceDelegate(Action<IEmitter> emitter, Type serviceType)
-        {                        
-            var openGenericMethod = GetType().GetPrivateMethod("CreateGenericDynamicMethodDelegate");
+        {
+            var openGenericMethod = GetType().GetTypeInfo().GetDeclaredMethod("CreateGenericDynamicMethodDelegate");
             var closedGenericMethod = openGenericMethod.MakeGenericMethod(serviceType);
             var del = WrapAsFuncDelegate(CreateDynamicMethodDelegate(emitter));
             return (Delegate)closedGenericMethod.Invoke(this, new object[] { del });
@@ -3159,19 +3261,20 @@ namespace RomanticWeb.LightInject
 
         // ReSharper disable UnusedMember.Local
         private Func<T> CreateGenericDynamicMethodDelegate<T>(Func<object> del)
+
         // ReSharper restore UnusedMember.Local
-        {            
+        {
             return () => (T)del();
         }
-        
+
         private void EmitConstructorDependency(IEmitter emitter, Dependency dependency)
         {
             var emitMethod = GetEmitMethodForDependency(dependency);
-                        
+
             try
             {
-                emitMethod(emitter);                
-                emitter.UnboxOrCast(dependency.ServiceType);                                    
+                emitMethod(emitter);
+                emitter.UnboxOrCast(dependency.ServiceType);
             }
             catch (InvalidOperationException ex)
             {
@@ -3189,9 +3292,9 @@ namespace RomanticWeb.LightInject
             }
 
             emitter.Push(instanceVariable);
-            propertyDependencyEmitMethod(emitter);                
+            propertyDependencyEmitMethod(emitter);
             emitter.UnboxOrCast(propertyDependency.ServiceType);
-            emitter.Call(propertyDependency.Property.GetSetMethod());
+            emitter.Call(propertyDependency.Property.SetMethod);
         }
 
         private Action<IEmitter> GetEmitMethodForDependency(Dependency dependency)
@@ -3204,7 +3307,7 @@ namespace RomanticWeb.LightInject
             Action<IEmitter> emitter = GetEmitMethod(dependency.ServiceType, dependency.ServiceName);
             if (emitter == null)
             {
-                emitter = GetEmitMethod(dependency.ServiceType, dependency.Name);                
+                emitter = GetEmitMethod(dependency.ServiceType, dependency.Name);
                 if (emitter == null && dependency.IsRequired)
                 {
                     throw new InvalidOperationException(string.Format(UnresolvedDependencyError, dependency));
@@ -3216,23 +3319,43 @@ namespace RomanticWeb.LightInject
 
         private void EmitDependencyUsingFactoryExpression(IEmitter emitter, Dependency dependency)
         {
-            var parameterExpression = (ParameterExpression)dependency.FactoryExpression.AsEnumerable().FirstOrDefault(e => e is ParameterExpression && e.Type == typeof(IServiceFactory));
+            var actions = new List<Action<IEmitter>>();
+            var parameters = dependency.FactoryExpression.GetMethodInfo().GetParameters();
 
-            if (parameterExpression != null)
+            foreach (var parameter in parameters)
             {
-                var lambda = Expression.Lambda(dependency.FactoryExpression, new[] { parameterExpression }).Compile();
-                MethodInfo methodInfo = lambda.GetType().GetMethod("Invoke");
-                emitter.PushConstant(constants.Add(lambda), lambda.GetType());
-                emitter.PushConstant(constants.Add(this), typeof(IServiceFactory));
-                emitter.Call(methodInfo);                
+                if (parameter.ParameterType == typeof(IServiceFactory))
+                {
+                    actions.Add(e => e.PushConstant(constants.Add(this), typeof(IServiceFactory)));
+                }
+
+                if (parameter.ParameterType == typeof(ParameterInfo))
+                {
+                    actions.Add(e => e.PushConstant(constants.Add(((ConstructorDependency)dependency).Parameter), typeof(ParameterInfo)));
+                }
+
+                if (parameter.ParameterType == typeof(PropertyInfo))
+                {
+                    actions.Add(e => e.PushConstant(constants.Add(((PropertyDependency)dependency).Property), typeof(PropertyInfo)));
+                }
+
+                if (parameter.ParameterType == typeof(object[]))
+                {
+                    actions.Add(e => PushRuntimeArguments(e));
+                }
             }
-            else
+
+            var factoryDelegateIndex = constants.Add(dependency.FactoryExpression);
+            Type funcType = dependency.FactoryExpression.GetType();
+            MethodInfo invokeMethod = funcType.GetTypeInfo().GetDeclaredMethod("Invoke");
+            emitter.PushConstant(factoryDelegateIndex, funcType);
+
+            foreach (var action in actions)
             {
-                var lambda = Expression.Lambda(dependency.FactoryExpression, new ParameterExpression[] { }).Compile();
-                MethodInfo methodInfo = lambda.GetType().GetMethod("Invoke");
-                emitter.PushConstant(constants.Add(lambda), lambda.GetType());
-                emitter.Call(methodInfo);                
-            }            
+                action(emitter);
+            }
+
+            emitter.Call(invokeMethod);
         }
 
         private void EmitPropertyDependencies(ConstructionInfo constructionInfo, IEmitter emitter)
@@ -3243,20 +3366,20 @@ namespace RomanticWeb.LightInject
             }
 
             LocalBuilder instanceVariable = emitter.DeclareLocal(constructionInfo.ImplementingType);
-            emitter.Store(instanceVariable);            
+            emitter.Store(instanceVariable);
             foreach (var propertyDependency in constructionInfo.PropertyDependencies)
             {
                 EmitPropertyDependency(emitter, propertyDependency, instanceVariable);
             }
 
-            emitter.Push(instanceVariable);            
+            emitter.Push(instanceVariable);
         }
 
         private Action<IEmitter> CreateEmitMethodForUnknownService(Type serviceType, string serviceName)
         {
             Action<IEmitter> emitter = null;
             if (serviceType.IsLazy())
-            {                
+            {
                 emitter = CreateEmitMethodBasedOnLazyServiceRequest(serviceType, t => t.CreateGetInstanceDelegate(this));
             }
             else if (serviceType.IsFuncWithParameters())
@@ -3275,10 +3398,12 @@ namespace RomanticWeb.LightInject
             {
                 emitter = CreateEmitMethodForArrayServiceRequest(serviceType);
             }
+#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || PCL_111 || NET46
             else if (serviceType.IsReadOnlyCollectionOfT() || serviceType.IsReadOnlyListOfT())
             {
                 emitter = CreateEmitMethodForReadOnlyCollectionServiceRequest(serviceType);
-            }            
+            }
+#endif
             else if (serviceType.IsListOfT())
             {
                 emitter = CreateEmitMethodForListServiceRequest(serviceType);
@@ -3286,7 +3411,7 @@ namespace RomanticWeb.LightInject
             else if (serviceType.IsCollectionOfT())
             {
                 emitter = CreateEmitMethodForListServiceRequest(serviceType);
-            }     
+            }
             else if (CanRedirectRequestForDefaultServiceToSingleNamedService(serviceType, serviceName))
             {
                 emitter = CreateServiceEmitterBasedOnSingleNamedInstance(serviceType);
@@ -3296,28 +3421,26 @@ namespace RomanticWeb.LightInject
                 emitter = CreateEmitMethodBasedOnClosedGenericServiceRequest(serviceType, serviceName);
             }
 
-            UpdateEmitMethod(serviceType, serviceName, emitter);
-
             return emitter;
         }
-        
+
         private Action<IEmitter> CreateEmitMethodBasedOnFuncServiceRequest(Type serviceType, string serviceName)
-        {            
+        {
             Delegate getInstanceDelegate;
-            var returnType = serviceType.GetGenericTypeArguments().Single();
+            var returnType = serviceType.GetTypeInfo().GenericTypeArguments[0];
             if (string.IsNullOrEmpty(serviceName))
             {
                 getInstanceDelegate = returnType.CreateGetInstanceDelegate(this);
             }
             else
-            {                
+            {
                 getInstanceDelegate = returnType.CreateNamedGetInstanceDelegate(serviceName, this);
-            }  
-                      
+            }
+
             var constantIndex = constants.Add(getInstanceDelegate);
-            return e => e.PushConstant(constantIndex, serviceType);            
+            return e => e.PushConstant(constantIndex, serviceType);
         }
-                      
+
         private Action<IEmitter> CreateEmitMethodBasedParameterizedFuncRequest(Type serviceType, string serviceName)
         {
             Delegate getInstanceDelegate;
@@ -3336,7 +3459,7 @@ namespace RomanticWeb.LightInject
             var constantIndex = constants.Add(getInstanceDelegate);
             return e => e.PushConstant(constantIndex, serviceType);
         }
-        
+
         private Delegate CreateGetInstanceWithParametersDelegate(Type serviceType)
         {
             var getInstanceMethod = ReflectionHelper.GetGetInstanceWithParametersMethod(serviceType);
@@ -3345,29 +3468,25 @@ namespace RomanticWeb.LightInject
 
         private Action<IEmitter> CreateServiceEmitterBasedOnFactoryRule(FactoryRule rule, Type serviceType, string serviceName)
         {
-            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ServiceName = serviceName, Lifetime = CloneLifeTime(rule.LifeTime) };
-            ParameterExpression serviceFactoryParameterExpression = Expression.Parameter(typeof(IServiceFactory));
-            ConstantExpression serviceRequestConstantExpression = Expression.Constant(new ServiceRequest(serviceType, serviceName, this));
-            ConstantExpression delegateConstantExpression = Expression.Constant(rule.Factory);
-            Type delegateType = typeof(Func<,>).MakeGenericType(typeof(IServiceFactory), serviceType);
-            UnaryExpression convertExpression = Expression.Convert(
-                Expression.Invoke(delegateConstantExpression, serviceRequestConstantExpression), serviceType);
-
-            LambdaExpression lambdaExpression = Expression.Lambda(delegateType, convertExpression, serviceFactoryParameterExpression);
-            serviceRegistration.FactoryExpression = lambdaExpression;
-
+            var serviceRegistration = new ServiceRegistration
+            {
+                ServiceType = serviceType,
+                ServiceName = serviceName,
+                FactoryExpression = rule.Factory,
+                Lifetime = CloneLifeTime(rule.LifeTime) ?? DefaultLifetime
+            };
             if (rule.LifeTime != null)
             {
-                return methodSkeleton => EmitLifetime(serviceRegistration, ms => EmitNewInstanceWithDecorators(serviceRegistration, ms), methodSkeleton);
+                return emitter => EmitLifetime(serviceRegistration, e => EmitNewInstanceWithDecorators(serviceRegistration, e), emitter);
             }
 
-            return methodSkeleton => EmitNewInstanceWithDecorators(serviceRegistration, methodSkeleton);
+            return emitter => EmitNewInstanceWithDecorators(serviceRegistration, emitter);
         }
 
         private Action<IEmitter> CreateEmitMethodForArrayServiceRequest(Type serviceType)
         {
             Action<IEmitter> enumerableEmitter = CreateEmitMethodForEnumerableServiceServiceRequest(serviceType);
-            return enumerableEmitter;            
+            return enumerableEmitter;
         }
 
         private Action<IEmitter> CreateEmitMethodForListServiceRequest(Type serviceType)
@@ -3375,7 +3494,7 @@ namespace RomanticWeb.LightInject
             // Note replace this with getEmitMethod();
             Action<IEmitter> enumerableEmitter = CreateEmitMethodForEnumerableServiceServiceRequest(serviceType);
 
-            MethodInfo openGenericToArrayMethod = typeof(Enumerable).GetMethod("ToList");
+            MethodInfo openGenericToArrayMethod = typeof(Enumerable).GetTypeInfo().GetDeclaredMethod("ToList");
             MethodInfo closedGenericToListMethod = openGenericToArrayMethod.MakeGenericMethod(TypeHelper.GetElementType(serviceType));
             return ms =>
             {
@@ -3383,22 +3502,25 @@ namespace RomanticWeb.LightInject
                 ms.Emit(OpCodes.Call, closedGenericToListMethod);
             };
         }
-        
+#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || PCL_111 || NET46
+
         private Action<IEmitter> CreateEmitMethodForReadOnlyCollectionServiceRequest(Type serviceType)
         {
             Type elementType = TypeHelper.GetElementType(serviceType);
             Type closedGenericReadOnlyCollectionType = typeof(ReadOnlyCollection<>).MakeGenericType(elementType);
-            ConstructorInfo constructorInfo = closedGenericReadOnlyCollectionType.GetConstructors()[0];
+            ConstructorInfo constructorInfo =
+                closedGenericReadOnlyCollectionType.GetTypeInfo().DeclaredConstructors.Single();
 
             Action<IEmitter> listEmitMethod = CreateEmitMethodForListServiceRequest(serviceType);
-            
+
             return emitter =>
             {
                 listEmitMethod(emitter);
-                emitter.New(constructorInfo);                
+                emitter.New(constructorInfo);
             };
         }
-        
+#endif
+
         private void EnsureEmitMethodsForOpenGenericTypesAreCreated(Type actualServiceType)
         {
             var openGenericServiceType = actualServiceType.GetGenericTypeDefinition();
@@ -3410,28 +3532,28 @@ namespace RomanticWeb.LightInject
         }
 
         private Action<IEmitter> CreateEmitMethodBasedOnLazyServiceRequest(Type serviceType, Func<Type, Delegate> valueFactoryDelegate)
-        {            
-            Type actualServiceType = serviceType.GetGenericTypeArguments()[0];
+        {
+            Type actualServiceType = serviceType.GetTypeInfo().GenericTypeArguments[0];
             Type funcType = actualServiceType.GetFuncType();
             ConstructorInfo lazyConstructor = actualServiceType.GetLazyConstructor();
             Delegate getInstanceDelegate = valueFactoryDelegate(actualServiceType);
             var constantIndex = constants.Add(getInstanceDelegate);
 
             return emitter =>
-                {
-                    emitter.PushConstant(constantIndex, funcType);      
-                    emitter.New(lazyConstructor);                    
-                };
+            {
+                emitter.PushConstant(constantIndex, funcType);
+                emitter.New(lazyConstructor);
+            };
         }
-             
+
         private ServiceRegistration GetOpenGenericServiceRegistration(Type openGenericServiceType, string serviceName)
         {
             var services = GetAvailableServices(openGenericServiceType);
             if (services.Count == 0)
             {
                 return null;
-            } 
-           
+            }
+
             ServiceRegistration openGenericServiceRegistration;
             services.TryGetValue(serviceName, out openGenericServiceRegistration);
             if (openGenericServiceRegistration == null && string.IsNullOrEmpty(serviceName) && services.Count == 1)
@@ -3447,13 +3569,13 @@ namespace RomanticWeb.LightInject
             Type openGenericServiceType = closedGenericServiceType.GetGenericTypeDefinition();
             ServiceRegistration openGenericServiceRegistration =
                 GetOpenGenericServiceRegistration(openGenericServiceType, serviceName);
-           
+
             if (openGenericServiceRegistration == null)
             {
                 return null;
             }
-            
-            Type[] closedGenericArguments = closedGenericServiceType.GetGenericTypeArguments();
+
+            Type[] closedGenericArguments = closedGenericServiceType.GetTypeInfo().GenericTypeArguments;
 
             Type closedGenericImplementingType = TryMakeGenericType(
                 openGenericServiceRegistration.ImplementingType,
@@ -3465,29 +3587,34 @@ namespace RomanticWeb.LightInject
             }
 
             var serviceRegistration = new ServiceRegistration
-                                                          {
-                                                              ServiceType = closedGenericServiceType,
-                                                              ImplementingType =
-                                                                  closedGenericImplementingType,
-                                                              ServiceName = serviceName,
-                                                              Lifetime =
-                                                                  CloneLifeTime(
-                                                                      openGenericServiceRegistration
-                                                                  .Lifetime)
-                                                          };            
+            {
+                ServiceType = closedGenericServiceType,
+                ImplementingType = closedGenericImplementingType,
+                ServiceName = serviceName,
+                Lifetime = CloneLifeTime(openGenericServiceRegistration.Lifetime) ?? DefaultLifetime
+            };
             Register(serviceRegistration);
-            return GetEmitMethod(serviceRegistration.ServiceType, serviceRegistration.ServiceName);            
+            return GetEmitMethod(serviceRegistration.ServiceType, serviceRegistration.ServiceName);
         }
 
         private Action<IEmitter> CreateEmitMethodForEnumerableServiceServiceRequest(Type serviceType)
         {
             Type actualServiceType = TypeHelper.GetElementType(serviceType);
-            if (actualServiceType.IsGenericType())
+            if (actualServiceType.GetTypeInfo().IsGenericType)
             {
                 EnsureEmitMethodsForOpenGenericTypesAreCreated(actualServiceType);
             }
 
-            IList<Action<IEmitter>> emitMethods = GetEmitMethods(actualServiceType).Values.ToList();
+            List<Action<IEmitter>> emitMethods;
+
+            if (options.EnableVariance)
+            {
+                emitMethods = emitters.Where(kv => actualServiceType.GetTypeInfo().IsAssignableFrom(kv.Key.GetTypeInfo())).SelectMany(kv => kv.Value.Values).ToList();
+            }
+            else
+            {
+                emitMethods = GetEmitMethods(actualServiceType).Values.ToList();
+            }
 
             if (dependencyStack.Count > 0 && emitMethods.Contains(dependencyStack.Peek()))
             {
@@ -3506,7 +3633,7 @@ namespace RomanticWeb.LightInject
         {
             return string.IsNullOrEmpty(serviceName) && GetEmitMethods(serviceType).Count == 1;
         }
-        
+
         private ConstructionInfo GetConstructionInfo(Registration registration)
         {
             return constructionInfoProvider.Value.GetConstructionInfo(registration);
@@ -3516,20 +3643,37 @@ namespace RomanticWeb.LightInject
         {
             return emitters.GetOrAdd(serviceType, s => new ThreadSafeDictionary<string, Action<IEmitter>>(StringComparer.CurrentCultureIgnoreCase));
         }
-       
+
         private ThreadSafeDictionary<string, ServiceRegistration> GetAvailableServices(Type serviceType)
         {
             return availableServices.GetOrAdd(serviceType, s => new ThreadSafeDictionary<string, ServiceRegistration>(StringComparer.CurrentCultureIgnoreCase));
         }
 
+        private ThreadSafeDictionary<string, Delegate> GetConstructorDependencyFactories(Type dependencyType)
+        {
+            return constructorDependencyFactories.GetOrAdd(
+                dependencyType,
+                d => new ThreadSafeDictionary<string, Delegate>(StringComparer.CurrentCultureIgnoreCase));
+        }
+
+        private ThreadSafeDictionary<string, Delegate> GetPropertyDependencyFactories(Type dependencyType)
+        {
+            return propertyDependencyFactories.GetOrAdd(
+                dependencyType,
+                d => new ThreadSafeDictionary<string, Delegate>(StringComparer.CurrentCultureIgnoreCase));
+        }
+
         private void RegisterService(Type serviceType, Type implementingType, ILifetime lifetime, string serviceName)
         {
-            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ImplementingType = implementingType, ServiceName = serviceName, Lifetime = lifetime };
-            Register(serviceRegistration);         
+            Ensure.IsNotNull(serviceType, "type");
+            Ensure.IsNotNull(implementingType, "implementingType");
+            Ensure.IsNotNull(serviceName, "serviceName");
+            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ImplementingType = implementingType, ServiceName = serviceName, Lifetime = lifetime ?? DefaultLifetime };
+            Register(serviceRegistration);
         }
-        
+
         private Action<IEmitter> ResolveEmitMethod(ServiceRegistration serviceRegistration)
-        {                    
+        {
             if (serviceRegistration.Lifetime == null)
             {
                 return methodSkeleton => EmitNewInstanceWithDecorators(serviceRegistration, methodSkeleton);
@@ -3537,16 +3681,16 @@ namespace RomanticWeb.LightInject
 
             return methodSkeleton => EmitLifetime(serviceRegistration, ms => EmitNewInstanceWithDecorators(serviceRegistration, ms), methodSkeleton);
         }
-        
+
         private void EmitLifetime(ServiceRegistration serviceRegistration, Action<IEmitter> emitMethod, IEmitter emitter)
         {
             if (serviceRegistration.Lifetime is PerContainerLifetime)
             {
                 Func<object> instanceDelegate =
-                    WrapAsFuncDelegate(CreateDynamicMethodDelegate(emitMethod));                        
+                    WrapAsFuncDelegate(CreateDynamicMethodDelegate(emitMethod));
                 var instance = serviceRegistration.Lifetime.GetInstance(instanceDelegate, null);
                 var instanceIndex = constants.Add(instance);
-                emitter.PushConstant(instanceIndex, instance.GetType());                
+                emitter.PushConstant(instanceIndex, instance.GetType());
             }
             else
             {
@@ -3562,7 +3706,7 @@ namespace RomanticWeb.LightInject
                 emitter.Call(getInstanceMethod);
             }
         }
-       
+
         private int CreateScopeManagerProviderIndex()
         {
             return constants.Add(ScopeManagerProvider);
@@ -3571,14 +3715,14 @@ namespace RomanticWeb.LightInject
         private int CreateInstanceDelegateIndex(Action<IEmitter> emitMethod)
         {
             return constants.Add(WrapAsFuncDelegate(CreateDynamicMethodDelegate(emitMethod)));
-        }                
+        }
 
         private int CreateLifetimeIndex(ILifetime lifetime)
         {
             return constants.Add(lifetime);
         }
 
-        private Func<object[], object> CreateDefaultDelegate(Type serviceType, bool throwError)
+        private GetInstanceDelegate CreateDefaultDelegate(Type serviceType, bool throwError)
         {
             var instanceDelegate = CreateDelegate(serviceType, string.Empty, throwError);
             if (instanceDelegate == null)
@@ -3590,7 +3734,7 @@ namespace RomanticWeb.LightInject
             return instanceDelegate;
         }
 
-        private Func<object[], object> CreateNamedDelegate(Tuple<Type, string> key, bool throwError)
+        private GetInstanceDelegate CreateNamedDelegate(Tuple<Type, string> key, bool throwError)
         {
             var instanceDelegate = CreateDelegate(key.Item1, key.Item2, throwError);
             if (instanceDelegate == null)
@@ -3602,8 +3746,8 @@ namespace RomanticWeb.LightInject
             return instanceDelegate;
         }
 
-        private Func<object[], object> CreateDelegate(Type serviceType, string serviceName, bool throwError)
-        {            
+        private GetInstanceDelegate CreateDelegate(Type serviceType, string serviceName, bool throwError)
+        {
             lock (lockObject)
             {
                 var serviceEmitter = GetEmitMethod(serviceType, serviceName);
@@ -3617,7 +3761,7 @@ namespace RomanticWeb.LightInject
                 {
                     try
                     {
-                        return CreateDynamicMethodDelegate(serviceEmitter);                        
+                        return CreateDynamicMethodDelegate(serviceEmitter);
                     }
                     catch (InvalidOperationException ex)
                     {
@@ -3631,22 +3775,33 @@ namespace RomanticWeb.LightInject
                 return null;
             }
         }
-                    
+
         private void RegisterValue(Type serviceType, object value, string serviceName)
         {
-            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ServiceName = serviceName, Value = value, Lifetime = new PerContainerLifetime() };
-            Register(serviceRegistration);            
+            var serviceRegistration = new ServiceRegistration
+            {
+                ServiceType = serviceType,
+                ServiceName = serviceName,
+                Value = value,
+                Lifetime = new PerContainerLifetime()
+            };
+            Register(serviceRegistration);
         }
 
-        private void RegisterServiceFromLambdaExpression<TService>(
-            LambdaExpression factory, ILifetime lifetime, string serviceName)
+        private void RegisterServiceFromLambdaExpression<TService>(Delegate factory, ILifetime lifetime, string serviceName)
         {
-            var serviceRegistration = new ServiceRegistration { ServiceType = typeof(TService), FactoryExpression = factory, ServiceName = serviceName, Lifetime = lifetime };
-            Register(serviceRegistration);            
+            var serviceRegistration = new ServiceRegistration
+            {
+                ServiceType = typeof(TService),
+                FactoryExpression = factory,
+                ServiceName = serviceName,
+                Lifetime = lifetime ?? DefaultLifetime
+            };
+            Register(serviceRegistration);
         }
 
         private class Storage<T>
-        {            
+        {
             public T[] Items = new T[0];
 
             private readonly object lockObject = new object();
@@ -3702,12 +3857,12 @@ namespace RomanticWeb.LightInject
         }
 
         private class DynamicMethodSkeleton : IMethodSkeleton
-        {            
+        {
             private IEmitter emitter;
             private DynamicMethod dynamicMethod;
 
             public DynamicMethodSkeleton(Type returnType, Type[] parameterTypes)
-            {         
+            {
                 CreateDynamicMethod(returnType, parameterTypes);
             }
 
@@ -3717,22 +3872,39 @@ namespace RomanticWeb.LightInject
             }
 
             public Delegate CreateDelegate(Type delegateType)
-            {                                                                       
+            {
                 return dynamicMethod.CreateDelegate(delegateType);
             }
 
+#if NET40
             private void CreateDynamicMethod(Type returnType, Type[] parameterTypes)
             {
                 dynamicMethod = new DynamicMethod(
-                    "DynamicMethod", returnType, parameterTypes, typeof(ServiceContainer).Module, true);
+                        "DynamicMethod", returnType, parameterTypes, typeof(ServiceContainer).Module, true);
                 emitter = new Emitter(dynamicMethod.GetILGenerator(), parameterTypes);
             }
+#endif
+#if (!NET40 && !PCL_111) || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
+            private void CreateDynamicMethod(Type returnType, Type[] parameterTypes)
+            {
+                dynamicMethod = new DynamicMethod(
+                    "DynamicMethod", returnType, parameterTypes, typeof(ServiceContainer).GetTypeInfo().Module, true);
+                emitter = new Emitter(dynamicMethod.GetILGenerator(), parameterTypes);
+            }
+#endif
+#if PCL_111
+            private void CreateDynamicMethod(Type returnType, Type[] parameterTypes)
+            {
+                dynamicMethod = new DynamicMethod(returnType, parameterTypes);
+                emitter = new Emitter(dynamicMethod.GetILGenerator(), parameterTypes);
+            }
+#endif
         }
 
         private class ServiceRegistry<T> : ThreadSafeDictionary<Type, ThreadSafeDictionary<string, T>>
         {
         }
-        
+
         private class FactoryRule
         {
             public Func<Type, string, bool> CanCreateInstance { get; set; }
@@ -3740,6 +3912,13 @@ namespace RomanticWeb.LightInject
             public Func<ServiceRequest, object> Factory { get; set; }
 
             public ILifetime LifeTime { get; set; }
+        }
+
+        private class Initializer
+        {
+            public Func<ServiceRegistration, bool> Predicate { get; set; }
+
+            public Action<IServiceFactory, object> Initialize { get; set; }
         }
 
         private class ServiceOverride
@@ -3753,8 +3932,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// A <see cref="IScopeManagerProvider"/> that provides a <see cref="ScopeManager"/> per thread.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PerThreadScopeManagerProvider : IScopeManagerProvider
+    public class PerThreadScopeManagerProvider : IScopeManagerProvider
     {
         private readonly ThreadLocal<ScopeManager> scopeManagers =
             new ThreadLocal<ScopeManager>(() => new ScopeManager());
@@ -3769,33 +3947,34 @@ namespace RomanticWeb.LightInject
         }
     }
 
+#if NET45 || NETSTANDARD13 || NETSTANDARD16 || NET46
     /// <summary>
-    /// A <see cref="IScopeManagerProvider"/> that provides a <see cref="ScopeManager"/> per
-    /// <see cref="CallContext"/>.
+    /// A <see cref="IScopeManagerProvider"/> that provides a <see cref="ScopeManager"/> across
+    /// async points.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PerLogicalCallContextScopeManagerProvider : IScopeManagerProvider
+    public class PerLogicalCallContextScopeManagerProvider : IScopeManagerProvider
     {
         private readonly LogicalThreadStorage<ScopeManager> scopeManagers =
             new LogicalThreadStorage<ScopeManager>(() => new ScopeManager());
-                
+
         /// <summary>
         /// Returns the <see cref="ScopeManager"/> that is responsible for managing scopes.
         /// </summary>
         /// <returns>The <see cref="ScopeManager"/> that is responsible for managing scopes.</returns>
         public ScopeManager GetScopeManager()
         {
-            return scopeManagers.Value;                        
+            return scopeManagers.Value;
         }
     }
+
+#endif
 
     /// <summary>
     /// A thread safe dictionary.
     /// </summary>
     /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ThreadSafeDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
+    public class ThreadSafeDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey,TValue}"/> class.
@@ -3805,7 +3984,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey,TValue}"/> class using the 
+        /// Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey,TValue}"/> class using the
         /// given <see cref="IEqualityComparer{T}"/>.
         /// </summary>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing keys</param>
@@ -3815,11 +3994,971 @@ namespace RomanticWeb.LightInject
         }
     }
 
+#if PCL_111
+    /// <summary>
+    /// Represents the MSIL instructions.
+    /// </summary>
+    public enum OpCode
+	{
+        /// <summary>
+        /// Adds two values and pushes the result onto the evaluation stack.
+        /// </summary>
+        Add,
+
+        /// <summary>
+        /// Attempts to cast an object passed by reference to the specified class.
+        /// </summary>
+        Castclass,
+
+        /// <summary>
+        /// Converts the boxed representation of a type specified in the instruction to its unboxed form.
+        /// </summary>
+        Unbox_Any,
+
+        /// <summary>
+        /// Loads the element containing an object reference at a specified array index 
+        /// onto the top of the evaluation stack as type O (object reference).
+        /// </summary>
+		Ldelem_Ref,
+
+        /// <summary>
+        /// Loads an argument (referenced by a specified index value) onto the stack.
+        /// </summary>
+        Ldarg,
+       
+        /// <summary>
+        /// Loads the argument at index 0 onto the evaluation stack.
+        /// </summary>
+        Ldarg_0,
+
+        /// <summary>
+        /// Loads the argument at index 1 onto the evaluation stack.
+        /// </summary>
+        Ldarg_1,
+
+        /// <summary>
+        /// Loads the argument at index 2 onto the evaluation stack.
+        /// </summary>
+        Ldarg_2,
+
+        /// <summary>
+        /// Loads the argument at index 3 onto the evaluation stack.
+        /// </summary>
+        Ldarg_3,
+
+        /// <summary>
+        /// Loads the argument (referenced by a specified short form index) onto the evaluation stack.
+        /// </summary>
+        Ldarg_S,
+
+        /// <summary>
+        /// Pushes the number of elements of a zero-based, one-dimensional array onto the evaluation stack.
+        /// </summary>
+		Ldlen,
+
+        /// <summary>
+        /// Converts the value on top of the evaluation stack to int32.
+        /// </summary>
+        Conv_I4,
+
+        /// <summary>
+        /// Subtracts one value from another and pushes the result onto the evaluation stack.
+        /// </summary>
+        Sub,
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack 
+        /// and stores it in a the local variable list at a specified index.
+        /// </summary>
+        Stloc,
+
+        /// <summary>
+        /// Loads the local variable at a specific index onto the evaluation stack.
+        /// </summary>
+		Ldloc,
+
+        /// <summary>
+        /// Pushes a supplied value of type int32 onto the evaluation stack as an int32.
+        /// </summary>
+		Ldc_I4,
+
+        /// <summary>
+        /// Calls a late-bound method on an object, pushing the return value onto the evaluation stack.
+        /// </summary>
+        Callvirt,
+
+        /// <summary>
+        /// Creates a new object or a new instance of a value type, pushing an object reference (type O) onto the evaluation stack.
+        /// </summary>
+        Newobj,
+
+        /// <summary>
+        /// Loads the local variable at index 0 onto the evaluation stack.
+        /// </summary>
+		Ldloc_0,
+
+        /// <summary>
+        /// Loads the local variable at index 1 onto the evaluation stack.
+        /// </summary>
+        Ldloc_1,
+
+        /// <summary>
+        /// Loads the local variable at index 2 onto the evaluation stack.
+        /// </summary>
+		Ldloc_2,
+
+        /// <summary>
+        /// Loads the local variable at index 3 onto the evaluation stack.
+        /// </summary>
+		Ldloc_3,
+
+        /// <summary>
+        /// Loads the local variable at a specific index onto the evaluation stack, short form.
+        /// </summary>
+		Ldloc_S,
+
+        /// <summary>
+        /// Calls the method indicated by the passed method descriptor.
+        /// </summary>
+		Call,
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 0.
+        /// </summary>
+		Stloc_0,
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 1.
+        /// </summary>
+		Stloc_1,
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 2.
+        /// </summary>
+        Stloc_2,
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 3.
+        /// </summary>
+		Stloc_3,
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index (short form).
+        /// </summary>
+		Stloc_S,
+
+        /// <summary>
+        /// Pushes the integer value of 0 onto the evaluation stack as an int32.
+        /// </summary>
+        Ldc_I4_0,
+
+        /// <summary>
+        /// Pushes the integer value of 1 onto the evaluation stack as an int32.
+        /// </summary>
+		Ldc_I4_1,
+
+        /// <summary>
+        /// Pushes the integer value of 2 onto the evaluation stack as an int32.
+        /// </summary>
+		Ldc_I4_2,
+
+        /// <summary>
+        /// Pushes the integer value of 3 onto the evaluation stack as an int32.
+        /// </summary>
+        Ldc_I4_3,
+
+        /// <summary>
+        /// Pushes the integer value of 4 onto the evaluation stack as an int32.
+        /// </summary>
+		Ldc_I4_4,
+
+        /// <summary>
+        /// Pushes the integer value of 5 onto the evaluation stack as an int32.
+        /// </summary>
+        Ldc_I4_5,
+
+        /// <summary>
+        /// Pushes the integer value of 6 onto the evaluation stack as an int32.
+        /// </summary>
+		Ldc_I4_6,
+
+        /// <summary>
+        /// Pushes the integer value of 7 onto the evaluation stack as an int32.
+        /// </summary>
+        Ldc_I4_7,
+
+        /// <summary>
+        /// Pushes the integer value of 8 onto the evaluation stack as an int32.
+        /// </summary>
+		Ldc_I4_8,
+
+        /// <summary>
+        /// Pushes the supplied int8 value onto the evaluation stack as an int32, short form.
+        /// </summary>
+        Ldc_I4_S,
+
+        /// <summary>
+        /// Returns from the current method, pushing a return value (if present) from the callee's evaluation stack onto the caller's evaluation stack.
+        /// </summary>
+        Ret,
+
+        /// <summary>
+        /// Pushes an object reference to a new zero-based, one-dimensional array whose elements are of a specific type onto the evaluation stack.
+        /// </summary>
+		Newarr,
+
+        /// <summary>
+        /// Replaces the array element at a given index with the value on the evaluation stack, whose type is specified in the instruction.
+        /// </summary>
+		Stelem,
+
+        /// <summary>
+        /// Converts a value type to an object reference (type O).
+        /// </summary>
+		Box,
+
+        /// <summary>
+        /// Pushes a new object reference to a string literal stored in the metadata.
+        /// </summary>
+        Ldstr
+    }
+
+    /// <summary>
+    /// Provides field representations of the Microsoft Intermediate Language (MSIL) instructions.
+    /// </summary>
+    public static class OpCodes
+	{
+        /// <summary>
+        /// Adds two values and pushes the result onto the evaluation stack.
+        /// </summary>
+        public static OpCode Add = OpCode.Add;
+        
+        /// <summary>
+        /// Attempts to cast an object passed by reference to the specified class.
+        /// </summary>
+        public static OpCode Castclass = OpCode.Castclass;
+
+        /// <summary>
+        /// Converts the boxed representation of a type specified in the instruction to its unboxed form.
+        /// </summary>
+        public static OpCode Unbox_Any = OpCode.Unbox_Any;
+
+        /// <summary>
+        /// Loads the element containing an object reference at a specified array index 
+        /// onto the top of the evaluation stack as type O (object reference).
+        /// </summary>
+		public static OpCode Ldelem_Ref = OpCode.Ldelem_Ref;
+
+        /// <summary>
+        /// Loads an argument (referenced by a specified index value) onto the stack.
+        /// </summary>
+        public static OpCode Ldarg = OpCode.Ldarg;
+
+        /// <summary>
+        /// Loads the argument at index 0 onto the evaluation stack.
+        /// </summary>
+        public static OpCode Ldarg_0 = OpCode.Ldarg_0;
+
+        /// <summary>
+        /// Loads the argument at index 1 onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldarg_1 = OpCode.Ldarg_1;
+
+        /// <summary>
+        /// Loads the argument at index 2 onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldarg_2 = OpCode.Ldarg_2;
+
+        /// <summary>
+        /// Loads the argument at index 3 onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldarg_3 = OpCode.Ldarg_3;
+
+        /// <summary>
+        /// Loads the argument (referenced by a specified short form index) onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldarg_S = OpCode.Ldarg_S;
+
+        /// <summary>
+        /// Pushes the number of elements of a zero-based, one-dimensional array onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldlen = OpCode.Ldlen;
+
+        /// <summary>
+        /// Converts the value on top of the evaluation stack to int32.
+        /// </summary>
+		public static OpCode Conv_I4 = OpCode.Conv_I4;
+
+        /// <summary>
+        /// Subtracts one value from another and pushes the result onto the evaluation stack.
+        /// </summary>
+		public static OpCode Sub = OpCode.Sub;
+
+        /// <summary>
+        /// Pushes a supplied value of type int32 onto the evaluation stack as an int32.
+        /// </summary>
+		public static OpCode Ldc_I4 = OpCode.Ldc_I4;
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack 
+        /// and stores it in a the local variable list at a specified index.
+        /// </summary>
+		public static OpCode Stloc = OpCode.Stloc;
+
+        /// <summary>
+        /// Loads the local variable at a specific index onto the evaluation stack.
+        /// </summary>
+        public static OpCode Ldloc = OpCode.Ldloc;
+
+        /// <summary>
+        /// Calls a late-bound method on an object, pushing the return value onto the evaluation stack.
+        /// </summary>
+		public static OpCode Callvirt = OpCode.Callvirt;
+
+        /// <summary>
+        /// Creates a new object or a new instance of a value type, pushing an object reference (type O) onto the evaluation stack.
+        /// </summary>
+        public static OpCode Newobj = OpCode.Newobj;
+
+        /// <summary>
+        /// Loads the local variable at index 0 onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldloc_0 = OpCode.Ldloc_0;
+
+        /// <summary>
+        /// Loads the local variable at index 1 onto the evaluation stack.
+        /// </summary>
+        public static OpCode Ldloc_1 = OpCode.Ldloc_1;
+
+        /// <summary>
+        /// Loads the local variable at index 2 onto the evaluation stack.
+        /// </summary>
+		public static OpCode Ldloc_2 = OpCode.Ldloc_2;
+
+        /// <summary>
+        /// Loads the local variable at index 3 onto the evaluation stack.
+        /// </summary>
+        public static OpCode Ldloc_3 = OpCode.Ldloc_3;
+
+        /// <summary>
+        /// Loads the local variable at a specific index onto the evaluation stack, short form.
+        /// </summary>
+		public static OpCode Ldloc_S = OpCode.Ldloc_S;
+
+        /// <summary>
+        /// Calls the method indicated by the passed method descriptor.
+        /// </summary>
+		public static OpCode Call = OpCode.Call;
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 0.
+        /// </summary>
+		public static OpCode Stloc_0 = OpCode.Stloc_0;
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 1.
+        /// </summary>
+        public static OpCode Stloc_1 = OpCode.Stloc_1;
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 2.
+        /// </summary>
+        public static OpCode Stloc_2 = OpCode.Stloc_2;
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index 3.
+        /// </summary>
+        public static OpCode Stloc_3 = OpCode.Stloc_3;
+
+        /// <summary>
+        /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at index (short form).
+        /// </summary>
+        public static OpCode Stloc_S = OpCode.Stloc_S;
+
+        /// <summary>
+        /// Pushes the integer value of 0 onto the evaluation stack as an int32.
+        /// </summary>
+		public static OpCode Ldc_I4_0 = OpCode.Ldc_I4_0;
+
+        /// <summary>
+        /// Pushes the integer value of 1 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_1 = OpCode.Ldc_I4_1;
+
+        /// <summary>
+        /// Pushes the integer value of 2 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_2 = OpCode.Ldc_I4_2;
+
+        /// <summary>
+        /// Pushes the integer value of 3 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_3 = OpCode.Ldc_I4_3;
+
+        /// <summary>
+        /// Pushes the integer value of 4 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_4 = OpCode.Ldc_I4_4;
+
+        /// <summary>
+        /// Pushes the integer value of 5 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_5 = OpCode.Ldc_I4_5;
+
+        /// <summary>
+        /// Pushes the integer value of 6 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_6 = OpCode.Ldc_I4_6;
+
+        /// <summary>
+        /// Pushes the integer value of 7 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_7 = OpCode.Ldc_I4_7;
+
+        /// <summary>
+        /// Pushes the integer value of 8 onto the evaluation stack as an int32.
+        /// </summary>
+        public static OpCode Ldc_I4_8 = OpCode.Ldc_I4_8;
+
+        /// <summary>
+        /// Pushes the supplied int8 value onto the evaluation stack as an int32, short form.
+        /// </summary>
+        public static OpCode Ldc_I4_S = OpCode.Ldc_I4_S;
+
+        /// <summary>
+        /// Pushes an object reference to a new zero-based, one-dimensional array whose elements are of a specific type onto the evaluation stack.
+        /// </summary>
+		public static OpCode Newarr = OpCode.Newarr;
+
+        /// <summary>
+        /// Replaces the array element at a given index with the value on the evaluation stack, whose type is specified in the instruction.
+        /// </summary>
+        public static OpCode Stelem = OpCode.Stelem;
+
+        /// <summary>
+        /// Converts a value type to an object reference (type O).
+        /// </summary>
+        public static OpCode Box = OpCode.Box;
+
+        /// <summary>
+        /// Returns from the current method, pushing a return value (if present) from the callee's evaluation stack onto the caller's evaluation stack.
+        /// </summary>
+		public static OpCode Ret = OpCode.Ret;
+
+        /// <summary>
+        /// Pushes a new object reference to a string literal stored in the metadata.
+        /// </summary>
+		public static OpCode Ldstr = OpCode.Ldstr;
+
+	}
+    
+    /// <summary>
+    /// Defines and represents a dynamic method that can be compiled and executed.
+    /// </summary>
+    public class DynamicMethod
+    {
+        private readonly Type returnType;
+
+        private readonly Type[] parameterTypes;
+
+        private readonly ParameterExpression[] parameters;
+
+        private readonly ILGenerator generator;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DynamicMethod"/> class.
+        /// </summary>
+        /// <param name="returnType">A <see cref="Type"/> object that specifies the return type of the dynamic method.</param>
+        /// <param name="parameterTypes">An array of <see cref="Type"/> objects specifying the types of the parameters of the dynamic method, or null if the method has no parameters.</param>
+        public DynamicMethod(Type returnType, Type[] parameterTypes)
+        {
+            this.returnType = returnType;
+            this.parameterTypes = parameterTypes;
+            parameters = parameterTypes.Select(Expression.Parameter).ToArray();
+            generator = new ILGenerator(parameters);
+        }
+
+        /// <summary>
+        /// Completes the dynamic method and creates a delegate that can be used to execute it
+        /// </summary>
+        /// <param name="delegateType">A delegate type whose signature matches that of the dynamic method.</param>
+        /// <returns>A delegate of the specified type, which can be used to execute the dynamic method.</returns>
+        public Delegate CreateDelegate(Type delegateType)
+        {
+            var lambda = Expression.Lambda(delegateType, generator.CurrentExpression, parameters);
+            return lambda.Compile();
+        }
+
+        /// <summary>
+        /// Completes the dynamic method and creates a delegate that can be used to execute it, specifying the delegate type and an object the delegate is bound to.
+        /// </summary>
+        /// <param name="delegateType">A delegate type whose signature matches that of the dynamic method, minus the first parameter.</param>
+        /// <param name="target">An object the delegate is bound to. Must be of the same type as the first parameter of the dynamic method.</param>
+        /// <returns>A delegate of the specified type, which can be used to execute the dynamic method with the specified target object.</returns>
+        public Delegate CreateDelegate(Type delegateType, object target)
+        {
+            Type delegateTypeWithTargetParameter =
+                Expression.GetDelegateType(parameterTypes.Concat(new[] { returnType }).ToArray());
+            var lambdaWithTargetParameter = Expression.Lambda(
+                delegateTypeWithTargetParameter, generator.CurrentExpression, true, parameters);
+
+            Expression[] arguments = new Expression[] { Expression.Constant(target) }.Concat(parameters.Cast<Expression>().Skip(1)).ToArray();
+            var invokeExpression = Expression.Invoke(lambdaWithTargetParameter, arguments);
+
+            var lambda = Expression.Lambda(delegateType, invokeExpression, parameters.Skip(1));
+            return lambda.Compile();
+        }
+
+        /// <summary>
+        /// Returns a <see cref="ILGenerator"/> for the method
+        /// </summary>
+        /// <returns>An <see cref="ILGenerator"/> object for the method.</returns>
+        public ILGenerator GetILGenerator()
+        {
+            return generator;
+        }
+    }
+
+    /// <summary>
+    /// A generator that transforms <see cref="OpCodes"/> into an expression tree.
+    /// </summary>
+    public class ILGenerator
+    {
+        private readonly ParameterExpression[] parameters;
+        private readonly Stack<Expression> stack = new Stack<Expression>();
+        private readonly List<LocalBuilder> locals = new List<LocalBuilder>();
+        private readonly List<Expression> expressions = new List<Expression>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ILGenerator"/> class.
+        /// </summary>
+        /// <param name="parameters">An array of parameters used by the target <see cref="DynamicMethod"/>.</param>
+        public ILGenerator(ParameterExpression[] parameters)
+        {
+            this.parameters = parameters;
+        }
+
+        /// <summary>
+        /// Gets the current expression based the emitted <see cref="OpCodes"/>.
+        /// </summary>
+        public Expression CurrentExpression
+        {
+            get
+            {
+                var variables = locals.Select(l => l.Variable).ToList();
+                var ex = new List<Expression>(expressions) { stack.Peek() };
+                return Expression.Block(variables, ex);
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction and metadata token for the specified constructor onto the Microsoft intermediate language (MSIL) stream of instructions.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be emitted onto the stream.</param>
+        /// <param name="constructor">A <see cref="ConstructorInfo"/> representing a constructor.</param>
+        public void Emit(OpCode code, ConstructorInfo constructor)
+        {
+            if (code == OpCodes.Newobj)
+            {
+                var parameterCount = constructor.GetParameters().Length;
+                var expression = Expression.New(constructor, Pop(parameterCount));
+                stack.Push(expression);
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction onto the stream of instructions.
+        /// </summary>
+        /// <param name="code">The Microsoft Intermediate Language (MSIL) instruction to be put onto the stream.</param>
+        public void Emit(OpCode code)
+        {
+            if (code == OpCodes.Ldarg_0)
+            {
+                stack.Push(parameters[0]);
+            }
+            else if (code == OpCodes.Ldarg_1)
+            {
+                stack.Push(parameters[1]);
+            }
+            else if (code == OpCodes.Ldarg_2)
+            {
+                stack.Push(parameters[2]);
+            }
+            else if (code == OpCodes.Ldarg_3)
+            {
+                stack.Push(parameters[3]);
+            }
+            else if (code == OpCodes.Ldloc_0)
+            {
+                stack.Push(locals[0].Variable);
+            }
+            else if (code == OpCodes.Ldloc_1)
+            {
+                stack.Push(locals[1].Variable);
+            }
+            else if (code == OpCodes.Ldloc_2)
+            {
+                stack.Push(locals[2].Variable);
+            }
+            else if (code == OpCodes.Ldloc_3)
+            {
+                stack.Push(locals[3].Variable);
+            }
+            else if (code == OpCodes.Stloc_0)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(locals[0].Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else if (code == OpCodes.Stloc_1)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(locals[1].Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else if (code == OpCodes.Stloc_2)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(locals[2].Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else if (code == OpCodes.Stloc_3)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(locals[3].Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else if (code == OpCodes.Ldelem_Ref)
+            {
+                Expression[] indexes = { stack.Pop() };
+                for (int i = 0; i < indexes.Length; i++)
+                {
+                    indexes[0] = Expression.Convert(indexes[i], typeof(int));
+                }
+
+                Expression array = stack.Pop();
+                stack.Push(Expression.ArrayAccess(array, indexes));
+            }
+            else if (code == OpCodes.Ldlen)
+            {
+                Expression array = stack.Pop();
+                stack.Push(Expression.ArrayLength(array));
+            }
+            else if (code == OpCodes.Conv_I4)
+            {
+                stack.Push(Expression.Convert(stack.Pop(), typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_0)
+            {
+                stack.Push(Expression.Constant(0, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_1)
+            {
+                stack.Push(Expression.Constant(1, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_2)
+            {
+                stack.Push(Expression.Constant(2, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_3)
+            {
+                stack.Push(Expression.Constant(3, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_4)
+            {
+                stack.Push(Expression.Constant(4, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_5)
+            {
+                stack.Push(Expression.Constant(5, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_6)
+            {
+                stack.Push(Expression.Constant(6, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_7)
+            {
+                stack.Push(Expression.Constant(7, typeof(int)));
+            }
+            else if (code == OpCodes.Ldc_I4_8)
+            {
+                stack.Push(Expression.Constant(8, typeof(int)));
+            }
+            else if (code == OpCodes.Sub)
+            {
+                var right = stack.Pop();
+                var left = stack.Pop();
+                stack.Push(Expression.Subtract(left, right));
+            }
+            else if (code == OpCodes.Ret)
+            {
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction onto the Microsoft intermediate language (MSIL) stream followed by the index of the given local variable.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be emitted onto the stream.</param>
+        /// <param name="localBuilder">A local variable.</param>
+        public void Emit(OpCode code, LocalBuilder localBuilder)
+        {
+            if (code == OpCodes.Stloc)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(localBuilder.Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else if (code == OpCodes.Ldloc)
+            {
+                stack.Push(localBuilder.Variable);
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction and numerical argument onto the Microsoft intermediate language (MSIL) stream of instructions.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be put onto the stream.</param>
+        /// <param name="arg">The numerical argument pushed onto the stream immediately after the instruction.</param>
+        public void Emit(OpCode code, int arg)
+        {
+            if (code == OpCodes.Ldc_I4)
+            {
+                stack.Push(Expression.Constant(arg, typeof(int)));
+            }
+            else if (code == OpCodes.Ldarg)
+            {
+                stack.Push(parameters[arg]);
+            }
+            else if (code == OpCodes.Ldloc)
+            {
+                stack.Push(locals[arg].Variable);
+            }
+            else if (code == OpCodes.Stloc)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(locals[arg].Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction and numerical argument onto the Microsoft intermediate language (MSIL) stream of instructions.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be put onto the stream.</param>
+        /// <param name="arg">The numerical argument pushed onto the stream immediately after the instruction.</param>
+        public void Emit(OpCode code, sbyte arg)
+        {
+            if (code == OpCodes.Ldc_I4_S)
+            {
+                stack.Push(Expression.Constant((int)arg, typeof(int)));
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction and numerical argument onto the Microsoft intermediate language (MSIL) stream of instructions.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be put onto the stream.</param>
+        /// <param name="arg">The numerical argument pushed onto the stream immediately after the instruction.</param>
+        public void Emit(OpCode code, byte arg)
+        {
+            if (code == OpCodes.Ldloc_S)
+            {
+                stack.Push(locals[arg].Variable);
+            }
+            else if (code == OpCodes.Ldarg_S)
+            {
+                stack.Push(parameters[arg]);
+            }
+            else if (code == OpCodes.Stloc_S)
+            {
+                Expression valueExpression = stack.Pop();
+                var assignExpression = Expression.Assign(locals[arg].Variable, valueExpression);
+                expressions.Add(assignExpression);
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction onto the Microsoft intermediate language (MSIL) stream followed by the metadata token for the given string.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be emitted onto the stream.</param>
+        /// <param name="arg">The String to be emitted.</param>
+        public void Emit(OpCode code, string arg)
+        {
+            if (code == OpCodes.Ldstr)
+            {
+                stack.Push(Expression.Constant(arg, typeof(string)));
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Declares a local variable of the specified type.
+        /// </summary>
+        /// <param name="type">A <see cref="Type"/> object that represents the type of the local variable.</param>
+        /// <returns>The declared local variable.</returns>
+        public LocalBuilder DeclareLocal(Type type)
+        {
+            var localBuilder = new LocalBuilder(type, locals.Count);
+            locals.Add(localBuilder);
+            return localBuilder;
+        }
+
+        /// <summary>
+        /// Puts the specified instruction onto the Microsoft intermediate language (MSIL) stream followed by the metadata token for the given type.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be put onto the stream.</param>
+        /// <param name="type">A <see cref="Type"/>.</param>
+        public void Emit(OpCode code, Type type)
+        {
+            if (code == OpCodes.Newarr)
+            {
+                stack.Push(Expression.NewArrayBounds(type, Pop(1)));
+            }
+            else if (code == OpCodes.Stelem)
+            {
+                var value = stack.Pop();
+                var index = stack.Pop();
+                var array = stack.Pop();
+                var arrayAccess = Expression.ArrayAccess(array, index);
+
+                var assignExpression = Expression.Assign(arrayAccess, value);
+                expressions.Add(assignExpression);
+            }
+            else if (code == OpCodes.Castclass)
+            {
+                stack.Push(Expression.Convert(stack.Pop(), type));
+            }
+            else if (code == OpCodes.Box)
+            {
+                stack.Push(Expression.Convert(stack.Pop(), typeof(object)));
+            }
+            else if (code == OpCodes.Unbox_Any)
+            {
+                stack.Push(Expression.Convert(stack.Pop(), type));
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Puts the specified instruction onto the Microsoft intermediate language (MSIL) stream followed by the metadata token for the given method.
+        /// </summary>
+        /// <param name="code">The MSIL instruction to be emitted onto the stream.</param>
+        /// <param name="methodInfo">A <see cref="MethodInfo"/> representing a method.</param>
+        public void Emit(OpCode code, MethodInfo methodInfo)
+        {
+            if (code == OpCodes.Callvirt || code == OpCodes.Call)
+            {
+                var parameterCount = methodInfo.GetParameters().Length;
+                Expression[] arguments = Pop(parameterCount);
+
+                MethodCallExpression methodCallExpression;
+
+                if (!methodInfo.IsStatic)
+                {
+                    var instance = stack.Pop();
+                    methodCallExpression = Expression.Call(instance, methodInfo, arguments);
+                }
+                else
+                {
+                    methodCallExpression = Expression.Call(null, methodInfo, arguments);
+                }
+
+                if (methodInfo.ReturnType == typeof(void))
+                {
+                    expressions.Add(methodCallExpression);
+                }
+                else
+                {
+                    stack.Push(methodCallExpression);
+                }
+            }
+            else
+            {
+                throw new NotSupportedException(code.ToString());
+            }
+        }
+
+        private Expression[] Pop(int numberOfElements)
+        {
+            var expressionsToPop = new Expression[numberOfElements];
+
+            for (int i = 0; i < numberOfElements; i++)
+            {
+                expressionsToPop[i] = stack.Pop();
+            }
+
+            return expressionsToPop.Reverse().ToArray();
+        }
+    }
+
+    /// <summary>
+    /// Represents a local variable within a method or constructor.
+    /// </summary>
+    public class LocalBuilder
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalBuilder"/> class.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the variable that this <see cref="LocalBuilder"/> represents.</param>
+        /// <param name="localIndex">The zero-based index of the local variable within the method body.</param>
+        public LocalBuilder(Type type, int localIndex)
+        {
+            Variable = Expression.Parameter(type);
+            LocalType = type;
+            LocalIndex = localIndex;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ParameterExpression"/> that represents the variable.
+        /// </summary>
+        public ParameterExpression Variable { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the local variable.
+        /// </summary>
+        public Type LocalType { get; private set; }
+
+        /// <summary>
+        /// Gets the zero-based index of the local variable within the method body.
+        /// </summary>
+        public int LocalIndex { get; private set; }
+    }
+#endif
+
     /// <summary>
     /// Selects the <see cref="ConstructionInfo"/> from a given type that represents the most resolvable constructor.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class MostResolvableConstructorSelector : IConstructorSelector
+    public class MostResolvableConstructorSelector : IConstructorSelector
     {
         private readonly Func<Type, string, bool> canGetInstance;
 
@@ -3840,7 +4979,7 @@ namespace RomanticWeb.LightInject
         /// when creating a new instance of the <paramref name="implementingType"/>.</returns>
         public ConstructorInfo Execute(Type implementingType)
         {
-            ConstructorInfo[] constructorCandidates = implementingType.GetConstructors();
+            ConstructorInfo[] constructorCandidates = implementingType.GetTypeInfo().DeclaredConstructors.Where(c => c.IsPublic && !c.IsStatic).ToArray();
             if (constructorCandidates.Length == 0)
             {
                 throw new InvalidOperationException("Missing public constructor for Type: " + implementingType.FullName);
@@ -3881,14 +5020,13 @@ namespace RomanticWeb.LightInject
         private bool CanCreateParameterDependency(ParameterInfo parameterInfo)
         {
             return canGetInstance(parameterInfo.ParameterType, string.Empty) || canGetInstance(parameterInfo.ParameterType, GetServiceName(parameterInfo));
-        }       
+        }
     }
 
     /// <summary>
     /// Selects the constructor dependencies for a given <see cref="ConstructorInfo"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ConstructorDependencySelector : IConstructorDependencySelector
+    public class ConstructorDependencySelector : IConstructorDependencySelector
     {
         /// <summary>
         /// Selects the constructor dependencies for the given <paramref name="constructor"/>.
@@ -3904,25 +5042,24 @@ namespace RomanticWeb.LightInject
                            .Select(
                                p =>
                                new ConstructorDependency
-                                   {
-                                       ServiceName = string.Empty,
-                                       ServiceType = p.ParameterType,
-                                       Parameter = p,
-                                       IsRequired = true
-                                   });
+                               {
+                                   ServiceName = string.Empty,
+                                   ServiceType = p.ParameterType,
+                                   Parameter = p,
+                                   IsRequired = true
+                               });
         }
     }
 
     /// <summary>
     /// Selects the property dependencies for a given <see cref="Type"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PropertyDependencySelector : IPropertyDependencySelector
+    public class PropertyDependencySelector : IPropertyDependencySelector
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyDependencySelector"/> class.
         /// </summary>
-        /// <param name="propertySelector">The <see cref="IPropertySelector"/> that is 
+        /// <param name="propertySelector">The <see cref="IPropertySelector"/> that is
         /// responsible for selecting a list of injectable properties.</param>
         public PropertyDependencySelector(IPropertySelector propertySelector)
         {
@@ -3930,7 +5067,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Gets the <see cref="IPropertySelector"/> that is responsible for selecting a 
+        /// Gets the <see cref="IPropertySelector"/> that is responsible for selecting a
         /// list of injectable properties.
         /// </summary>
         protected IPropertySelector PropertySelector { get; private set; }
@@ -3951,30 +5088,38 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Builds a <see cref="ConstructionInfo"/> instance based on the implementing <see cref="Type"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TypeConstructionInfoBuilder : ITypeConstructionInfoBuilder
+    public class TypeConstructionInfoBuilder : IConstructionInfoBuilder
     {
         private readonly IConstructorSelector constructorSelector;
         private readonly IConstructorDependencySelector constructorDependencySelector;
         private readonly IPropertyDependencySelector propertyDependencySelector;
+        private readonly Func<Type, string, Delegate> getConstructorDependencyExpression;
+
+        private readonly Func<Type, string, Delegate> getPropertyDependencyExpression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeConstructionInfoBuilder"/> class.
         /// </summary>
         /// <param name="constructorSelector">The <see cref="IConstructorSelector"/> that is responsible
         /// for selecting the constructor to be used for constructor injection.</param>
-        /// <param name="constructorDependencySelector">The <see cref="IConstructorDependencySelector"/> that is 
+        /// <param name="constructorDependencySelector">The <see cref="IConstructorDependencySelector"/> that is
         /// responsible for selecting the constructor dependencies for a given <see cref="ConstructionInfo"/>.</param>
         /// <param name="propertyDependencySelector">The <see cref="IPropertyDependencySelector"/> that is responsible
         /// for selecting the property dependencies for a given <see cref="Type"/>.</param>
+        /// <param name="getConstructorDependencyExpression">A function delegate that returns the registered constructor dependency expression, if any.</param>
+        /// <param name="getPropertyDependencyExpression">A function delegate that returns the registered property dependency expression, if any.</param>
         public TypeConstructionInfoBuilder(
             IConstructorSelector constructorSelector,
             IConstructorDependencySelector constructorDependencySelector,
-            IPropertyDependencySelector propertyDependencySelector)
+            IPropertyDependencySelector propertyDependencySelector,
+            Func<Type, string, Delegate> getConstructorDependencyExpression,
+            Func<Type, string, Delegate> getPropertyDependencyExpression)
         {
             this.constructorSelector = constructorSelector;
             this.constructorDependencySelector = constructorDependencySelector;
             this.propertyDependencySelector = propertyDependencySelector;
+            this.getConstructorDependencyExpression = getConstructorDependencyExpression;
+            this.getPropertyDependencyExpression = getPropertyDependencyExpression;
         }
 
         /// <summary>
@@ -3984,25 +5129,54 @@ namespace RomanticWeb.LightInject
         /// <returns>A <see cref="ConstructionInfo"/> instance.</returns>
         public ConstructionInfo Execute(Registration registration)
         {
-            var implementingType = registration.ImplementingType;
-            var constructionInfo = new ConstructionInfo();            
-            constructionInfo.ImplementingType = implementingType;
-            constructionInfo.PropertyDependencies.AddRange(propertyDependencySelector.Execute(implementingType));
-            if (!registration.IgnoreConstructorDependencies)
+            if (registration.FactoryExpression != null)
             {
-                constructionInfo.Constructor = constructorSelector.Execute(implementingType);
-                constructionInfo.ConstructorDependencies.AddRange(constructorDependencySelector.Execute(constructionInfo.Constructor));    
-            }          
-  
+                return new ConstructionInfo() { FactoryDelegate = registration.FactoryExpression };
+            }
+
+            var implementingType = registration.ImplementingType;
+            var constructionInfo = new ConstructionInfo();
+            constructionInfo.ImplementingType = implementingType;
+            constructionInfo.PropertyDependencies.AddRange(GetPropertyDependencies(implementingType));
+            constructionInfo.Constructor = constructorSelector.Execute(implementingType);
+            constructionInfo.ConstructorDependencies.AddRange(GetConstructorDependencies(constructionInfo.Constructor));
+
             return constructionInfo;
+        }
+
+        private IEnumerable<ConstructorDependency> GetConstructorDependencies(ConstructorInfo constructorInfo)
+        {
+            var constructorDependencies = constructorDependencySelector.Execute(constructorInfo).ToArray();
+            foreach (var constructorDependency in constructorDependencies)
+            {
+                constructorDependency.FactoryExpression =
+                    getConstructorDependencyExpression(
+                        constructorDependency.ServiceType,
+                        constructorDependency.ServiceName);
+            }
+
+            return constructorDependencies;
+        }
+
+        private IEnumerable<PropertyDependency> GetPropertyDependencies(Type implementingType)
+        {
+            var propertyDependencies = propertyDependencySelector.Execute(implementingType).ToArray();
+            foreach (var property in propertyDependencies)
+            {
+                property.FactoryExpression =
+                    getPropertyDependencyExpression(
+                        property.ServiceType,
+                        property.ServiceName);
+            }
+
+            return propertyDependencies;
         }
     }
 
     /// <summary>
     /// Keeps track of a <see cref="ConstructionInfo"/> instance for each <see cref="Registration"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ConstructionInfoProvider : IConstructionInfoProvider
+    public class ConstructionInfoProvider : IConstructionInfoProvider
     {
         private readonly IConstructionInfoBuilder constructionInfoBuilder;
         private readonly ThreadSafeDictionary<Registration, ConstructionInfo> cache = new ThreadSafeDictionary<Registration, ConstructionInfo>();
@@ -4010,7 +5184,7 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Initializes a new instance of the <see cref="ConstructionInfoProvider"/> class.
         /// </summary>
-        /// <param name="constructionInfoBuilder">The <see cref="IConstructionInfoBuilder"/> that 
+        /// <param name="constructionInfoBuilder">The <see cref="IConstructionInfoBuilder"/> that
         /// is responsible for building a <see cref="ConstructionInfo"/> instance based on a given <see cref="Registration"/>.</param>
         public ConstructionInfoProvider(IConstructionInfoBuilder constructionInfoBuilder)
         {
@@ -4028,7 +5202,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Invalidates the <see cref="IConstructionInfoProvider"/> and causes new <see cref="ConstructionInfo"/> instances 
+        /// Invalidates the <see cref="IConstructionInfoProvider"/> and causes new <see cref="ConstructionInfo"/> instances
         /// to be created when the <see cref="IConstructionInfoProvider.GetConstructionInfo"/> method is called.
         /// </summary>
         public void Invalidate()
@@ -4038,231 +5212,9 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// Provides a <see cref="ConstructorInfo"/> instance 
-    /// that describes how to create a service instance.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ConstructionInfoBuilder : IConstructionInfoBuilder
-    {
-        private readonly Lazy<ILambdaConstructionInfoBuilder> lambdaConstructionInfoBuilder;
-        private readonly Lazy<ITypeConstructionInfoBuilder> typeConstructionInfoBuilder;
- 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConstructionInfoBuilder"/> class.             
-        /// </summary>
-        /// <param name="lambdaConstructionInfoBuilderFactory">
-        /// A function delegate used to provide a <see cref="ILambdaConstructionInfoBuilder"/> instance.
-        /// </param>
-        /// <param name="typeConstructionInfoBuilderFactory">
-        /// A function delegate used to provide a <see cref="ITypeConstructionInfoBuilder"/> instance.
-        /// </param>
-        public ConstructionInfoBuilder(
-            Func<ILambdaConstructionInfoBuilder> lambdaConstructionInfoBuilderFactory,
-            Func<ITypeConstructionInfoBuilder> typeConstructionInfoBuilderFactory)
-        {
-            typeConstructionInfoBuilder = new Lazy<ITypeConstructionInfoBuilder>(typeConstructionInfoBuilderFactory);
-            lambdaConstructionInfoBuilder = new Lazy<ILambdaConstructionInfoBuilder>(lambdaConstructionInfoBuilderFactory);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="ConstructionInfo"/> instance based on the given <see cref="Registration"/>.
-        /// </summary>
-        /// <param name="registration">The <see cref="Registration"/> for which to return a <see cref="ConstructionInfo"/> instance.</param>
-        /// <returns>A <see cref="ConstructionInfo"/> instance that describes how to create a service instance.</returns>
-        public ConstructionInfo Execute(Registration registration)
-        {
-            return registration.FactoryExpression != null
-                ? CreateConstructionInfoFromLambdaExpression(registration.FactoryExpression)
-                : CreateConstructionInfoFromImplementingType(registration);
-        }
-        
-        private ConstructionInfo CreateConstructionInfoFromLambdaExpression(LambdaExpression lambdaExpression)
-        {
-            return lambdaConstructionInfoBuilder.Value.Execute(lambdaExpression);
-        }
-        
-        private ConstructionInfo CreateConstructionInfoFromImplementingType(Registration registration)
-        {
-            return typeConstructionInfoBuilder.Value.Execute(registration);
-        }
-    }
-
-    /// <summary>
-    /// Parses a <see cref="LambdaExpression"/> into a <see cref="ConstructionInfo"/> instance.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class LambdaConstructionInfoBuilder : ILambdaConstructionInfoBuilder
-    {                
-        /// <summary>
-        /// Parses the <paramref name="lambdaExpression"/> and returns a <see cref="ConstructionInfo"/> instance.
-        /// </summary>
-        /// <param name="lambdaExpression">The <see cref="LambdaExpression"/> to parse.</param>
-        /// <returns>A <see cref="ConstructionInfo"/> instance.</returns>
-        public ConstructionInfo Execute(LambdaExpression lambdaExpression)
-        {            
-            if (!CanParse(lambdaExpression))
-            {
-                return CreateConstructionInfoBasedOnLambdaExpression(lambdaExpression);
-            }
-            
-            switch (lambdaExpression.Body.NodeType)
-            {
-                case ExpressionType.New:
-                    return CreateConstructionInfoBasedOnNewExpression((NewExpression)lambdaExpression.Body);
-                case ExpressionType.MemberInit:
-                    return CreateConstructionInfoBasedOnHandleMemberInitExpression((MemberInitExpression)lambdaExpression.Body);
-                default:
-                    return CreateConstructionInfoBasedOnLambdaExpression(lambdaExpression);
-            }
-        }
-
-        private bool CanParse(LambdaExpression lambdaExpression)
-        {
-            return lambdaExpression.Parameters.Count <= 1;
-        }
-
-        private static ConstructionInfo CreateConstructionInfoBasedOnLambdaExpression(LambdaExpression lambdaExpression)
-        {
-            return new ConstructionInfo { FactoryDelegate = lambdaExpression.Compile() };
-        }
-
-        private static ConstructionInfo CreateConstructionInfoBasedOnNewExpression(NewExpression newExpression)
-        {
-            var constructionInfo = CreateConstructionInfo(newExpression);
-            ParameterInfo[] parameters = newExpression.Constructor.GetParameters();
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                ConstructorDependency constructorDependency = CreateConstructorDependency(parameters[i]);
-                ApplyDependencyDetails(newExpression.Arguments[i], constructorDependency);
-                constructionInfo.ConstructorDependencies.Add(constructorDependency);
-            }
-
-            return constructionInfo;
-        }
-
-        private static ConstructionInfo CreateConstructionInfo(NewExpression newExpression)
-        {
-            var constructionInfo = new ConstructionInfo { Constructor = newExpression.Constructor, ImplementingType = newExpression.Constructor.DeclaringType };
-            return constructionInfo;
-        }
-
-        private static ConstructionInfo CreateConstructionInfoBasedOnHandleMemberInitExpression(MemberInitExpression memberInitExpression)
-        {
-            var constructionInfo = CreateConstructionInfoBasedOnNewExpression(memberInitExpression.NewExpression);
-            foreach (MemberBinding memberBinding in memberInitExpression.Bindings)
-            {
-                HandleMemberAssignment((MemberAssignment)memberBinding, constructionInfo);
-            }
-
-            return constructionInfo;
-        }
-
-        private static void HandleMemberAssignment(MemberAssignment memberAssignment, ConstructionInfo constructionInfo)
-        {
-            var propertyDependency = CreatePropertyDependency(memberAssignment);
-            ApplyDependencyDetails(memberAssignment.Expression, propertyDependency);
-            constructionInfo.PropertyDependencies.Add(propertyDependency);
-        }
-
-        private static ConstructorDependency CreateConstructorDependency(ParameterInfo parameterInfo)
-        {
-            var constructorDependency = new ConstructorDependency
-            {
-                Parameter = parameterInfo,
-                ServiceType = parameterInfo.ParameterType,
-                IsRequired = true
-            };
-            return constructorDependency;
-        }
-
-        private static PropertyDependency CreatePropertyDependency(MemberAssignment memberAssignment)
-        {
-            var propertyDependecy = new PropertyDependency
-            {
-                Property = (PropertyInfo)memberAssignment.Member,
-                ServiceType = ((PropertyInfo)memberAssignment.Member).PropertyType
-            };
-            return propertyDependecy;
-        }
-
-        private static void ApplyDependencyDetails(Expression expression, Dependency dependency)
-        {
-            if (RepresentsServiceFactoryMethod(expression))
-            {
-                ApplyDependencyDetailsFromMethodCall((MethodCallExpression)expression, dependency);
-            }
-            else
-            {
-                ApplyDependecyDetailsFromExpression(expression, dependency);
-            }
-        }
-
-        private static bool RepresentsServiceFactoryMethod(Expression expression)
-        {
-            return IsMethodCall(expression) &&
-                IsServiceFactoryMethod(((MethodCallExpression)expression).Method);
-        }
-
-        private static bool IsMethodCall(Expression expression)
-        {
-            return expression.NodeType == ExpressionType.Call;
-        }
-
-        private static bool IsServiceFactoryMethod(MethodInfo methodInfo)
-        {
-            return methodInfo.DeclaringType == typeof(IServiceFactory);
-        }
-        
-        private static void ApplyDependecyDetailsFromExpression(Expression expression, Dependency dependency)
-        {
-            dependency.FactoryExpression = expression;
-            dependency.ServiceName = string.Empty;
-        }
-
-        private static void ApplyDependencyDetailsFromMethodCall(MethodCallExpression methodCallExpression, Dependency dependency)
-        {
-            dependency.ServiceType = methodCallExpression.Method.ReturnType;
-            if (RepresentsGetNamedInstanceMethod(methodCallExpression))
-            {
-                dependency.ServiceName = (string)((ConstantExpression)methodCallExpression.Arguments[0]).Value;
-            }
-            else
-            {
-                dependency.ServiceName = string.Empty;
-            }
-        }
-
-        private static bool RepresentsGetNamedInstanceMethod(MethodCallExpression node)
-        {
-            return IsGetInstanceMethod(node.Method) && HasOneArgumentRepresentingServiceName(node);
-        }
-
-        private static bool IsGetInstanceMethod(MethodInfo methodInfo)
-        {
-            return methodInfo.Name == "GetInstance";
-        }
-
-        private static bool HasOneArgumentRepresentingServiceName(MethodCallExpression node)
-        {
-            return HasOneArgument(node) && IsConstantExpression(node.Arguments[0]);
-        }
-
-        private static bool HasOneArgument(MethodCallExpression node)
-        {
-            return node.Arguments.Count == 1;
-        }
-
-        private static bool IsConstantExpression(Expression argument)
-        {
-            return argument.NodeType == ExpressionType.Constant;
-        }
-    }
-   
-    /// <summary>
     /// Contains information about a service request that originates from a rule based service registration.
-    /// </summary>    
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ServiceRequest
+    /// </summary>
+    public class ServiceRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceRequest"/> class.
@@ -4296,17 +5248,12 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Base class for concrete registrations within the service container.
     /// </summary>
-    internal abstract class Registration
+    public abstract class Registration
     {
         /// <summary>
         /// Gets or sets the service <see cref="Type"/>.
         /// </summary>
         public Type ServiceType { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether constructor dependencies should be ignored.
-        /// </summary>
-        public bool IgnoreConstructorDependencies { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Type"/> that implements the <see cref="Registration.ServiceType"/>.
@@ -4316,17 +5263,16 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Gets or sets the <see cref="LambdaExpression"/> used to create a service instance.
         /// </summary>
-        public LambdaExpression FactoryExpression { get; set; }
+        public Delegate FactoryExpression { get; set; }
     }
 
     /// <summary>
     /// Contains information about a registered decorator.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class DecoratorRegistration : Registration
+    public class DecoratorRegistration : Registration
     {
         /// <summary>
-        /// Gets or sets a function delegate that determines if the decorator can decorate the service 
+        /// Gets or sets a function delegate that determines if the decorator can decorate the service
         /// represented by the supplied <see cref="ServiceRegistration"/>.
         /// </summary>
         public Func<ServiceRegistration, bool> CanDecorate { get; set; }
@@ -4350,14 +5296,13 @@ namespace RomanticWeb.LightInject
             {
                 return ImplementingType == null && FactoryExpression == null;
             }
-        }       
+        }
     }
 
     /// <summary>
     /// Contains information about a registered service.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ServiceRegistration : Registration
+    public class ServiceRegistration : Registration
     {
         /// <summary>
         /// Gets or sets the name of the service.
@@ -4375,13 +5320,13 @@ namespace RomanticWeb.LightInject
         public object Value { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ServiceRegistration"/> can be overridden 
+        /// Gets or sets a value indicating whether this <see cref="ServiceRegistration"/> can be overridden
         /// by another registration.
         /// </summary>
         public bool IsReadOnly { get; set; }
 
         /// <summary>
-        /// Serves as a hash function for a particular type. 
+        /// Serves as a hash function for a particular type.
         /// </summary>
         /// <returns>
         /// A hash code for the current <see cref="T:System.Object"/>.
@@ -4411,12 +5356,11 @@ namespace RomanticWeb.LightInject
             return result;
         }
     }
-    
+
     /// <summary>
     /// Contains information about how to create a service instance.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ConstructionInfo
+    public class ConstructionInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConstructionInfo"/> class.
@@ -4438,14 +5382,14 @@ namespace RomanticWeb.LightInject
         public ConstructorInfo Constructor { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="PropertyDependency"/> instances that represent 
-        /// the property dependencies for the target service instance. 
+        /// Gets a list of <see cref="PropertyDependency"/> instances that represent
+        /// the property dependencies for the target service instance.
         /// </summary>
         public List<PropertyDependency> PropertyDependencies { get; private set; }
 
         /// <summary>
-        /// Gets a list of <see cref="ConstructorDependency"/> instances that represent 
-        /// the property dependencies for the target service instance. 
+        /// Gets a list of <see cref="ConstructorDependency"/> instances that represent
+        /// the property dependencies for the target service instance.
         /// </summary>
         public List<ConstructorDependency> ConstructorDependencies { get; private set; }
 
@@ -4458,7 +5402,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class dependency.
     /// </summary>
-    internal abstract class Dependency
+    public abstract class Dependency
     {
         /// <summary>
         /// Gets or sets the service <see cref="Type"/> of the <see cref="Dependency"/>.
@@ -4472,9 +5416,9 @@ namespace RomanticWeb.LightInject
 
         /// <summary>
         /// Gets or sets the <see cref="FactoryExpression"/> that represent getting the value of the <see cref="Dependency"/>.
-        /// </summary>            
-        public Expression FactoryExpression { get; set; }
-       
+        /// </summary>
+        public Delegate FactoryExpression { get; set; }
+
         /// <summary>
         /// Gets the name of the dependency accessor.
         /// </summary>
@@ -4499,8 +5443,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a property dependency.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PropertyDependency : Dependency
+    public class PropertyDependency : Dependency
     {
         /// <summary>
         /// Gets or sets the <see cref="MethodInfo"/> that is used to set the property value.
@@ -4531,8 +5474,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a constructor dependency.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ConstructorDependency : Dependency
+    public class ConstructorDependency : Dependency
     {
         /// <summary>
         /// Gets or sets the <see cref="ParameterInfo"/> for this <see cref="ConstructorDependency"/>.
@@ -4540,8 +5482,8 @@ namespace RomanticWeb.LightInject
         public ParameterInfo Parameter { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether that this parameter represents  
-        /// the decoration target passed into a decorator instance. 
+        /// Gets or sets a value indicating whether that this parameter represents
+        /// the decoration target passed into a decorator instance.
         /// </summary>
         public bool IsDecoratorTarget { get; set; }
 
@@ -4569,8 +5511,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Ensures that only one instance of a given service can exist within the current <see cref="IServiceContainer"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PerContainerLifetime : ILifetime, IDisposable
+    public class PerContainerLifetime : ILifetime, IDisposable
     {
         private readonly object syncRoot = new object();
         private volatile object singleton;
@@ -4615,8 +5556,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Ensures that a new instance is created for each request in addition to tracking disposable instances.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PerRequestLifeTime : ILifetime
+    public class PerRequestLifeTime : ILifetime
     {
         /// <summary>
         /// Returns a service instance according to the specific lifetime characteristics.
@@ -4651,11 +5591,10 @@ namespace RomanticWeb.LightInject
     /// Ensures that only one service instance can exist within a given <see cref="Scope"/>.
     /// </summary>
     /// <remarks>
-    /// If the service instance implements <see cref="IDisposable"/>, 
+    /// If the service instance implements <see cref="IDisposable"/>,
     /// it will be disposed when the <see cref="Scope"/> ends.
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PerScopeLifetime : ILifetime
+    public class PerScopeLifetime : ILifetime
     {
         private readonly ThreadSafeDictionary<Scope, object> instances = new ThreadSafeDictionary<Scope, object>();
 
@@ -4706,8 +5645,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Manages a set of <see cref="Scope"/> instances.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ScopeManager
+    public class ScopeManager
     {
         private readonly object syncRoot = new object();
 
@@ -4728,7 +5666,7 @@ namespace RomanticWeb.LightInject
         }
 
         /// <summary>
-        /// Starts a new <see cref="Scope"/>. 
+        /// Starts a new <see cref="Scope"/>.
         /// </summary>
         /// <returns>A new <see cref="Scope"/>.</returns>
         public Scope BeginScope()
@@ -4769,10 +5707,9 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// Represents a scope. 
+    /// Represents a scope.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class Scope : IDisposable
+    public class Scope : IDisposable
     {
         private readonly IList<IDisposable> disposableObjects = new List<IDisposable>();
 
@@ -4795,12 +5732,12 @@ namespace RomanticWeb.LightInject
         public event EventHandler<EventArgs> Completed;
 
         /// <summary>
-        /// Gets or sets the parent <see cref="Scope"/>.
+        /// Gets the parent <see cref="Scope"/>.
         /// </summary>
         public Scope ParentScope { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the child <see cref="Scope"/>.
+        /// Gets the child <see cref="Scope"/>.
         /// </summary>
         public Scope ChildScope { get; internal set; }
 
@@ -4845,8 +5782,7 @@ namespace RomanticWeb.LightInject
     /// Used at the assembly level to describe the composition root(s) for the target assembly.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class CompositionRootTypeAttribute : Attribute
+    public class CompositionRootTypeAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CompositionRootTypeAttribute"/> class.
@@ -4864,11 +5800,43 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
+    /// A class that is capable of extracting attributes of type
+    /// <see cref="CompositionRootTypeAttribute"/> from an <see cref="Assembly"/>.
+    /// </summary>
+    public class CompositionRootAttributeExtractor : ICompositionRootAttributeExtractor
+    {
+        /// <summary>
+        /// Gets a list of attributes of type <see cref="CompositionRootTypeAttribute"/> from
+        /// the given <paramref name="assembly"/>.
+        /// </summary>
+        /// <param name="assembly">The assembly from which to extract
+        /// <see cref="CompositionRootTypeAttribute"/> attributes.</param>
+        /// <returns>A list of attributes of type <see cref="CompositionRootTypeAttribute"/></returns>
+        public CompositionRootTypeAttribute[] GetAttributes(Assembly assembly)
+        {
+            return assembly.GetCustomAttributes(typeof(CompositionRootTypeAttribute))
+                       .Cast<CompositionRootTypeAttribute>().ToArray();
+        }
+    }
+
+    /// <summary>
     /// Extracts concrete <see cref="ICompositionRoot"/> implementations from an <see cref="Assembly"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class CompositionRootTypeExtractor : ITypeExtractor
+    public class CompositionRootTypeExtractor : ITypeExtractor
     {
+        private readonly ICompositionRootAttributeExtractor compositionRootAttributeExtractor;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompositionRootTypeExtractor"/> class.
+        /// </summary>
+        /// <param name="compositionRootAttributeExtractor">The <see cref="ICompositionRootAttributeExtractor"/>
+        /// that is responsible for extracting attributes of type <see cref="CompositionRootTypeAttribute"/> from
+        /// a given <see cref="Assembly"/>.</param>
+        public CompositionRootTypeExtractor(ICompositionRootAttributeExtractor compositionRootAttributeExtractor)
+        {
+            this.compositionRootAttributeExtractor = compositionRootAttributeExtractor;
+        }
+
         /// <summary>
         /// Extracts concrete <see cref="ICompositionRoot"/> implementations found in the given <paramref name="assembly"/>.
         /// </summary>
@@ -4877,23 +5845,25 @@ namespace RomanticWeb.LightInject
         public Type[] Execute(Assembly assembly)
         {
             CompositionRootTypeAttribute[] compositionRootAttributes =
-                assembly.GetCustomAttributes(typeof(CompositionRootTypeAttribute))
-                        .Cast<CompositionRootTypeAttribute>().ToArray();
-            
+                compositionRootAttributeExtractor.GetAttributes(assembly);
+
             if (compositionRootAttributes.Length > 0)
             {
                 return compositionRootAttributes.Select(a => a.CompositionRootType).ToArray();
             }
 
-            return assembly.GetTypes().Where(t => !t.IsAbstract() && typeof(ICompositionRoot).IsAssignableFrom(t)).ToArray();
+            return
+                assembly.DefinedTypes.Where(
+                    t => !t.IsAbstract && typeof(ICompositionRoot).GetTypeInfo().IsAssignableFrom(t))
+                    .Cast<Type>()
+                    .ToArray();
         }
     }
 
     /// <summary>
     /// A <see cref="ITypeExtractor"/> cache decorator.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class CachedTypeExtractor : ITypeExtractor
+    public class CachedTypeExtractor : ITypeExtractor
     {
         private readonly ITypeExtractor typeExtractor;
 
@@ -4923,14 +5893,12 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Extracts concrete types from an <see cref="Assembly"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class ConcreteTypeExtractor : ITypeExtractor
+    public class ConcreteTypeExtractor : ITypeExtractor
     {
         private static readonly List<Type> InternalTypes = new List<Type>();
-       
+
         static ConcreteTypeExtractor()
-        {        
-            InternalTypes.Add(typeof(LambdaConstructionInfoBuilder));       
+        {
             InternalTypes.Add(typeof(ConstructorDependency));
             InternalTypes.Add(typeof(PropertyDependency));
             InternalTypes.Add(typeof(ThreadSafeDictionary<,>));
@@ -4944,11 +5912,12 @@ namespace RomanticWeb.LightInject
             InternalTypes.Add(typeof(Registration));
             InternalTypes.Add(typeof(ServiceContainer));
             InternalTypes.Add(typeof(ConstructionInfo));
-            InternalTypes.Add(typeof(AssemblyLoader));            
+#if NET45 || NET46
+            InternalTypes.Add(typeof(AssemblyLoader));
+#endif
             InternalTypes.Add(typeof(TypeConstructionInfoBuilder));
             InternalTypes.Add(typeof(ConstructionInfoProvider));
-            InternalTypes.Add(typeof(ConstructionInfoBuilder));            
-            InternalTypes.Add(typeof(MostResolvableConstructorSelector));            
+            InternalTypes.Add(typeof(MostResolvableConstructorSelector));
             InternalTypes.Add(typeof(PerContainerLifetime));
             InternalTypes.Add(typeof(PerContainerLifetime));
             InternalTypes.Add(typeof(PerRequestLifeTime));
@@ -4964,12 +5933,23 @@ namespace RomanticWeb.LightInject
             InternalTypes.Add(typeof(ImmutableList<>));
             InternalTypes.Add(typeof(KeyValue<,>));
             InternalTypes.Add(typeof(ImmutableHashTree<,>));
-            InternalTypes.Add(typeof(PerThreadScopeManagerProvider));            
+            InternalTypes.Add(typeof(ImmutableHashTable<,>));
+            InternalTypes.Add(typeof(PerThreadScopeManagerProvider));
             InternalTypes.Add(typeof(Emitter));
             InternalTypes.Add(typeof(Instruction));
             InternalTypes.Add(typeof(Instruction<>));
+            InternalTypes.Add(typeof(GetInstanceDelegate));
+            InternalTypes.Add(typeof(ContainerOptions));
+            InternalTypes.Add(typeof(CompositionRootAttributeExtractor));
+#if NET45 || NET46 || NETSTANDARD13 || NETSTANDARD16
             InternalTypes.Add(typeof(PerLogicalCallContextScopeManagerProvider));
             InternalTypes.Add(typeof(LogicalThreadStorage<>));
+#endif
+#if PCL_111
+            InternalTypes.Add(typeof(DynamicMethod));
+            InternalTypes.Add(typeof(ILGenerator));
+            InternalTypes.Add(typeof(LocalBuilder));
+#endif
         }
 
         /// <summary>
@@ -4978,39 +5958,50 @@ namespace RomanticWeb.LightInject
         /// <param name="assembly">The <see cref="Assembly"/> for which to extract types.</param>
         /// <returns>A set of concrete types found in the given <paramref name="assembly"/>.</returns>
         public Type[] Execute(Assembly assembly)
-        {            
-            return assembly.GetTypes().Where(t => t.IsClass()
-                                               && !t.IsNestedPrivate()
-                                               && !t.IsAbstract() 
-                                               && !Equals(t.GetAssembly(), typeof(string).GetAssembly())
-                                               && !IsCompilerGenerated(t)).Except(InternalTypes).ToArray();
+        {
+            return
+                assembly.DefinedTypes.Where(info => IsConcreteType(info))
+                    .Except(InternalTypes.Select(i => i.GetTypeInfo()))
+                    .Cast<Type>()
+                    .ToArray();
         }
 
-        private static bool IsCompilerGenerated(Type type)
+        private static bool IsConcreteType(TypeInfo typeInfo)
         {
-            return type.IsDefined(typeof(CompilerGeneratedAttribute), false);
+            return typeInfo.IsClass
+                        && !typeInfo.IsNestedPrivate
+                        && !typeInfo.IsAbstract
+                        && !Equals(typeInfo.Assembly, typeof(string).GetTypeInfo().Assembly)
+                        && !IsCompilerGenerated(typeInfo);
+        }
+
+        private static bool IsCompilerGenerated(TypeInfo typeInfo)
+        {
+            return typeInfo.IsDefined(typeof(CompilerGeneratedAttribute), false);
         }
     }
 
     /// <summary>
     /// A class that is responsible for instantiating and executing an <see cref="ICompositionRoot"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class CompositionRootExecutor : ICompositionRootExecutor
+    public class CompositionRootExecutor : ICompositionRootExecutor
     {
         private readonly IServiceRegistry serviceRegistry;
+        private readonly Func<Type, ICompositionRoot> activator;
 
         private readonly IList<Type> executedCompositionRoots = new List<Type>();
-        
+
         private readonly object syncRoot = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompositionRootExecutor"/> class.
         /// </summary>
         /// <param name="serviceRegistry">The <see cref="IServiceRegistry"/> to be configured by the <see cref="ICompositionRoot"/>.</param>
-        public CompositionRootExecutor(IServiceRegistry serviceRegistry)
+        /// <param name="activator">The function delegate that is responsible for creating an instance of the <see cref="ICompositionRoot"/>.</param>
+        public CompositionRootExecutor(IServiceRegistry serviceRegistry, Func<Type, ICompositionRoot> activator)
         {
             this.serviceRegistry = serviceRegistry;
+            this.activator = activator;
         }
 
         /// <summary>
@@ -5026,19 +6017,18 @@ namespace RomanticWeb.LightInject
                     if (!executedCompositionRoots.Contains(compositionRootType))
                     {
                         executedCompositionRoots.Add(compositionRootType);
-                        var compositionRoot = (ICompositionRoot)Activator.CreateInstance(compositionRootType);
+                        var compositionRoot = activator(compositionRootType);
                         compositionRoot.Compose(serviceRegistry);
                     }
                 }
-            }            
-        }       
+            }
+        }
     }
 
     /// <summary>
     /// An assembly scanner that registers services based on the types contained within an <see cref="Assembly"/>.
-    /// </summary>    
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class AssemblyScanner : IAssemblyScanner
+    /// </summary>
+    public class AssemblyScanner : IAssemblyScanner
     {
         private readonly ITypeExtractor concreteTypeExtractor;
         private readonly ITypeExtractor compositionRootTypeExtractor;
@@ -5048,11 +6038,11 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyScanner"/> class.
         /// </summary>
-        /// <param name="concreteTypeExtractor">The <see cref="ITypeExtractor"/> that is responsible for 
+        /// <param name="concreteTypeExtractor">The <see cref="ITypeExtractor"/> that is responsible for
         /// extracting concrete types from the assembly being scanned.</param>
-        /// <param name="compositionRootTypeExtractor">The <see cref="ITypeExtractor"/> that is responsible for 
+        /// <param name="compositionRootTypeExtractor">The <see cref="ITypeExtractor"/> that is responsible for
         /// extracting <see cref="ICompositionRoot"/> implementations from the assembly being scanned.</param>
-        /// <param name="compositionRootExecutor">The <see cref="ICompositionRootExecutor"/> that is 
+        /// <param name="compositionRootExecutor">The <see cref="ICompositionRootExecutor"/> that is
         /// responsible for creating and executing an <see cref="ICompositionRoot"/>.</param>
         public AssemblyScanner(ITypeExtractor concreteTypeExtractor, ITypeExtractor compositionRootTypeExtractor, ICompositionRootExecutor compositionRootExecutor)
         {
@@ -5064,12 +6054,12 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Scans the target <paramref name="assembly"/> and registers services found within the assembly.
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>        
+        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>
         /// <param name="serviceRegistry">The target <see cref="IServiceRegistry"/> instance.</param>
         /// <param name="lifetimeFactory">The <see cref="ILifetime"/> factory that controls the lifetime of the registered service.</param>
         /// <param name="shouldRegister">A function delegate that determines if a service implementation should be registered.</param>
         public void Scan(Assembly assembly, IServiceRegistry serviceRegistry, Func<ILifetime> lifetimeFactory, Func<Type, Type, bool> shouldRegister)
-        {            
+        {
             Type[] concreteTypes = GetConcreteTypes(assembly);
             foreach (Type type in concreteTypes)
             {
@@ -5080,7 +6070,7 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Scans the target <paramref name="assembly"/> and executes composition roots found within the <see cref="Assembly"/>.
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>        
+        /// <param name="assembly">The <see cref="Assembly"/> to scan.</param>
         /// <param name="serviceRegistry">The target <see cref="IServiceRegistry"/> instance.</param>
         public void Scan(Assembly assembly, IServiceRegistry serviceRegistry)
         {
@@ -5089,14 +6079,14 @@ namespace RomanticWeb.LightInject
             {
                 currentAssembly = assembly;
                 ExecuteCompositionRoots(compositionRootTypes);
-            }            
+            }
         }
 
         private static string GetServiceName(Type serviceType, Type implementingType)
         {
             string implementingTypeName = implementingType.Name;
             string serviceTypeName = serviceType.Name;
-            if (implementingType.IsGenericTypeDefinition())
+            if (implementingType.GetTypeInfo().IsGenericTypeDefinition)
             {
                 var regex = new Regex("((?:[a-z][a-z]+))", RegexOptions.IgnoreCase);
                 implementingTypeName = regex.Match(implementingTypeName).Groups[1].Value;
@@ -5117,7 +6107,7 @@ namespace RomanticWeb.LightInject
             while (baseType != typeof(object) && baseType != null)
             {
                 yield return baseType;
-                baseType = baseType.GetBaseType();
+                baseType = baseType.GetTypeInfo().BaseType;
             }
         }
 
@@ -5131,7 +6121,7 @@ namespace RomanticWeb.LightInject
 
         private Type[] GetConcreteTypes(Assembly assembly)
         {
-            return concreteTypeExtractor.Execute(assembly);            
+            return concreteTypeExtractor.Execute(assembly);
         }
 
         private Type[] GetCompositionRootTypes(Assembly assembly)
@@ -5141,7 +6131,7 @@ namespace RomanticWeb.LightInject
 
         private void BuildImplementationMap(Type implementingType, IServiceRegistry serviceRegistry, Func<ILifetime> lifetimeFactory, Func<Type, Type, bool> shouldRegister)
         {
-            Type[] interfaces = implementingType.GetInterfaces();
+            Type[] interfaces = implementingType.GetTypeInfo().ImplementedInterfaces.ToArray();
             foreach (Type interfaceType in interfaces)
             {
                 if (shouldRegister(interfaceType, implementingType))
@@ -5161,9 +6151,10 @@ namespace RomanticWeb.LightInject
 
         private void RegisterInternal(Type serviceType, Type implementingType, IServiceRegistry serviceRegistry, ILifetime lifetime)
         {
-            if (serviceType.IsGenericType() && serviceType.ContainsGenericParameters())
+            var serviceTypeInfo = serviceType.GetTypeInfo();
+            if (serviceTypeInfo.IsGenericType && serviceTypeInfo.ContainsGenericParameters)
             {
-                serviceType = serviceType.GetGenericTypeDefinition();
+                serviceType = serviceTypeInfo.GetGenericTypeDefinition();
             }
 
             serviceRegistry.Register(serviceType, implementingType, GetServiceName(serviceType, implementingType), lifetime);
@@ -5173,8 +6164,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Selects the properties that represents a dependency to the target <see cref="Type"/>.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class PropertySelector : IPropertySelector
+    public class PropertySelector : IPropertySelector
     {
         /// <summary>
         /// Selects properties that represents a dependency from the given <paramref name="type"/>.
@@ -5183,7 +6173,7 @@ namespace RomanticWeb.LightInject
         /// <returns>A list of properties that represents a dependency to the target <paramref name="type"/></returns>
         public IEnumerable<PropertyInfo> Execute(Type type)
         {
-            return type.GetProperties().Where(IsInjectable).ToList();
+            return type.GetRuntimeProperties().Where(IsInjectable).ToList();
         }
 
         /// <summary>
@@ -5198,15 +6188,15 @@ namespace RomanticWeb.LightInject
 
         private static bool IsReadOnly(PropertyInfo propertyInfo)
         {
-            return propertyInfo.GetSetMethod() == null || propertyInfo.GetSetMethod().IsStatic || propertyInfo.GetSetMethod().IsPrivate || propertyInfo.GetIndexParameters().Length > 0;
+            return propertyInfo.SetMethod == null || propertyInfo.SetMethod.IsStatic || propertyInfo.SetMethod.IsPrivate || propertyInfo.GetIndexParameters().Length > 0;
         }
     }
+#if NET45 || NET46
 
     /// <summary>
     /// Loads all assemblies from the application base directory that matches the given search pattern.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class AssemblyLoader : IAssemblyLoader
+    public class AssemblyLoader : IAssemblyLoader
     {
         /// <summary>
         /// Loads a set of assemblies based on the given <paramref name="searchPattern"/>.
@@ -5236,13 +6226,14 @@ namespace RomanticWeb.LightInject
             return true;
         }
     }
-  
+#endif
+
     /// <summary>
-    /// Defines an immutable representation of a key and a value.  
+    /// Defines an immutable representation of a key and a value.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    internal sealed class KeyValue<TKey, TValue>
+    public sealed class KeyValue<TKey, TValue>
     {
         /// <summary>
         /// The key of this <see cref="KeyValue{TKey,TValue}"/> instance.
@@ -5270,7 +6261,7 @@ namespace RomanticWeb.LightInject
     /// Represents a simple "add only" immutable list.
     /// </summary>
     /// <typeparam name="T">The type of items contained in the list.</typeparam>
-    internal sealed class ImmutableList<T>
+    public sealed class ImmutableList<T>
     {
         /// <summary>
         /// Represents an empty <see cref="ImmutableList{T}"/>.
@@ -5317,11 +6308,98 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
+    /// A simple immutable add-only hash table.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    public sealed class ImmutableHashTable<TKey, TValue>
+    {
+        /// <summary>
+        /// An empty <see cref="ImmutableHashTree{TKey,TValue}"/>.
+        /// </summary>
+        public static readonly ImmutableHashTable<TKey, TValue> Empty = new ImmutableHashTable<TKey, TValue>();
+
+        /// <summary>
+        /// Gets the number of items stored in the hash table.
+        /// </summary>
+        public readonly int Count;
+
+        /// <summary>
+        /// Gets the hast table buckets.
+        /// </summary>
+        internal readonly ImmutableHashTree<TKey, TValue>[] Buckets;
+
+        /// <summary>
+        /// Gets the divisor used to calculate the bucket index from the hash code of the key.
+        /// </summary>
+        internal readonly int Divisor;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImmutableHashTable{TKey,TValue}"/> class.
+        /// </summary>
+        /// <param name="previous">The "previous" hash table that contains already existing values.</param>
+        /// <param name="key">The key to be associated with the value.</param>
+        /// <param name="value">The value to be added to the tree.</param>
+        internal ImmutableHashTable(ImmutableHashTable<TKey, TValue> previous, TKey key, TValue value)
+        {
+            this.Count = previous.Count + 1;
+            if (previous.Count >= previous.Divisor)
+            {
+                this.Divisor = previous.Divisor * 2;
+                this.Buckets = new ImmutableHashTree<TKey, TValue>[this.Divisor];
+                InitializeBuckets(0, this.Divisor);
+                this.AddExistingValues(previous);
+            }
+            else
+            {
+                this.Divisor = previous.Divisor;
+                this.Buckets = new ImmutableHashTree<TKey, TValue>[this.Divisor];
+                Array.Copy(previous.Buckets, this.Buckets, previous.Divisor);
+            }
+
+            var hashCode = key.GetHashCode();
+            var bucketIndex = hashCode & (this.Divisor - 1);
+            this.Buckets[bucketIndex] = this.Buckets[bucketIndex].Add(key, value);
+        }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="ImmutableHashTable{TKey,TValue}"/> class from being created.
+        /// </summary>
+        private ImmutableHashTable()
+        {
+            this.Buckets = new ImmutableHashTree<TKey, TValue>[2];
+            this.Divisor = 2;
+            InitializeBuckets(0, 2);
+        }
+
+        private void AddExistingValues(ImmutableHashTable<TKey, TValue> previous)
+        {
+            foreach (ImmutableHashTree<TKey, TValue> bucket in previous.Buckets)
+            {
+                foreach (var keyValue in bucket.InOrder())
+                {
+                    int hashCode = keyValue.Key.GetHashCode();
+                    int bucketIndex = hashCode & (this.Divisor - 1);
+                    this.Buckets[bucketIndex] = this.Buckets[bucketIndex].Add(keyValue.Key, keyValue.Value);
+                }
+            }
+        }
+
+        private void InitializeBuckets(int startIndex, int count)
+        {
+            for (int i = startIndex; i < count; i++)
+            {
+                this.Buckets[i] = ImmutableHashTree<TKey, TValue>.Empty;
+            }
+        }
+    }
+
+    /// <summary>
     /// A balanced binary search tree implemented as an AVL tree.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    internal sealed class ImmutableHashTree<TKey, TValue>
+    public sealed class ImmutableHashTree<TKey, TValue>
     {
         /// <summary>
         /// An empty <see cref="ImmutableHashTree{TKey,TValue}"/>.
@@ -5339,7 +6417,7 @@ namespace RomanticWeb.LightInject
         public readonly TValue Value;
 
         /// <summary>
-        /// The list of <see cref="KeyValue{TKey,TValue}"/> instances where the 
+        /// The list of <see cref="KeyValue{TKey,TValue}"/> instances where the
         /// <see cref="KeyValue{TKey,TValue}.Key"/> has the same hash code as this <see cref="ImmutableHashTree{TKey,TValue}"/>.
         /// </summary>
         public readonly ImmutableList<KeyValue<TKey, TValue>> Duplicates;
@@ -5421,7 +6499,7 @@ namespace RomanticWeb.LightInject
                     left = RotateLeft(left);
                 }
 
-                // Rotate right                    
+                // Rotate right
                 Key = left.Key;
                 Value = left.Value;
                 Right = new ImmutableHashTree<TKey, TValue>(key, value, left.Right, right);
@@ -5480,8 +6558,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents an MSIL instruction to be emitted into a dynamic method.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class Instruction
+    public class Instruction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Instruction"/> class.
@@ -5520,8 +6597,7 @@ namespace RomanticWeb.LightInject
     /// Represents an MSIL instruction to be emitted into a dynamic method.
     /// </summary>
     /// <typeparam name="T">The type of argument used in this instruction.</typeparam>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class Instruction<T> : Instruction
+    public class Instruction<T> : Instruction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Instruction{T}"/> class.
@@ -5552,11 +6628,10 @@ namespace RomanticWeb.LightInject
     }
 
     /// <summary>
-    /// An abstraction of the <see cref="ILGenerator"/> class that provides information 
+    /// An abstraction of the <see cref="ILGenerator"/> class that provides information
     /// about the <see cref="Type"/> currently on the stack.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class Emitter : IEmitter
+    public class Emitter : IEmitter
     {
         private readonly ILGenerator generator;
 
@@ -5575,7 +6650,7 @@ namespace RomanticWeb.LightInject
         /// <param name="parameterTypes">The list of parameter types used by the current dynamic method.</param>
         public Emitter(ILGenerator generator, Type[] parameterTypes)
         {
-            this.generator = generator;            
+            this.generator = generator;
             this.parameterTypes = parameterTypes;
         }
 
@@ -5598,7 +6673,7 @@ namespace RomanticWeb.LightInject
             get
             {
                 return instructions;
-            }            
+            }
         }
 
         /// <summary>
@@ -5610,7 +6685,7 @@ namespace RomanticWeb.LightInject
             if (code == OpCodes.Ldarg_0)
             {
                 stack.Push(parameterTypes[0]);
-            }            
+            }
             else if (code == OpCodes.Ldarg_1)
             {
                 stack.Push(parameterTypes[1]);
@@ -5657,7 +6732,7 @@ namespace RomanticWeb.LightInject
             }
             else if (code == OpCodes.Ldelem_Ref)
             {
-                stack.Pop();                
+                stack.Pop();
                 Type arrayType = stack.Pop();
                 stack.Push(arrayType.GetElementType());
             }
@@ -5706,7 +6781,7 @@ namespace RomanticWeb.LightInject
             else if (code == OpCodes.Ldc_I4_8)
             {
                 stack.Push(typeof(int));
-            }            
+            }
             else if (code == OpCodes.Sub)
             {
                 stack.Pop();
@@ -5740,7 +6815,7 @@ namespace RomanticWeb.LightInject
         {
             if (code == OpCodes.Ldc_I4)
             {
-                stack.Push(typeof(int));                
+                stack.Push(typeof(int));
             }
             else if (code == OpCodes.Ldarg)
             {
@@ -5759,9 +6834,9 @@ namespace RomanticWeb.LightInject
                 throw new NotSupportedException(code.ToString());
             }
 
-            instructions.Add(new Instruction<int>(code, arg, il => il.Emit(code, arg)));            
+            instructions.Add(new Instruction<int>(code, arg, il => il.Emit(code, arg)));
         }
-       
+
         /// <summary>
         /// Puts the specified instruction and numerical argument onto the Microsoft intermediate language (MSIL) stream of instructions.
         /// </summary>
@@ -5771,14 +6846,14 @@ namespace RomanticWeb.LightInject
         {
             if (code == OpCodes.Ldc_I4_S)
             {
-                stack.Push(typeof(sbyte));    
+                stack.Push(typeof(int));
             }
             else
             {
                 throw new NotSupportedException(code.ToString());
             }
 
-            instructions.Add(new Instruction<sbyte>(code, arg, il => il.Emit(code, arg)));            
+            instructions.Add(new Instruction<int>(code, arg, il => il.Emit(code, arg)));
         }
 
         /// <summary>
@@ -5805,7 +6880,7 @@ namespace RomanticWeb.LightInject
                 throw new NotSupportedException(code.ToString());
             }
 
-            instructions.Add(new Instruction<byte>(code, arg, il => il.Emit(code, arg)));            
+            instructions.Add(new Instruction<byte>(code, arg, il => il.Emit(code, arg)));
         }
 
         /// <summary>
@@ -5818,35 +6893,35 @@ namespace RomanticWeb.LightInject
             if (code == OpCodes.Newarr)
             {
                 stack.Pop();
-                stack.Push(type.MakeArrayType());                
+                stack.Push(type.MakeArrayType());
             }
             else if (code == OpCodes.Stelem)
             {
                 stack.Pop();
                 stack.Pop();
-                stack.Pop();                
+                stack.Pop();
             }
             else if (code == OpCodes.Castclass)
             {
                 stack.Pop();
-                stack.Push(type);                
+                stack.Push(type);
             }
             else if (code == OpCodes.Box)
             {
                 stack.Pop();
-                stack.Push(typeof(object));                
+                stack.Push(typeof(object));
             }
             else if (code == OpCodes.Unbox_Any)
             {
                 stack.Pop();
-                stack.Push(type);                
+                stack.Push(type);
             }
             else
             {
                 throw new NotSupportedException(code.ToString());
             }
 
-            instructions.Add(new Instruction<Type>(code, type, il => il.Emit(code, type)));            
+            instructions.Add(new Instruction<Type>(code, type, il => il.Emit(code, type)));
         }
 
         /// <summary>
@@ -5871,7 +6946,7 @@ namespace RomanticWeb.LightInject
                 throw new NotSupportedException(code.ToString());
             }
 
-            instructions.Add(new Instruction<ConstructorInfo>(code, constructor, il => il.Emit(code, constructor)));            
+            instructions.Add(new Instruction<ConstructorInfo>(code, constructor, il => il.Emit(code, constructor)));
         }
 
         /// <summary>
@@ -5893,8 +6968,8 @@ namespace RomanticWeb.LightInject
             {
                 throw new NotSupportedException(code.ToString());
             }
-            
-            instructions.Add(new Instruction<LocalBuilder>(code, localBuilder, il => il.Emit(code, localBuilder)));                        
+
+            instructions.Add(new Instruction<LocalBuilder>(code, localBuilder, il => il.Emit(code, localBuilder)));
         }
 
         /// <summary>
@@ -5927,7 +7002,7 @@ namespace RomanticWeb.LightInject
                 throw new NotSupportedException(code.ToString());
             }
 
-            instructions.Add(new Instruction<MethodInfo>(code, methodInfo, il => il.Emit(code, methodInfo)));                                   
+            instructions.Add(new Instruction<MethodInfo>(code, methodInfo, il => il.Emit(code, methodInfo)));
         }
 
         /// <summary>
@@ -5942,14 +7017,14 @@ namespace RomanticWeb.LightInject
             return localBuilder;
         }
     }
-    
+#if NET45
+
     /// <summary>
     /// Provides storage per logical thread of execution.
     /// </summary>
     /// <typeparam name="T">The type of the value contained in this <see cref="LogicalThreadStorage{T}"/>.</typeparam>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class LogicalThreadStorage<T>
-    {      
+    public class LogicalThreadStorage<T>
+    {
         private readonly Func<T> valueFactory;
 
         private readonly string key;
@@ -6014,6 +7089,438 @@ namespace RomanticWeb.LightInject
                     this.value = value;
                 }
             }
+        }
+    }
+#endif
+#if NETSTANDARD13 || NETSTANDARD16 || NET46
+    /// <summary>
+    /// Provides storage per logical thread of execution.
+    /// </summary>
+    /// <typeparam name="T">The type of the value contained in this <see cref="LogicalThreadStorage{T}"/>.</typeparam>
+    public class LogicalThreadStorage<T>
+    {
+        private readonly Func<T> valueFactory;
+
+        private readonly AsyncLocal<T> asyncLocal;
+
+        private readonly object lockObject = new object();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicalThreadStorage{T}"/> class.
+        /// </summary>
+        /// <param name="valueFactory">The value factory used to create an instance of <typeparamref name="T"/>.</param>
+        public LogicalThreadStorage(Func<T> valueFactory)
+        {
+            asyncLocal = new AsyncLocal<T>();
+            this.valueFactory = valueFactory;
+        }
+
+        /// <summary>
+        /// Gets the value for the current logical thread of execution.
+        /// </summary>
+        /// <value>
+        /// The value for the current logical thread of execution.
+        /// </value>
+        public T Value
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    T value = asyncLocal.Value;
+                    if (value == null)
+                    {
+                        asyncLocal.Value = valueFactory();
+                    }
+
+                    return asyncLocal.Value;
+                }
+            }
+        }
+    }
+#endif
+
+    internal static class LifetimeHelper
+    {
+        static LifetimeHelper()
+        {
+            GetInstanceMethod = typeof(ILifetime).GetTypeInfo().GetDeclaredMethod("GetInstance");
+            GetCurrentScopeMethod = typeof(ScopeManager).GetTypeInfo().GetDeclaredProperty("CurrentScope").GetMethod;
+            GetScopeManagerMethod = typeof(IScopeManagerProvider).GetTypeInfo().GetDeclaredMethod("GetScopeManager");
+        }
+
+        public static MethodInfo GetInstanceMethod { get; private set; }
+
+        public static MethodInfo GetCurrentScopeMethod { get; private set; }
+
+        public static MethodInfo GetScopeManagerMethod { get; private set; }
+    }
+
+    internal static class DelegateTypeExtensions
+    {
+        private static readonly MethodInfo OpenGenericGetInstanceMethodInfo =
+            typeof(IServiceFactory).GetTypeInfo().DeclaredMethods.Where(m => m.Name == "GetInstance" & m.GetParameters().Length == 0).Single();
+
+        private static readonly ThreadSafeDictionary<Type, MethodInfo> GetInstanceMethods =
+            new ThreadSafeDictionary<Type, MethodInfo>();
+
+        public static Delegate CreateGetInstanceDelegate(this Type serviceType, IServiceFactory serviceFactory)
+        {
+            Type delegateType = serviceType.GetFuncType();
+            MethodInfo getInstanceMethod = GetInstanceMethods.GetOrAdd(serviceType, CreateGetInstanceMethod);
+            return getInstanceMethod.CreateDelegate(delegateType, serviceFactory);
+        }
+
+        private static MethodInfo CreateGetInstanceMethod(Type type)
+        {
+            return OpenGenericGetInstanceMethodInfo.MakeGenericMethod(type);
+        }
+    }
+
+    internal static class NamedDelegateTypeExtensions
+    {
+        private static readonly MethodInfo CreateInstanceDelegateMethodInfo =
+            typeof(NamedDelegateTypeExtensions).GetTypeInfo().GetDeclaredMethod("CreateInstanceDelegate");
+
+        private static readonly ThreadSafeDictionary<Type, MethodInfo> CreateInstanceDelegateMethods =
+            new ThreadSafeDictionary<Type, MethodInfo>();
+
+        public static Delegate CreateNamedGetInstanceDelegate(this Type serviceType, string serviceName, IServiceFactory factory)
+        {
+            MethodInfo createInstanceDelegateMethodInfo = CreateInstanceDelegateMethods.GetOrAdd(
+                serviceType,
+                CreateClosedGenericCreateInstanceDelegateMethod);
+
+            return (Delegate)createInstanceDelegateMethodInfo.Invoke(null, new object[] { factory, serviceName });
+        }
+
+        private static MethodInfo CreateClosedGenericCreateInstanceDelegateMethod(Type type)
+        {
+            return CreateInstanceDelegateMethodInfo.MakeGenericMethod(type);
+        }
+
+        // ReSharper disable UnusedMember.Local
+        private static Func<TService> CreateInstanceDelegate<TService>(IServiceFactory factory, string serviceName)
+
+        // ReSharper restore UnusedMember.Local
+        {
+            return () => factory.GetInstance<TService>(serviceName);
+        }
+    }
+
+    internal static class ReflectionHelper
+    {
+        private static readonly Lazy<ThreadSafeDictionary<Type, MethodInfo>> GetInstanceWithParametersMethods;
+
+        static ReflectionHelper()
+        {
+            GetInstanceWithParametersMethods = CreateLazyGetInstanceWithParametersMethods();
+        }
+
+        public static MethodInfo GetGetInstanceWithParametersMethod(Type serviceType)
+        {
+            return GetInstanceWithParametersMethods.Value.GetOrAdd(serviceType, CreateGetInstanceWithParametersMethod);
+        }
+
+        public static Delegate CreateGetNamedInstanceWithParametersDelegate(IServiceFactory factory, Type delegateType, string serviceName)
+        {
+            Type[] genericTypeArguments = delegateType.GetTypeInfo().GenericTypeArguments;
+            var openGenericMethod =
+                typeof(ReflectionHelper).GetTypeInfo().DeclaredMethods
+                    .Single(
+                        m =>
+                        m.GetGenericArguments().Length == genericTypeArguments.Length
+                        && m.Name == "CreateGenericGetNamedParameterizedInstanceDelegate");
+            var closedGenericMethod = openGenericMethod.MakeGenericMethod(genericTypeArguments);
+            return (Delegate)closedGenericMethod.Invoke(null, new object[] { factory, serviceName });
+        }
+
+        private static Lazy<ThreadSafeDictionary<Type, MethodInfo>> CreateLazyGetInstanceWithParametersMethods()
+        {
+            return new Lazy<ThreadSafeDictionary<Type, MethodInfo>>(
+                () => new ThreadSafeDictionary<Type, MethodInfo>());
+        }
+
+        private static MethodInfo CreateGetInstanceWithParametersMethod(Type serviceType)
+        {
+            Type[] genericTypeArguments = serviceType.GetTypeInfo().GenericTypeArguments;
+            MethodInfo openGenericMethod =
+                typeof(IServiceFactory).GetTypeInfo().DeclaredMethods.Single(m => m.Name == "GetInstance"
+                    && m.GetGenericArguments().Length == genericTypeArguments.Length && m.GetParameters().All(p => p.Name != "serviceName"));
+
+            MethodInfo closedGenericMethod = openGenericMethod.MakeGenericMethod(genericTypeArguments);
+
+            return closedGenericMethod;
+        }
+
+        // ReSharper disable UnusedMember.Local
+        private static Func<TArg, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg, TService>(IServiceFactory factory, string serviceName)
+
+        // ReSharper restore UnusedMember.Local
+        {
+            return arg => factory.GetInstance<TArg, TService>(arg, serviceName);
+        }
+
+        // ReSharper disable UnusedMember.Local
+        private static Func<TArg1, TArg2, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg1, TArg2, TService>(IServiceFactory factory, string serviceName)
+
+        // ReSharper restore UnusedMember.Local
+        {
+            return (arg1, arg2) => factory.GetInstance<TArg1, TArg2, TService>(arg1, arg2, serviceName);
+        }
+
+        // ReSharper disable UnusedMember.Local
+        private static Func<TArg1, TArg2, TArg3, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg1, TArg2, TArg3, TService>(IServiceFactory factory, string serviceName)
+
+        // ReSharper restore UnusedMember.Local
+        {
+            return (arg1, arg2, arg3) => factory.GetInstance<TArg1, TArg2, TArg3, TService>(arg1, arg2, arg3, serviceName);
+        }
+
+        // ReSharper disable UnusedMember.Local
+        private static Func<TArg1, TArg2, TArg3, TArg4, TService> CreateGenericGetNamedParameterizedInstanceDelegate<TArg1, TArg2, TArg3, TArg4, TService>(IServiceFactory factory, string serviceName)
+
+        // ReSharper restore UnusedMember.Local
+        {
+            return (arg1, arg2, arg3, arg4) => factory.GetInstance<TArg1, TArg2, TArg3, TArg4, TService>(arg1, arg2, arg3, arg4, serviceName);
+        }
+    }
+
+    /// <summary>
+    /// Contains a set of extension method that represents
+    /// a compability layer for reflection methods.
+    /// </summary>
+    internal static class TypeHelper
+    {
+#if NET45 || NET46
+
+        /// <summary>
+        /// Gets the method represented by the delegate.
+        /// </summary>
+        /// <param name="del">The target <see cref="Delegate"/>.</param>
+        /// <returns>The method represented by the delegate.</returns>
+        public static MethodInfo GetMethodInfo(this Delegate del)
+        {
+            return del.Method;
+        }
+
+        /// <summary>
+        /// Gets a <see cref="MethodInfo"/> that represents a private method on the target <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <param name="name">The name of the private method.</param>
+        /// <returns>A <see cref="MethodInfo"/> that represents a private method on the target <paramref name="type"/>.</returns>
+        public static MethodInfo GetPrivateMethod(this Type type, string name)
+        {
+            return type.GetTypeInfo().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="MethodInfo"/> that represents a private static method on the target <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <param name="name">The name of the private method.</param>
+        /// <returns>A <see cref="MethodInfo"/> that represents a private static method on the target <paramref name="type"/>.</returns>
+        public static MethodInfo GetPrivateStaticMethod(this Type type, string name)
+        {
+            return type.GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
+        /// <summary>
+        /// Gets an array of <see cref="MethodInfo"/> objects that represents private static methods on the target <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>An array of <see cref="MethodInfo"/> objects that represents private static methods on the target <paramref name="type"/>.</returns>
+        public static MethodInfo[] GetPrivateStaticMethods(this Type type)
+        {
+            return type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
+        /// <summary>
+        /// Gets the custom attributes for this <paramref name="assembly"/>.
+        /// </summary>
+        /// <param name="assembly">The target <see cref="Assembly"/>.</param>
+        /// <param name="attributeType">The type of <see cref="Attribute"/> objects to return.</param>
+        /// <returns>The custom attributes for this <paramref name="assembly"/>.</returns>
+        public static IEnumerable<Attribute> GetCustomAttributes(this Assembly assembly, Type attributeType)
+        {
+            return assembly.GetCustomAttributes(attributeType, false).Cast<Attribute>();
+        }
+#endif
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="IEnumerable{T}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="IEnumerable{T}"/>; otherwise, false.</returns>
+        public static bool IsEnumerableOfT(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="IList{T}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="IList{T}"/>; otherwise, false.</returns>
+        public static bool IsListOfT(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IList<>);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="ICollection{T}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="ICollection{T}"/>; otherwise, false.</returns>
+        public static bool IsCollectionOfT(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(ICollection<>);
+        }
+#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || PCL_111 || NET46
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="IReadOnlyCollection{T}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="IReadOnlyCollection{T}"/>; otherwise, false.</returns>
+        public static bool IsReadOnlyCollectionOfT(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="IReadOnlyList{T}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="IReadOnlyList{T}"/>; otherwise, false.</returns>
+        public static bool IsReadOnlyListOfT(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IReadOnlyList<>);
+        }
+#endif
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="Lazy{T}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="Lazy{T}"/>; otherwise, false.</returns>
+        public static bool IsLazy(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Lazy<>);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="Func{T1}"/> type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="Func{T1}"/>; otherwise, false.</returns>
+        public static bool IsFunc(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Func<>);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="Func{T1, TResult}"/>,
+        /// <see cref="Func{T1,T2,TResult}"/>, <see cref="Func{T1,T2,T3, TResult}"/> or an <see cref="Func{T1,T2,T3,T4 ,TResult}"/>.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is an <see cref="Func{T1, TResult}"/>, <see cref="Func{T1,T2,TResult}"/>, <see cref="Func{T1,T2,T3, TResult}"/> or an <see cref="Func{T1,T2,T3,T4 ,TResult}"/>; otherwise, false.</returns>
+        public static bool IsFuncWithParameters(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            if (!typeInfo.IsGenericType)
+            {
+                return false;
+            }
+
+            Type genericTypeDefinition = typeInfo.GetGenericTypeDefinition();
+
+            return genericTypeDefinition == typeof(Func<,>) || genericTypeDefinition == typeof(Func<,,>)
+                || genericTypeDefinition == typeof(Func<,,,>) || genericTypeDefinition == typeof(Func<,,,,>);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Type"/> is a closed generic type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>true if the <see cref="Type"/> is a closed generic type; otherwise, false.</returns>
+        public static bool IsClosedGeneric(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericType && !typeInfo.IsGenericTypeDefinition;
+        }
+
+        /// <summary>
+        /// Returns the <see cref="Type"/> of the object encompassed or referred to by the current array, pointer or reference type.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>The <see cref="Type"/> of the object encompassed or referred to by the current array, pointer, or reference type,
+        /// or null if the current Type is not an array or a pointer, or is not passed by reference,
+        /// or represents a generic type or a type parameter in the definition of a generic type or generic method.</returns>
+        public static Type GetElementType(Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            var genericTypeArguments = typeInfo.GenericTypeArguments;
+            if (typeInfo.IsGenericType && genericTypeArguments.Length == 1)
+            {
+                return genericTypeArguments[0];
+            }
+
+            return type.GetElementType();
+        }
+    }
+
+    internal static class LazyTypeExtensions
+    {
+        private static readonly ThreadSafeDictionary<Type, ConstructorInfo> Constructors = new ThreadSafeDictionary<Type, ConstructorInfo>();
+
+        public static ConstructorInfo GetLazyConstructor(this Type type)
+        {
+            return Constructors.GetOrAdd(type, GetConstructor);
+        }
+
+        private static ConstructorInfo GetConstructor(Type type)
+        {
+            Type closedGenericLazyType = typeof(Lazy<>).MakeGenericType(type);
+            return closedGenericLazyType.GetTypeInfo().DeclaredConstructors.Where(c => c.GetParameters().Length == 1 && c.GetParameters()[0].ParameterType == type.GetFuncType()).Single();
+        }
+    }
+
+    internal static class EnumerableTypeExtensions
+    {
+        private static readonly ThreadSafeDictionary<Type, Type> EnumerableTypes = new ThreadSafeDictionary<Type, Type>();
+
+        public static Type GetEnumerableType(this Type returnType)
+        {
+            return EnumerableTypes.GetOrAdd(returnType, CreateEnumerableType);
+        }
+
+        private static Type CreateEnumerableType(Type type)
+        {
+            return typeof(IEnumerable<>).MakeGenericType(type);
+        }
+    }
+
+    internal static class FuncTypeExtensions
+    {
+        private static readonly ThreadSafeDictionary<Type, Type> FuncTypes = new ThreadSafeDictionary<Type, Type>();
+
+        public static Type GetFuncType(this Type returnType)
+        {
+            return FuncTypes.GetOrAdd(returnType, CreateFuncType);
+        }
+
+        private static Type CreateFuncType(Type type)
+        {
+            return typeof(Func<>).MakeGenericType(type);
         }
     }
 }

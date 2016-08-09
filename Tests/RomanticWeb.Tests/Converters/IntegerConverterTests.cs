@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
@@ -45,18 +46,16 @@ namespace RomanticWeb.Tests.Converters
 
         [TestCase("2e10")]
         [TestCase("2.3")]
-        [ExpectedException]
         public void Should_not_convert_decimal_numbers(string value)
         {
-            Converter.Convert(Node.ForLiteral(value), new Mock<IEntityContext>().Object);
+            Converter.Invoking(instance => instance.Convert(Node.ForLiteral(value), new Mock<IEntityContext>().Object)).ShouldThrow<FormatException>();
         }
 
         [TestCase("some text")]
         [TestCase("2010-09-05")]
-        [ExpectedException]
         public void Should_not_convert_non_numbers(string literal)
         {
-            Converter.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object);
+            Converter.Invoking(instance => instance.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object)).ShouldThrow<FormatException>();
         }
     }
 }

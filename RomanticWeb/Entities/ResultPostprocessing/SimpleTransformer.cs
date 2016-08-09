@@ -29,20 +29,20 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         protected IResultAggregator Aggregator { get { return _aggregator; } }
 
         /// <summary>Converts <paramref name="nodes"/> and returns the aggregated the result.</summary>
-        public virtual object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, IEnumerable<Node> nodes)
+        public virtual object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, IEnumerable<INode> nodes)
         {
             var convertedValues = nodes.Select(node => Transform(node, property, context));
             return _aggregator.Aggregate(convertedValues);
         }
 
         /// <summary>Converts the given <paramref name="value"/> to <see cref="Node"/>s.</summary>
-        public virtual IEnumerable<Node> ToNodes(object value, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
+        public virtual IEnumerable<INode> ToNodes(object value, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
         {
             return new[] { property.Converter.ConvertBack(value, context) };
         }
 
         /// <inheritdoc />
-        protected virtual object Transform(Node node, IPropertyMapping property, IEntityContext context)
+        protected virtual object Transform(INode node, IPropertyMapping property, IEntityContext context)
         {
             object result = property.Converter.Convert(node, context);
             if (result != null)
@@ -59,7 +59,7 @@ namespace RomanticWeb.Entities.ResultPostprocessing
                     itemType = property.ReturnType.FindItemType();
                 }
 
-                if (((!isEnumerable) || (property.ReturnType != itemType)) && (!itemType.IsAssignableFrom(result.GetType())))
+                if (((!isEnumerable) || (property.ReturnType != itemType)) && (!itemType.IsInstanceOfType(result)))
                 {
                     if (itemType == typeof(string))
                     {
@@ -77,24 +77,18 @@ namespace RomanticWeb.Entities.ResultPostprocessing
 
         private string TransformToString(Type itemType, object result)
         {
-            if (typeof(IEntity).IsAssignableFrom(result.GetType()))
+            if (result is IEntity)
             {
-                result = ((IEntity)result).Id.ToString(true);
-            }
-            else
-            {
-                TypeConverter typeConverter = TypeDescriptor.GetConverter(result.GetType());
-                if ((typeConverter != null) && (typeConverter.CanConvertTo(typeof(string))))
-                {
-                    result = typeConverter.ConvertToInvariantString(result);
-                }
-                else
-                {
-                    throw new InvalidOperationException(System.String.Format("Cannot transform node of type '{0}' to type of '{1}'.", result.GetType(), itemType));
-                }
+                return ((IEntity)result).Id.ToString(true);
             }
 
-            return (string)result;
+            TypeConverter typeConverter = TypeDescriptor.GetConverter(result.GetType());
+            if (typeConverter.CanConvertTo(typeof(string)))
+            {
+                typeConverter.ConvertToInvariantString(result);
+            }
+
+            throw new InvalidOperationException(System.String.Format("Cannot transform node of type '{0}' to type of '{1}'.", result.GetType(), itemType));
         }
     }
 }

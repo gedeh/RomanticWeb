@@ -20,7 +20,7 @@ namespace RomanticWeb.Ontologies
         public override string ToString()
         {
             string prefix = Ontology == null ? "_" : Ontology.Prefix;
-            return string.Format("Object property {0}:{1}", prefix, PropertyName);
+            return string.Format("Object property {0}:{1}", prefix, Name);
         }
 #pragma warning restore
     }

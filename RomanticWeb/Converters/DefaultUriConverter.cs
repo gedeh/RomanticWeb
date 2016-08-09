@@ -3,15 +3,11 @@ using RomanticWeb.Model;
 
 namespace RomanticWeb.Converters
 {
-    /// <summary>
-    /// Generic converter for any type of entity id
-    /// </summary>
+    /// <summary>Generic converter for any type of entity id.</summary>
     public class DefaultUriConverter : INodeConverter
     {
-        /// <summary>
-        /// Converts an uri node to URI
-        /// </summary>
-        public object Convert(Node objectNode, IEntityContext context)
+        /// <summary>Converts an uri node to URI.</summary>
+        public object Convert(INode objectNode, IEntityContext context)
         {
             if (objectNode.IsBlank)
             {
@@ -27,7 +23,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        public Node ConvertBack(object obj, IEntityContext context)
+        public INode ConvertBack(object obj, IEntityContext context)
         {
             return Node.ForUri(((Uri)obj));
         }

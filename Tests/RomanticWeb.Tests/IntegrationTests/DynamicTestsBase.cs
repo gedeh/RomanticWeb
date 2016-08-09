@@ -183,7 +183,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         }
 
         [Test]
-        [Ignore]
+        [Ignore("Nested lists are not yet considered.")]
         public void Should_allow_reading_nested_rdf_lists_as_collection_of_lists()
         {
             // given

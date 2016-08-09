@@ -5,19 +5,19 @@ using RomanticWeb.Entities;
 namespace RomanticWeb.Model
 {
     /// <summary>Represents a triple (subject, predicate, object).</summary>
-    public sealed class EntityQuad : Triple, IComparable, IComparable<EntityQuad>
+    public sealed class EntityQuad : Triple, IEntityQuad
     {
         private readonly int _hashCode;
-        private readonly Node _graph;
+        private readonly INode _graph;
         private readonly EntityId _entityId;
 
-        /// <summary>Creates a new instance of <see cref="EntityQuad"/> from given <see cref="Triple"/>.</summary>
-        public EntityQuad(EntityId entityId, Triple triple) : this(entityId, triple.Subject, triple.Predicate, triple.Object)
+        /// <summary>Creates a new instance of <see cref="EntityQuad"/> from given <see cref="ITriple"/>.</summary>
+        public EntityQuad(EntityId entityId, ITriple triple) : this(entityId, triple.Subject, triple.Predicate, triple.Object)
         {
         }
 
         /// <summary>Creates a new instance of <see cref="EntityQuad"/> in named graph.</summary>
-        public EntityQuad(EntityId entityId, Node s, Node p, Node o, [AllowNull] Node graph) : this(entityId, s, p, o)
+        public EntityQuad(EntityId entityId, INode s, INode p, INode o, [AllowNull] INode graph) : this(entityId, s, p, o)
         {
             if ((graph != null) && (!graph.IsUri) && (!graph.IsBlank))
             {
@@ -31,7 +31,7 @@ namespace RomanticWeb.Model
         }
 
         /// <summary>Creates a new instance of <see cref="EntityQuad"/> in default graph.</summary>
-        public EntityQuad(EntityId entityId, Node s, Node p, Node o) : base(s, p, o)
+        public EntityQuad(EntityId entityId, INode s, INode p, INode o) : base(s, p, o)
         {
             _entityId = entityId;
             _hashCode = ComputeHashCode();
@@ -39,7 +39,7 @@ namespace RomanticWeb.Model
 
         /// <summary>Gets the named graph node or null, if triple is in named graph.</summary>
         [AllowNull]
-        public Node Graph { get { return _graph; } }
+        public INode Graph { get { return _graph; } }
 
         /// <summary>Gets entity id, which defines this triple.</summary>
         public EntityId EntityId { get { return _entityId; } }
@@ -182,7 +182,7 @@ namespace RomanticWeb.Model
             return String.Format("{0} {1} {2} {3} . ", Subject.ToString(true), Predicate.ToString(true), Object.ToString(true), Graph.ToString(true));
         }
 
-        int IComparable<EntityQuad>.CompareTo(EntityQuad other)
+        int IComparable<IEntityQuad>.CompareTo(IEntityQuad other)
         {
             return ((IComparable)this).CompareTo(other);
         }

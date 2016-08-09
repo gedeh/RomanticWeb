@@ -10,7 +10,7 @@ namespace RomanticWeb.Converters
         private static readonly Regex UrnUuidRegex = new Regex(@"^urn:uuid:", RegexOptions.IgnoreCase);
 
         /// <inheritdoc />
-        public object Convert(Node objectNode, IEntityContext context)
+        public object Convert(INode objectNode, IEntityContext context)
         {
             if (objectNode.IsLiteral)
             {
@@ -30,7 +30,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        public Node ConvertBack(object value, IEntityContext context)
+        public INode ConvertBack(object value, IEntityContext context)
         {
             return Node.ForLiteral(value.ToString());
         }

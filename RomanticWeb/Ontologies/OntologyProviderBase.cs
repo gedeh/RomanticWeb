@@ -11,18 +11,18 @@ namespace RomanticWeb.Ontologies
         /// <summary>Default parameterles constructor.</summary>
         public OntologyProviderBase()
         {
-            Ontologies = new Ontology[0];
+            Ontologies = new IOntology[0];
         }
 
         /// <summary>Constructor with an enumeration of ontologies to be included</summary>
         /// <param name="ontologies"></param>
-        public OntologyProviderBase(IEnumerable<Ontology> ontologies)
+        public OntologyProviderBase(IEnumerable<IOntology> ontologies)
         {
             Ontologies = ontologies;
         }
 
         /// <summary>Get ontologies' metadata.</summary>
-        public virtual IEnumerable<Ontology> Ontologies { get; private set; }
+        public virtual IEnumerable<IOntology> Ontologies { get; private set; }
 
         /// <summary>Gets a URI from a QName.</summary>
         [return: AllowNull]

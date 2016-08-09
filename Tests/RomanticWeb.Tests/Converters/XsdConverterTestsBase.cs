@@ -68,7 +68,7 @@ namespace RomanticWeb.Tests.Converters
             _converter = new TConverter();
         }
 
-        [TestCaseSource("DatatypesSupportedByConverter")]
+        [TestCaseSource(typeof(XsdConverterTestsBase<>), "DatatypesSupportedByConverter")]
         public void Should_support_converting_supported_xsd_types(Uri type, Type netType)
         {
             Converter.CanConvert(Node.ForLiteral(string.Empty, type)).DatatypeMatches.Should().Be(MatchResult.ExactMatch);

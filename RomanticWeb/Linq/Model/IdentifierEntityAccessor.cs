@@ -39,11 +39,8 @@ namespace RomanticWeb.Linq.Model
         #endregion
 
         #region Properties
-        /// <summary>Gets a strong entity accessor.</summary>
-        internal StrongEntityAccessor EntityAccessor { get { return _entityAccessor; } }
-
         /// <summary>Gets an owning query.</summary>
-        internal override Query OwnerQuery
+        public override IQuery OwnerQuery
         {
             get
             {
@@ -56,6 +53,9 @@ namespace RomanticWeb.Linq.Model
                 _entityAccessor.OwnerQuery = value;
             }
         }
+
+        /// <summary>Gets a strong entity accessor.</summary>
+        internal StrongEntityAccessor EntityAccessor { get { return _entityAccessor; } }
         #endregion
 
         #region Public methods

@@ -4,18 +4,18 @@ using NullGuard;
 namespace RomanticWeb.Model
 {
     /// <summary>Reprents a triple, which does nto belong to a graph.</summary>
-    public class Triple : IComparable, IComparable<Triple>
+    public class Triple : ITriple
     {
         private readonly int _hashCode;
-        private readonly Node _object;
-        private readonly Node _subject;
-        private readonly Node _predicate;
+        private readonly INode _object;
+        private readonly INode _subject;
+        private readonly INode _predicate;
 
         /// <summary>Creates a new triple. </summary>
         /// <param name="s">Subject.</param>
         /// <param name="p">Predicate.</param>
         /// <param name="o">Object.</param>
-        public Triple(Node s, Node p, Node o)
+        public Triple(INode s, INode p, INode o)
         {
             if ((!p.IsUri) && (!p.IsBlank))
             {
@@ -35,13 +35,13 @@ namespace RomanticWeb.Model
         }
 
         /// <summary>Gets the triple's object.</summary>
-        public Node Object { get { return _object; } }
+        public INode Object { get { return _object; } }
 
         /// <summary>Gets the triple's predicate.</summary>
-        public Node Predicate { get { return _predicate; } }
+        public INode Predicate { get { return _predicate; } }
 
         /// <summary>Gets the triple's subject.</summary>
-        public Node Subject { get { return _subject; } }
+        public INode Subject { get { return _subject; } }
 
 #pragma warning disable 1591
         public static bool operator ==([AllowNull] Triple left, [AllowNull] Triple right)
@@ -67,7 +67,7 @@ namespace RomanticWeb.Model
             return _hashCode;
         }
 
-        int IComparable<Triple>.CompareTo(Triple other)
+        int IComparable<ITriple>.CompareTo(ITriple other)
         {
             return ((IComparable)this).CompareTo(other);
         }

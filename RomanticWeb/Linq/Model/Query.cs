@@ -8,89 +8,65 @@ using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
 {
-    /// <summary>Specifies target SPARQL query form.</summary>
-    public enum QueryForms
-    {
-        /// <summary>Selects expressions in to the resulting data set.</summary>
-        Select,
-
-        /// <summary>Asks for existance of a given entities.</summary>
-        Ask,
-
-        /// <summary>Returns triples describing given entities.</summary>
-        Describe,
-
-        /// <summary>Returns triples that can be used to construct another triple store.</summary>
-        Construct
-    }
-
     /// <summary>Represents a whole query.</summary>
     [QueryComponentNavigator(typeof(QueryNavigator))]
-    public class Query : QueryElement, IExpression
+    public class Query : QueryElement, IExpression, IQuery
     {
         #region Fieds
-        private IList<Prefix> _prefixes;
-        private IList<ISelectableQueryComponent> _select;
-        private IList<QueryElement> _elements;
-        private IVariableNamingStrategy _variableNamingStrategy;
-        private IVariableNamingConvention _variableNamingConvention;
+        private readonly IList<IPrefix> _prefixes;
+        private readonly IList<ISelectableQueryComponent> _select;
+        private readonly IList<IQueryElement> _elements;
+        private readonly IVariableNamingStrategy _variableNamingStrategy;
+        private readonly IVariableNamingConvention _variableNamingConvention;
+        private readonly IDictionary<IExpression, bool> _orderBy = new Dictionary<IExpression, bool>();
         private Identifier _subject;
         private QueryForms _queryForm;
         private int _offset = -1;
         private int _limit = -1;
-        private IDictionary<IExpression, bool> _orderBy = new Dictionary<IExpression, bool>();
         #endregion
 
         #region Constructors
-        /// <summary>Default parameterles constructor</summary>
-        internal Query()
-            : this(null)
+        /// <summary>Constructor with subject and variable naming strategy passed.</summary>
+        /// <param name="variableNamingStrategy">Varialbe naming strategy.</param>
+        /// <param name="variableNamingConvention">Variable naming convention.</param>
+        internal Query(IVariableNamingStrategy variableNamingStrategy, IVariableNamingConvention variableNamingConvention)
         {
-        }
-
-        /// <summary>Constrctor with subject passed.</summary>
-        /// <param name="subject">Subject of this query.</param>
-        internal Query(Identifier subject)
-            : base()
-        {
+            _variableNamingStrategy = variableNamingStrategy;
+            _variableNamingConvention = variableNamingConvention;
             _queryForm = QueryForms.Select;
-            ObservableCollection<Prefix> prefixes = new ObservableCollection<Prefix>();
+            ObservableCollection<IPrefix> prefixes = new ObservableCollection<IPrefix>();
             prefixes.CollectionChanged += OnCollectionChanged;
             _prefixes = prefixes;
             ObservableCollection<ISelectableQueryComponent> select = new ObservableCollection<ISelectableQueryComponent>();
             select.CollectionChanged += OnCollectionChanged;
             _select = select;
-            ObservableCollection<QueryElement> elements = new ObservableCollection<QueryElement>();
+            ObservableCollection<IQueryElement> elements = new ObservableCollection<IQueryElement>();
             elements.CollectionChanged += OnCollectionChanged;
             _elements = elements;
-            _variableNamingStrategy = new UniqueVariableNamingStrategy(this);
-            _variableNamingConvention = new CamelCaseVariableNamingConvention();
-            if ((_subject = subject) != null)
-            {
-                _subject.OwnerQuery = this;
-            }
         }
 
         /// <summary>Constructor with subject and variable naming strategy passed.</summary>
         /// <param name="subject">Subject of this query.</param>
         /// <param name="variableNamingStrategy">Varialbe naming strategy.</param>
-        internal Query(Identifier subject, IVariableNamingStrategy variableNamingStrategy)
-            : this(subject)
+        /// <param name="variableNamingConvention">Variable naming convention.</param>
+        internal Query(Identifier subject, IVariableNamingStrategy variableNamingStrategy, IVariableNamingConvention variableNamingConvention) : this(variableNamingStrategy, variableNamingConvention)
         {
-            _variableNamingStrategy = variableNamingStrategy;
-            _variableNamingConvention = new CamelCaseVariableNamingConvention();
+            if ((_subject = subject) != null)
+            {
+                _subject.OwnerQuery = this;
+            }
         }
         #endregion
 
         #region Properties
         /// <summary>Gets an enumeration of all prefixes.</summary>
-        public IList<Prefix> Prefixes { get { return _prefixes; } }
+        public IList<IPrefix> Prefixes { get { return _prefixes; } }
 
         /// <summary>Gets an enumeration of all selected expressions.</summary>
         public IList<ISelectableQueryComponent> Select { get { return _select; } }
 
         /// <summary>Gets an enumeration of all query elements.</summary>
-        public IList<QueryElement> Elements { get { return _elements; } }
+        public IList<IQueryElement> Elements { get { return _elements; } }
 
         /// <summary>Gets a value indicating if the given query is actually a sub query.</summary>
         public bool IsSubQuery { get { return (OwnerQuery != null); } }
@@ -109,7 +85,7 @@ namespace RomanticWeb.Linq.Model
         public IDictionary<IExpression, bool> OrderBy { get { return _orderBy; } }
 
         /// <summary>Gets an owning query.</summary>
-        internal override Query OwnerQuery
+        public override IQuery OwnerQuery
         {
             [return: AllowNull]
             get
@@ -154,7 +130,7 @@ namespace RomanticWeb.Linq.Model
         /// <returns>Query that can act as a sub query for this instance.</returns>
         public Query CreateSubQuery(Identifier subject)
         {
-            Query result = new Query(subject, _variableNamingStrategy);
+            Query result = new Query(subject, _variableNamingStrategy, _variableNamingConvention);
             result.OwnerQuery = this;
             return result;
         }
@@ -164,7 +140,7 @@ namespace RomanticWeb.Linq.Model
         /// <returns>Variable name with unique name.</returns>
         public string CreateVariableName(string identifier)
         {
-            return _variableNamingStrategy.GetNameForIdentifier(CreateIdentifier(identifier));
+            return _variableNamingStrategy.GetNameForIdentifier(this, CreateIdentifier(identifier));
         }
 
         /// <summary>Retrieves an identifier from a passed variable name.</summary>

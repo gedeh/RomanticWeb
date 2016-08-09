@@ -17,7 +17,7 @@ namespace RomanticWeb.Tests
         private const string Uri = "urn:test:identity";
         private Entity _entity;
         private Mock<INodeConverter> _nodeProcessor;
-        private Ontology _ontology;
+        private IOntology _ontology;
         private Mock<IEntityStore> _store;
 
         [TestFixtureSetUp]

@@ -10,7 +10,7 @@ namespace RomanticWeb.Converters
     public class StringConverter : LiteralNodeConverter
     {
         /// <inheritdoc/>
-        public override Node ConvertBack(object value, IEntityContext context)
+        public override INode ConvertBack(object value, IEntityContext context)
         {
             return (context.CurrentCulture.Equals(CultureInfo.InvariantCulture) ? 
                 Node.ForLiteral(value.ToString(), Xsd.String) : 
@@ -18,7 +18,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc/>
-        public override LiteralConversionMatch CanConvert(Node literalNode)
+        public override LiteralConversionMatch CanConvert(INode literalNode)
         {
             var literalConversionMatch = new LiteralConversionMatch { LiteralFormatMatches = MatchResult.DontCare };
             if ((literalNode.IsLiteral) && ((literalNode.DataType == null) || (AbsoluteUriComparer.Default.Compare(literalNode.DataType, Xsd.String) == 0)))
@@ -37,7 +37,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc/>
-        protected override object ConvertInternal(Node objectNode)
+        protected override object ConvertInternal(INode objectNode)
         {
             if (!objectNode.IsLiteral)
             {

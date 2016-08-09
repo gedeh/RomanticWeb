@@ -17,9 +17,7 @@ namespace RomanticWeb.Ontologies
         private readonly IServiceContainer _container;
         private readonly ContentTypeResolver _contentTypeResolver;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OntologyFactory"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="OntologyFactory"/> class.</summary>
         public OntologyFactory()
         {
             _container = new ServiceContainer();
@@ -32,7 +30,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="path">File path containing a serialized ontology data.</param>
         /// <remarks>This method assumes that path can be converted to an URI, thus it is possible to pass both local file system and remote files.</remarks>
         /// <returns>Ontology beeing an object representation of given data.</returns>
-        public Ontology Create(string path)
+        public IOntology Create(string path)
         {
             return Create(new Uri(path), null);
         }
@@ -42,7 +40,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="contentType">Explicitly passed content type of the data stored in the given stream.</param>
         /// <remarks>This method assumes that path can be converted to an URI, thus it is possible to pass both local file system and remote files.</remarks>
         /// <returns>Ontology beeing an object representation of given data.</returns>
-        public Ontology Create(string path, string contentType)
+        public IOntology Create(string path, string contentType)
         {
             return Create(new Uri(path), null);
         }
@@ -50,7 +48,7 @@ namespace RomanticWeb.Ontologies
         /// <summary>Creates an ontology from given stream.</summary>
         /// <param name="fileStream">Stream containing a serialized ontology data.</param>
         /// <returns>Ontology beeing an object representation of given data.</returns>
-        public Ontology Create(Stream fileStream)
+        public IOntology Create(Stream fileStream)
         {
             string contentType = _contentTypeResolver.Resolve(null, new StreamWebResponse(fileStream));
             return Create(fileStream, contentType);
@@ -60,7 +58,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="fileStream">Stream containing a serialized ontology data.</param>
         /// <param name="contentType">Explicitly passed content type of the data stored in the given stream.</param>
         /// <returns>Ontology beeing an object representation of given data.</returns>
-        public Ontology Create(Stream fileStream, string contentType)
+        public IOntology Create(Stream fileStream, string contentType)
         {
             IOntologyLoader ontologyFactory = GetOntologyFactory(contentType);
             if (ontologyFactory == null)
@@ -68,12 +66,12 @@ namespace RomanticWeb.Ontologies
                 throw new NotSupportedException(System.String.Format("MIME type of '{0}' is not supported.", contentType));
             }
 
-            Ontology result = ontologyFactory.Create(fileStream);
+            IOntology result = ontologyFactory.Create(fileStream);
             fileStream.Close();
             return result;
         }
 
-        private Ontology Create(Uri uriPath, [AllowNull] string contentType)
+        private IOntology Create(Uri uriPath, [AllowNull] string contentType)
         {
             WebRequest request = WebRequest.Create(uriPath);
             WebResponse response = request.GetResponse();
@@ -88,12 +86,12 @@ namespace RomanticWeb.Ontologies
 
         private IOntologyLoader GetOntologyFactory(string contentType)
         {
-            IOntologyLoader result = null;
+            IOntologyLoader result;
             lock (_ontologyFactoryMimeTypeMappingCache)
             {
                 if (!_ontologyFactoryMimeTypeMappingCache.TryGetValue(contentType, out result))
                 {
-                    _ontologyFactoryMimeTypeMappingCache[contentType] = result = _container.GetAllInstances<IOntologyLoader>().Where(item => item.Accepts.Any(mimeType => mimeType == contentType)).FirstOrDefault();
+                    _ontologyFactoryMimeTypeMappingCache[contentType] = result = _container.GetAllInstances<IOntologyLoader>().FirstOrDefault(item => item.Accepts.Any(mimeType => mimeType == contentType));
                 }
             }
 

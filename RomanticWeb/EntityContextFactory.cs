@@ -37,7 +37,7 @@ namespace RomanticWeb
         {
             _trackedScopes = new Dictionary<Scope, Scope>();
             _container = container;
-            _container.RegisterAssembly("RomanticWeb.dll");
+            _container.RegisterAssembly(this.GetType().Assembly);
             _container.Register<IEntityContextFactory>(f => this);
 
             WithMappings(DefaultMappings);

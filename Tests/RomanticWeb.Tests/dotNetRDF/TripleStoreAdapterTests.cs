@@ -79,12 +79,11 @@ namespace RomanticWeb.Tests.DotNetRDF
 
         public class TestUpdate : DatasetChange
         {
-            public TestUpdate()
-                : base("urn:test:entity", "urn:test:graph")
+            public TestUpdate() : base("urn:test:entity", "urn:test:graph")
             {
             }
 
-            public override DatasetChange MergeWith(DatasetChange other)
+            public override IDatasetChange MergeWith(IDatasetChange other)
             {
                 throw new NotImplementedException();
             }

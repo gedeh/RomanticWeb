@@ -5,9 +5,9 @@ namespace RomanticWeb.JsonLd
 {
     public interface IJsonLdProcessor
     {
-        string FromRdf(IEnumerable<EntityQuad> dataset, bool userRdfType = false, bool useNativeTypes = false);
+        string FromRdf(IEnumerable<IEntityQuad> dataset, bool userRdfType = false, bool useNativeTypes = false);
 
-        IEnumerable<EntityQuad> ToRdf(string json, JsonLdOptions options, bool produceGeneralizedRdf = false);
+        IEnumerable<IEntityQuad> ToRdf(string json, JsonLdOptions options, bool produceGeneralizedRdf = false);
 
         string Compact(string json, string jsonLdContext);
 

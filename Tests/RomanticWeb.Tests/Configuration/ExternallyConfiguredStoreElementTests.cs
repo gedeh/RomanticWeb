@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.DotNetRDF.Configuration;
@@ -56,20 +57,20 @@ namespace RomanticWeb.Tests.Configuration
             _loader.Verify(l => l.LoadObject<ITripleStore>(new Uri("urn:store:uri")));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Should_throw_when_uri_and_bnode_not_set()
         {
             // given
             // nothing set
 
             // when
-            _element.CreateTripleStore();
+            _element.Invoking(instance => instance.CreateTripleStore()).ShouldThrow<ConfigurationErrorsException>();
 
             // then
             _loader.Verify(l => l.LoadObject<ITripleStore>(new Uri("urn:store:uri")));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Should_throw_when_both_uri_and_bnode_are_set()
         {
             // given
@@ -77,7 +78,7 @@ namespace RomanticWeb.Tests.Configuration
             _element.BlankNodeIdentifier = "store";
 
             // when
-            _element.CreateTripleStore();
+            _element.Invoking(instance => instance.CreateTripleStore()).ShouldThrow<ConfigurationErrorsException>();
         }
     }
 }

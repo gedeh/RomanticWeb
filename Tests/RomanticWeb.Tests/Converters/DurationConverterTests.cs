@@ -33,7 +33,7 @@ namespace RomanticWeb.Tests.Converters
         }
 
         [Test]
-        [TestCaseSource("TimeSpanValues")]
+        [TestCaseSource(typeof(DurationConverterTests), "TimeSpanValues")]
         public void Should_convert_values(string literal, Duration expected)
         {
             var duration = Converter.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object);

@@ -18,7 +18,7 @@ namespace RomanticWeb.Tests.Stubs
             _includeFoaf = includeFoaf;
         }
 
-        public override IEnumerable<Ontology> Ontologies
+        public override IEnumerable<IOntology> Ontologies
         {
             get
             {

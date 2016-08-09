@@ -24,7 +24,7 @@ namespace RomanticWeb.Converters
         /// <summary>Converts date value to it's string representation.</summary>
         /// <param name="value">The date-time value.</param>
         /// <param name="context">Owning entity context.</param>
-        public override Node ConvertBack(object value, IEntityContext context)
+        public override INode ConvertBack(object value, IEntityContext context)
         {
             // todo: xsd:Time and xsd:Date
             return Node.ForLiteral(XmlConvert.ToString((DateTime)value, XmlDateTimeSerializationMode.RoundtripKind), Xsd.DateTime);
@@ -46,7 +46,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        protected override object ConvertInternal(Node literalNode)
+        protected override object ConvertInternal(INode literalNode)
         {
             var dateTime = XmlConvert.ToDateTime(literalNode.Literal, XmlDateTimeSerializationMode.RoundtripKind);
 

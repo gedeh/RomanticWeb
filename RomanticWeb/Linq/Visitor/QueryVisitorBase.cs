@@ -33,7 +33,7 @@ namespace RomanticWeb.Linq.Visitor
 
         /// <summary>Visit a query.</summary>
         /// <param name="query">Query to be visited.</param>
-        public abstract void VisitQuery(Query query);
+        public abstract void VisitQuery(IQuery query);
         #endregion
 
         #region Non-public methods
@@ -75,7 +75,7 @@ namespace RomanticWeb.Linq.Visitor
 
         /// <summary>Visit a prefix.</summary>
         /// <param name="prefix">Prefix to be visited.</param>
-        protected abstract void VisitPrefix(Prefix prefix);
+        protected abstract void VisitPrefix(IPrefix prefix);
 
         /// <summary>Visit a identifier.</summary>
         /// <param name="identifier">Identifier to be visited.</param>

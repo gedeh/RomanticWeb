@@ -14,11 +14,13 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <GitVersionOnlyMajorAndMinorInAssemblyVersion>true</GitVersionOnlyMajorAndMinorInAssemblyVersion>
     <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +45,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\RomanticWeb.Contracts\RomanticWeb.Contracts.csproj">
+      <Project>{17315f2e-393a-422f-80ba-575794350285}</Project>
+      <Name>RomanticWeb.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RomanticWeb\RomanticWeb.csproj">
       <Project>{0EE621E3-4A27-44B5-AEA9-04B43E730D46}</Project>
       <Name>RomanticWeb</Name>
@@ -97,8 +103,8 @@
     <EmbeddedResource Include="Queries\InsertBlankEntityData.ru" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Anotar.NLog">
-      <HintPath>..\packages\Anotar.NLog.Fody.2.8.2.0\Lib\portable-net4+sl4+wp7+windows8\Anotar.NLog.dll</HintPath>
+    <Reference Include="Anotar.NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=9d5b24f0733c26f7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Anotar.NLog.Fody.3.1.0\lib\Anotar.NLog.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="dotNetRDF, Version=1.0.3.0, Culture=neutral, PublicKeyToken=6055ffe4c97cc780, processorArchitecture=MSIL">
@@ -116,31 +122,33 @@
       <HintPath>..\packages\ImpromptuInterface.6.2.2\lib\net40\ImpromptuInterface.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.7\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="NullGuard">
-      <HintPath>..\packages\NullGuard.Fody.1.2.0.0\Lib\portable-net4+sl4+wp7+win8+MonoAndroid16+MonoTouch40\NullGuard.dll</HintPath>
+    <Reference Include="NullGuard, Version=1.4.6.0, Culture=neutral, PublicKeyToken=1958ac8092168428, processorArchitecture=MSIL">
+      <HintPath>..\packages\NullGuard.Fody.1.4.6\lib\dotnet\NullGuard.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="OpenLink.Data.Virtuoso">
       <HintPath>..\packages\dotNetRDF.Data.Virtuoso.1.0.3\lib\net40\OpenLink.Data.Virtuoso.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Linq, Version=1.15.13.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Remotion.Linq.1.15.13.0\lib\portable-net45+wp80+win\Remotion.Linq.dll</HintPath>
+    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.2.1.1\lib\net45\Remotion.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Resourcer">
-      <HintPath>..\packages\Resourcer.Fody.1.2.0.0\Lib\portable-net4+sl4+wp7+win8+MonoAndroid16+MonoTouch40\Resourcer.dll</HintPath>
+    <Reference Include="Resourcer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Resourcer.Fody.1.4.2\Lib\portable-net45+netcore45+wpa81+wp8\Resourcer.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml" />
     <Reference Include="VDS.Common">
@@ -153,17 +161,19 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  <Import Project="..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" />
-  <Import Project="..\packages\Fody.1.24.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.24.0\build\Fody.targets')" />
-  <Import Project="..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets" Condition="Exists('..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets'))" />
-    <Error Condition="!Exists('..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets'))" />
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets'))" />
+    <Error Condition="!Exists('..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets'))" />
+    <Error Condition="!Exists('..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets'))" />
   </Target>
-  <Import Project="..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets" Condition="Exists('..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
+  <Import Project="..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets" Condition="Exists('..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets')" />
+  <Import Project="..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />
+  <Import Project="..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets" Condition="Exists('..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets')" />
 </Project>

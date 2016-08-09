@@ -11,6 +11,6 @@ namespace RomanticWeb.Ontologies
         /// <summary>Creates an ontology from given stream.</summary>
         /// <param name="fileStream">Stream containing a serialized ontology data.</param>
         /// <returns>Ontology beeing an object representation of given data.</returns>
-        Ontology Create(Stream fileStream);
+        IOntology Create(Stream fileStream);
     }
 }

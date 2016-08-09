@@ -8,10 +8,10 @@ namespace RomanticWeb.Converters
     public abstract class LiteralNodeConverter : ILiteralNodeConverter
     {
         /// <summary>Check if a converter can convert the given RDF data type.</summary>
-        public abstract LiteralConversionMatch CanConvert(Node literalNode);
+        public abstract LiteralConversionMatch CanConvert(INode literalNode);
 
         /// <summary>Converts the given node to an object.</summary>
-        public object Convert(Node objectNode, IEntityContext context)
+        public object Convert(INode objectNode, IEntityContext context)
         {
             if (!objectNode.IsLiteral)
             {
@@ -23,12 +23,12 @@ namespace RomanticWeb.Converters
 
         /// <summary>Converts the given value to a literal node.</summary>
         [return: AllowNull]
-        public abstract Node ConvertBack(object value, IEntityContext context);
+        public abstract INode ConvertBack(object value, IEntityContext context);
 
         /// <inheritdoc />
         public abstract Uri CanConvertBack(Type type);
 
         /// <summary>Does the actual convertion.</summary>
-        protected abstract object ConvertInternal(Node literalNode);
+        protected abstract object ConvertInternal(INode literalNode);
     }
 }

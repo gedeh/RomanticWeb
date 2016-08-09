@@ -87,7 +87,7 @@ namespace RomanticWeb.Fody
             }
         }
 
-        public TypeReference EntityTypeRef { get { return ModuleDefinition.Import(_references.Orm.FindType("IEntity")); } }
+        public TypeReference EntityTypeRef { get { return ModuleDefinition.Import(_references.Contracts.FindType("IEntity")); } }
 
         public TypeReference DictionaryTypeRef { get { return ModuleDefinition.Import(typeof(IDictionary<,>)); } }
 

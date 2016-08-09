@@ -74,7 +74,7 @@ namespace RomanticWeb.Ontologies
             { "application/owl+xml", "owl" }
         };
 
-        private IList<Ontology> _ontologies;
+        private IList<IOntology> _ontologies;
         private IList<BuiltInOntologies> _includedOntologies;
         private OntologyFactory _ontologyFactory;
 
@@ -82,7 +82,7 @@ namespace RomanticWeb.Ontologies
         public DefaultOntologiesProvider()
         {
             _ontologyFactory = new OntologyFactory();
-            _ontologies = new List<Ontology>();
+            _ontologies = new List<IOntology>();
             _includedOntologies = new List<BuiltInOntologies>();
             Include(BuiltInOntologies.RDF |
                 BuiltInOntologies.RDFS |
@@ -104,14 +104,13 @@ namespace RomanticWeb.Ontologies
 
         /// <summary>Creates a default ontology provider with given built in ontologies initialized.</summary>
         /// <param name="ontologies">Ontologies to be included int this instance.</param>
-        public DefaultOntologiesProvider(BuiltInOntologies ontologies)
-            : this()
+        public DefaultOntologiesProvider(BuiltInOntologies ontologies) : this()
         {
             Include(ontologies);
         }
 
         /// <summary>Get ontologies' metadata.</summary>
-        public override IEnumerable<Ontology> Ontologies { get { return _ontologies; } }
+        public override IEnumerable<IOntology> Ontologies { get { return _ontologies; } }
 
         /// <summary>Adds another built in ontology into this provider instance.</summary>
         /// <param name="ontologies">Ontologiesto be included in this instance.</param>
@@ -131,7 +130,7 @@ namespace RomanticWeb.Ontologies
                         throw new System.IO.FileNotFoundException(System.String.Format("No embedded ontology stream found for '{0}'.", ontology.ToString()));
                     }
 
-                    Ontology ontologyInstance = _ontologyFactory.Create(
+                    IOntology ontologyInstance = _ontologyFactory.Create(
                         Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName),
                         "application/" + (resourceName.EndsWith(".owl") ? "owl" : "rdf") + "+xml");
                     if (ontologyInstance != null)
@@ -274,7 +273,7 @@ namespace RomanticWeb.Ontologies
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public IList<Ontology> Ontologies
+            public IList<IOntology> Ontologies
             {
                 get
                 {

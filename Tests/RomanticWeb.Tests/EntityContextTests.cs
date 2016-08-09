@@ -99,7 +99,7 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [TestCaseSource("TypedAndUntypedEntities")]
+        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
         public void Creating_new_Entity_should_create_an_instance_with_id(Lazy<IEntity> lazyEntity)
         {
             // when
@@ -112,14 +112,13 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Creating_new_Entity_should_throw_when_EntityId_is_null()
         {
-            _entityContext.Load<IEntity>(null);
+            _entityContext.Invoking(instance => instance.Load<IEntity>(null)).ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
-        [TestCaseSource("TypedAndUntypedEntities")]
+        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
         public void Creating_new_Entity_should_add_getters_for_known_ontology_namespaces(Lazy<IEntity> lazyEntity)
         {
             // given
@@ -134,15 +133,14 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [TestCaseSource("TypedAndUntypedEntities")]
-        [ExpectedException(typeof(RuntimeBinderException))]
+        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
         public void Creating_new_Entity_should_not_add_getters_for_any_other_ontology_namespaces(Lazy<IEntity> lazyEntity)
         {
             // given
             dynamic entity = lazyEntity.Value.AsDynamic();
 
             // when
-            var accessor = entity.dcterms;
+            Assert.Throws<RuntimeBinderException>(() => { var test = entity.dcterms; });
         }
 
         [Test]
@@ -160,7 +158,7 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [TestCaseSource("TypedAndUntypedEntities")]
+        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
         public void Accessing_entity_id_should_not_trigger_lazy_load(Lazy<IEntity> lazyEntity)
         {
             // given
@@ -370,12 +368,11 @@ namespace RomanticWeb.Tests
 
         private class TestChange : DatasetChange
         {
-            public TestChange(EntityId entity, EntityId graph)
-                : base(entity, graph)
+            public TestChange(EntityId entity, EntityId graph) : base(entity, graph)
             {
             }
 
-            public override DatasetChange MergeWith(DatasetChange other)
+            public override IDatasetChange MergeWith(IDatasetChange other)
             {
                 throw new NotImplementedException();
             }

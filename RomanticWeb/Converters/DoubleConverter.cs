@@ -21,7 +21,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc/>
-        public override Node ConvertBack(object value, IEntityContext context)
+        public override INode ConvertBack(object value, IEntityContext context)
         {
             if (value is float)
             {
@@ -47,7 +47,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc/>
-        protected override object ConvertInternal(Node literalNode)
+        protected override object ConvertInternal(INode literalNode)
         {
             if (literalNode.Literal == "+INF")
             {

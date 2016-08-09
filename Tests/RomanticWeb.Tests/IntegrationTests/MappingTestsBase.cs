@@ -439,7 +439,7 @@ namespace RomanticWeb.Tests.IntegrationTests
             karol.Friends.Add(gniewo);
 
             // then
-            Func<EntityQuad, bool> quadSearch = quad => (!quad.Subject.IsBlank) && (quad.Subject.Uri.AbsoluteUri == karolId.Uri.AbsoluteUri) && 
+            Func<IEntityQuad, bool> quadSearch = quad => (!quad.Subject.IsBlank) && (quad.Subject.Uri.AbsoluteUri == karolId.Uri.AbsoluteUri) && 
                     (quad.Predicate.Uri.AbsoluteUri == "http://xmlns.com/foaf/0.1/knows") && (quad.Object.IsBlank);
             Assert.That(karol.Friends, Has.Count.EqualTo(2));
             Assert.That(EntityContext.Store.Quads.Any(quadSearch));
@@ -630,13 +630,13 @@ namespace RomanticWeb.Tests.IntegrationTests
             Factory.WithNamedGraphSelector(new TestGraphSelector());
         }
 
-        private static bool GraphUpdateSettingRdfTypes(DatasetChange change)
+        private static bool GraphUpdateSettingRdfTypes(IDatasetChange change)
         {
             var update = change as GraphUpdate;
             return update != null
-                && update.AddedQuads.All(q => q.Predicate == Node.ForUri(Rdf.type))
-                && (update.AddedQuads.Any(q => q.Object == Node.ForUri(Foaf.Person))
-                || update.AddedQuads.Any(q => q.Object == Node.ForUri(Foaf.Agent)));
+                && update.AddedQuads.All(q => q.Predicate.Equals(Node.ForUri(Rdf.type)))
+                && (update.AddedQuads.Any(q => q.Object.Equals(Node.ForUri(Foaf.Person)))
+                || update.AddedQuads.Any(q => q.Object.Equals(Node.ForUri(Foaf.Agent))));
         }
 
         [Obsolete]

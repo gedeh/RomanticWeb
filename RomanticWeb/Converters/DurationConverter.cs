@@ -6,14 +6,14 @@ using RomanticWeb.Vocabularies;
 
 namespace RomanticWeb.Converters
 {
-    /// <summary>=Converts xsd:duration to <see cref="TimeSpan"/>.</summary>
+    /// <summary>Converts xsd:duration to <see cref="TimeSpan"/>.</summary>
     public class DurationConverter : XsdConverterBase
     {
         /// <summary>=Gets Uri of xsd:duration.</summary>
         protected override IEnumerable<Uri> SupportedDataTypes { get { yield return Xsd.Duration; } }
 
         /// <inheritdoc/>
-        public override Node ConvertBack(object value, IEntityContext context)
+        public override INode ConvertBack(object value, IEntityContext context)
         {
             return Node.ForLiteral(((Duration)value).ToString(), Xsd.Duration);
         }
@@ -26,7 +26,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc/>
-        protected override object ConvertInternal(Node literalNode)
+        protected override object ConvertInternal(INode literalNode)
         {
             return Duration.Parse(literalNode.Literal);
         }

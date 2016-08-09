@@ -139,7 +139,7 @@ namespace RomanticWeb.Entities
                 var propertyUri = Node.ForUri(property.Uri);
                 var resultTransformer = _resultTransformers.GetTransformer(property);
 
-                Func<IEnumerable<Node>> newValues = () => new Node[0];
+                Func<IEnumerable<INode>> newValues = () => new INode[0];
                 if (value != null)
                 {
                     newValues = () => resultTransformer.ToNodes(value, this, property, Context).ToArray();

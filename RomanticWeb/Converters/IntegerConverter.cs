@@ -33,7 +33,7 @@ namespace RomanticWeb.Converters
         protected override IEnumerable<Uri> SupportedDataTypes { get { return IntegerTypes.Values.SelectMany(t => t); } }
 
         /// <inheritdoc/>
-        public override Node ConvertBack(object value, IEntityContext context)
+        public override INode ConvertBack(object value, IEntityContext context)
         {
             return Node.ForLiteral(XmlConvert.ToString((dynamic)value), IntegerTypes[value.GetType()].First());
         }
@@ -52,7 +52,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <summary>Converts xsd:int (and subtypes) into <see cref="long"/>.</summary>
-        protected override object ConvertInternal(Node objectNode)
+        protected override object ConvertInternal(INode objectNode)
         {
             var returnType = typeof(Int64);
             if (objectNode.DataType != null)

@@ -136,7 +136,7 @@ namespace RomanticWeb.Linq
         /// <param name="index">Index of the where clause in the query model.</param>
         public override void VisitWhereClause(WhereClause whereClause, Remotion.Linq.QueryModel queryModel, int index)
         {
-            _visitor.VisitExpression(whereClause.Predicate);
+            _visitor.Visit(whereClause.Predicate);
             QueryComponent queryComponent = _visitor.RetrieveComponent();
             if (queryComponent != null)
             {
@@ -151,7 +151,7 @@ namespace RomanticWeb.Linq
         /// <param name="queryModel">Query model containing given from clause.</param>
         public override void VisitMainFromClause(MainFromClause fromClause, Remotion.Linq.QueryModel queryModel)
         {
-            _visitor.VisitExpression(fromClause.FromExpression);
+            _visitor.Visit(fromClause.FromExpression);
             _from = _visitor.RetrieveComponent();
             base.VisitMainFromClause(fromClause, queryModel);
         }
@@ -162,7 +162,7 @@ namespace RomanticWeb.Linq
         /// <param name="index">Index of the where clause in the query model.</param>
         public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
         {
-            _visitor.VisitExpression(fromClause.FromExpression);
+            _visitor.Visit(fromClause.FromExpression);
             _from = _visitor.RetrieveComponent();
             base.VisitAdditionalFromClause(fromClause, queryModel, index);
         }
@@ -193,9 +193,11 @@ namespace RomanticWeb.Linq
         /// <param name="queryModel">Query model containing given body clause.</param>
         protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, Remotion.Linq.QueryModel queryModel)
         {
-            foreach (var indexValuePair in bodyClauses.AsChangeResistantEnumerableWithIndex())
+            var index = 0;
+            foreach (var bodyClause in bodyClauses)
             {
-                indexValuePair.Value.Accept(this, queryModel, indexValuePair.Index);
+                bodyClause.Accept(this, queryModel, index);
+                index++;
             }
         }
 
@@ -240,7 +242,7 @@ namespace RomanticWeb.Linq
             if (expression is System.Linq.Expressions.MemberExpression)
             {
                 System.Linq.Expressions.MemberExpression memberExpression = (System.Linq.Expressions.MemberExpression)expression;
-                _visitor.VisitExpression(expression);
+                _visitor.Visit(expression);
                 QueryComponent component = _visitor.RetrieveComponent();
                 if (component is Identifier)
                 {

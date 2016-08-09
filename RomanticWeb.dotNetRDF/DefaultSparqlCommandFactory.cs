@@ -45,7 +45,7 @@ namespace RomanticWeb.DotNetRDF
             }
         }
 
-        public IEnumerable<SparqlUpdateCommand> CreateCommands(DatasetChange change)
+        public IEnumerable<SparqlUpdateCommand> CreateCommands(IDatasetChange change)
         {
             var changeType = change.GetType();
             if (_commandFactories.ContainsKey(changeType))
@@ -56,7 +56,7 @@ namespace RomanticWeb.DotNetRDF
             throw new ArgumentOutOfRangeException("change", string.Format("Unsupported dataset change type {0}", changeType.Name));
         }
 
-        private static string ConvertTriples(IEnumerable<EntityQuad> removedQuads, INodeFactory factory)
+        private static string ConvertTriples(IEnumerable<IEntityQuad> removedQuads, INodeFactory factory)
         {
             var formatter = new NTriplesFormatter();
             var quads = from quad in removedQuads

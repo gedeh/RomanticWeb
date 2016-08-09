@@ -6,36 +6,25 @@ using RomanticWeb.ComponentModel;
 
 namespace RomanticWeb.Converters
 {
-    /// <summary>
-    /// Default implementation of <see cref="IConverterCatalog"/>
-    /// </summary>
+    /// <summary>Default implementation of <see cref="IConverterCatalog"/>.</summary>
     internal sealed class ConverterCatalog : IConverterCatalog
     {
         private readonly GetConverterDelegate _createConverter;
         private readonly GetAllConvertersDelegate _getConverters;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConverterCatalog"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ConverterCatalog"/> class.</summary>
         public ConverterCatalog(GetConverterDelegate createConverter, GetAllConvertersDelegate getConverters)
         {
             _createConverter = createConverter;
             _getConverters = getConverters;
         }
 
-        internal ConverterCatalog()
-            : this(type => null, () => new INodeConverter[0])
+        internal ConverterCatalog() : this(type => null, () => new INodeConverter[0])
         {
         }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<INodeConverter> UriNodeConverters
-        {
-            get
-            {
-                return new ReadOnlyCollection<INodeConverter>(_getConverters().ToList());
-            }
-        }
+        public IReadOnlyCollection<INodeConverter> UriNodeConverters { get { return new ReadOnlyCollection<INodeConverter>(_getConverters().ToList()); } }
 
         /// <inheritdoc/>
         public IReadOnlyCollection<ILiteralNodeConverter> LiteralNodeConverters
@@ -49,12 +38,7 @@ namespace RomanticWeb.Converters
         /// <inheritdoc/>
         public INodeConverter GetConverter(Type converterType)
         {
-            if (converterType == typeof(FallbackNodeConverter))
-            {
-                return new FallbackNodeConverter(this);
-            }
-
-            return _createConverter(converterType);
+            return (converterType == typeof(FallbackNodeConverter) ? new FallbackNodeConverter(this) : _createConverter(converterType));
         }
     }
 }

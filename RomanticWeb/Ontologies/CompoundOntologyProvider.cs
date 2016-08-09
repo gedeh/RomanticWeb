@@ -29,7 +29,7 @@ namespace RomanticWeb.Ontologies
 
         #region Properties
         /// <summary>Get ontologies' metadata.</summary>
-        public override IEnumerable<Ontology> Ontologies { get { return _ontologyProviders.SelectMany(item => item.Ontologies).Distinct(); } }
+        public override IEnumerable<IOntology> Ontologies { get { return _ontologyProviders.SelectMany(item => item.Ontologies).Distinct(); } }
 
         /// <summary>Gets a list of ontology proiders stored by this provider.</summary>
         internal IList<IOntologyProvider> OntologyProviders { get { return _ontologyProviders; } }
@@ -71,7 +71,7 @@ namespace RomanticWeb.Ontologies
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public IList<Ontology> Ontologies
+            public IList<IOntology> Ontologies
             {
                 get
                 {

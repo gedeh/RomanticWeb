@@ -17,7 +17,7 @@ namespace RomanticWeb.JsonLd
         // TODO: Confirm that Object to RDF conversion algorithm misses an xsd:dateTime, xsd:date and xsd:time datatypes related steps.
         // TODO: Confirm that Node map generation algorithm should have a 'reference' instead of 'element' in the step 6.6.3.
         // TODO: Confirm that Unit test #044 should have 'http://example.org/set2' instead of second 'http://example.org/set1'.
-        public IEnumerable<EntityQuad> ToRdf(string json, JsonLdOptions options, bool produceGeneralizedRdf = false)
+        public IEnumerable<IEntityQuad> ToRdf(string json, JsonLdOptions options, bool produceGeneralizedRdf = false)
         {
             json = Expand(json, options);
             JObject nodeMap = new JObject();
@@ -26,7 +26,7 @@ namespace RomanticWeb.JsonLd
             int counterGraphs = 0;
             IDictionary<string, string> graphMap = new Dictionary<string, string>();
             GenerateNodeMap((JToken)JsonConvert.DeserializeObject(json), nodeMap, identifierMap, ref counter);
-            List<EntityQuad> dataset = new List<EntityQuad>();
+            List<IEntityQuad> dataset = new List<IEntityQuad>();
             foreach (JProperty _graph in nodeMap.Properties().OrderBy(graph => graph.Name == Default ? 1 : 0).ThenBy(graph => graph.Name))
             {
                 string graphName = _graph.Name;
@@ -36,7 +36,7 @@ namespace RomanticWeb.JsonLd
                     continue;
                 }
 
-                List<Triple> triples = new List<Triple>();
+                List<ITriple> triples = new List<ITriple>();
                 foreach (JProperty _subject in graph.Properties().OrderBy(subject => subject.Name))
                 {
                     string subject = _subject.Name;
@@ -76,13 +76,13 @@ namespace RomanticWeb.JsonLd
                                 if ((item is JObject) && (((JObject)item).IsPropertySet(List)))
                                 {
                                     IList<Triple> listTriples = new List<Triple>();
-                                    Node listHead = ConvertList((JArray)((JObject)item)[List], listTriples, identifierMap, ref counter, graphName, subject);
+                                    INode listHead = ConvertList((JArray)((JObject)item)[List], listTriples, identifierMap, ref counter, graphName, subject);
                                     triples.Add(new Triple(CreateNode(subject), Node.ForUri(new Uri(property)), listHead));
                                     triples.AddRange(listTriples);
                                 }
                                 else
                                 {
-                                    Node result = ConvertObject(item, ref counter, identifierMap);
+                                    INode result = ConvertObject(item, ref counter, identifierMap);
                                     if (result != null)
                                     {
                                         triples.Add(new Triple(CreateNode(subject, graphName), CreateNode(property), result));
@@ -93,7 +93,7 @@ namespace RomanticWeb.JsonLd
                     }
                 }
 
-                foreach (Triple triple in triples)
+                foreach (var triple in triples)
                 {
                     if (graphName == Default)
                     {
@@ -316,7 +316,7 @@ namespace RomanticWeb.JsonLd
             return result;
         }
 
-        private Node ConvertList(JArray list, IList<Triple> listTriples, IDictionary<string, string> identifierMap, ref int counter, string graphName, string parent)
+        private INode ConvertList(JArray list, IList<Triple> listTriples, IDictionary<string, string> identifierMap, ref int counter, string graphName, string parent)
         {
             if (list == null)
             {
@@ -334,11 +334,11 @@ namespace RomanticWeb.JsonLd
             {
                 string subject = bnodes[index];
                 JObject item = (JObject)list[index];
-                Node @object = ConvertObject(item, ref counter, identifierMap);
+                INode @object = ConvertObject(item, ref counter, identifierMap);
                 if (@object != null)
                 {
                     listTriples.Add(new Triple(CreateNode(subject, graphName), RdfFirst, @object));
-                    Node rest = (index + 1 < bnodes.Count ? CreateNode(bnodes[index + 1]) : RdfNil);
+                    INode rest = (index + 1 < bnodes.Count ? CreateNode(bnodes[index + 1]) : RdfNil);
                     listTriples.Add(new Triple(CreateNode(subject), RdfRest, rest));
                 }
             }
@@ -346,7 +346,7 @@ namespace RomanticWeb.JsonLd
             return (bnodes.Count > 0 ? CreateNode(bnodes[0]) : RdfNil);
         }
 
-        private Node ConvertObject(JToken item, ref int counter, IDictionary<string, string> identifierMap)
+        private INode ConvertObject(JToken item, ref int counter, IDictionary<string, string> identifierMap)
         {
             JObject @object = item as JObject;
             if ((IsNodeObject(item)) && (!IsBlankIri(@object.Property(Id).ValueAs<string>())) && (!Regex.IsMatch(@object.Property(Id).ValueAs<string>(), "[a-zA-Z0-9_]+://.+")))
@@ -358,76 +358,65 @@ namespace RomanticWeb.JsonLd
             {
                 return CreateNode(@object.Property(Id).ValueAs<string>());
             }
-            else
-            {
-                JValue value = (JValue)@object[Value];
-                string datatype = (@object.IsPropertySet(Type) ? @object.Property(Type).ValueAs<string>() : null);
-                if ((value.ValueIs<bool>()) && ((value.ValueAs<bool>() == true) || (value.ValueAs<bool>() == false)))
-                {
-                    value = new JValue(value.Value.ToString().ToLower());
-                    if (datatype == null)
-                    {
-                        datatype = RomanticWeb.Vocabularies.Xsd.Boolean.AbsoluteUri;
-                    }
-                }
-                else if (((value.ValueIs<double>()) && (Math.Floor(value.ValueAs<double>()) != value.ValueAs<double>())) || ((value.ValueIs<int>()) && (datatype == RomanticWeb.Vocabularies.Xsd.Double.AbsoluteUri)))
-                {
-                    value = new JValue(value.ValueAs<double>().ToString("0.0################################E0", CultureInfo.InvariantCulture));
-                    if (datatype == null)
-                    {
-                        datatype = RomanticWeb.Vocabularies.Xsd.Double.AbsoluteUri;
-                    }
-                }
-                else if ((value.ValueIs<int>()) || ((value.ValueIs<double>()) && (Math.Floor(value.ValueAs<double>()) == value.ValueAs<double>()) && (datatype == RomanticWeb.Vocabularies.Xsd.Integer.AbsoluteUri)))
-                {
-                    value = new JValue(value.Value.ToString());
-                    if (datatype == null)
-                    {
-                        datatype = RomanticWeb.Vocabularies.Xsd.Integer.AbsoluteUri;
-                    }
-                }
-                else if (datatype == RomanticWeb.Vocabularies.Xsd.Date.AbsoluteUri)
-                {
-                    value = new JValue(value.ValueAs<DateTime>().ToString("yyyy\\-MM\\-dd"));
-                    if (datatype == null)
-                    {
-                        datatype = RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri;
-                    }
-                }
-                else if ((value.ValueIs<DateTime>()) || (datatype == RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri))
-                {
-                    value = new JValue(value.ValueAs<DateTime>().ToString("yyyy\\-MM\\-dd" + ((datatype == RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri) || (datatype != RomanticWeb.Vocabularies.Xsd.Date.AbsoluteUri) ? "\\THH\\:mm\\:ssZ" : string.Empty)));
-                    if (datatype == null)
-                    {
-                        datatype = RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri;
-                    }
-                }
-                else if ((value.ValueIs<TimeSpan>()) || (datatype == RomanticWeb.Vocabularies.Xsd.Time.AbsoluteUri))
-                {
-                    value = new JValue(new Duration(value.ValueAs<TimeSpan>()).ToString());
-                    if (datatype == null)
-                    {
-                        datatype = RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri;
-                    }
-                }
-                ////else if (datatype==null)
-                ////{
-                ////    datatype=(@object.IsPropertySet(Language)?"http://www.w3.org/2001/XMLSchema#langString":"http://www.w3.org/2001/XMLSchema#string");
-                ////}
 
-                if (@object.IsPropertySet(Language))
+            JValue value = (JValue)@object[Value];
+            string datatype = (@object.IsPropertySet(Type) ? @object.Property(Type).ValueAs<string>() : null);
+            if ((value.ValueIs<bool>()) && ((value.ValueAs<bool>() == true) || (value.ValueAs<bool>() == false)))
+            {
+                value = new JValue(value.Value.ToString().ToLower());
+                if (datatype == null)
                 {
-                    return Node.ForLiteral((string)value.Value, @object.Property(Language).ValueAs<string>());
-                }
-                else if (datatype != null)
-                {
-                    return Node.ForLiteral((string)value.Value, (IsBlankIri(datatype) ? new Uri("blank://" + datatype.Substring(2)) : new Uri(datatype)));
-                }
-                else
-                {
-                    return Node.ForLiteral((string)value.Value);
+                    datatype = RomanticWeb.Vocabularies.Xsd.Boolean.AbsoluteUri;
                 }
             }
+            else if (((value.ValueIs<double>()) && (Math.Floor(value.ValueAs<double>()) != value.ValueAs<double>())) || ((value.ValueIs<int>()) && (datatype == RomanticWeb.Vocabularies.Xsd.Double.AbsoluteUri)))
+            {
+                value = new JValue(value.ValueAs<double>().ToString("0.0################################E0", CultureInfo.InvariantCulture));
+                if (datatype == null)
+                {
+                    datatype = RomanticWeb.Vocabularies.Xsd.Double.AbsoluteUri;
+                }
+            }
+            else if ((value.ValueIs<int>()) || ((value.ValueIs<double>()) && (Math.Floor(value.ValueAs<double>()) == value.ValueAs<double>()) && (datatype == RomanticWeb.Vocabularies.Xsd.Integer.AbsoluteUri)))
+            {
+                value = new JValue(value.Value.ToString());
+                if (datatype == null)
+                {
+                    datatype = RomanticWeb.Vocabularies.Xsd.Integer.AbsoluteUri;
+                }
+            }
+            else if (datatype == RomanticWeb.Vocabularies.Xsd.Date.AbsoluteUri)
+            {
+                value = new JValue(value.ValueAs<DateTime>().ToString("yyyy\\-MM\\-dd"));
+            }
+            else if ((value.ValueIs<DateTime>()) || (datatype == RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri))
+            {
+                value = new JValue(value.ValueAs<DateTime>().ToString("yyyy\\-MM\\-dd" + ((datatype == RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri) || (datatype != RomanticWeb.Vocabularies.Xsd.Date.AbsoluteUri) ? "\\THH\\:mm\\:ssZ" : string.Empty)));
+                if (datatype == null)
+                {
+                    datatype = RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri;
+                }
+            }
+            else if ((value.ValueIs<TimeSpan>()) || (datatype == RomanticWeb.Vocabularies.Xsd.Time.AbsoluteUri))
+            {
+                value = new JValue(new Duration(value.ValueAs<TimeSpan>()).ToString());
+                if (datatype == null)
+                {
+                    datatype = RomanticWeb.Vocabularies.Xsd.DateTime.AbsoluteUri;
+                }
+            }
+
+            if (@object.IsPropertySet(Language))
+            {
+                return Node.ForLiteral((string)value.Value, @object.Property(Language).ValueAs<string>());
+            }
+
+            if (datatype != null)
+            {
+                return Node.ForLiteral((string)value.Value, (IsBlankIri(datatype) ? new Uri("blank://" + datatype.Substring(2)) : new Uri(datatype)));
+            }
+
+            return Node.ForLiteral((string)value.Value);
         }
 
         private bool IsNodeObject(JToken token)
@@ -438,14 +427,7 @@ namespace RomanticWeb.JsonLd
 
         private Node CreateNode(string iri, string graphName = null)
         {
-            if (IsBlankIri(iri))
-            {
-                return Node.ForBlank(iri.Substring(2), null, null);
-            }
-            else
-            {
-                return Node.ForUri(new Uri(iri));
-            }
+            return (IsBlankIri(iri) ? Node.ForBlank(iri.Substring(2), null, null) : Node.ForUri(new Uri(iri)));
         }
 
         private Uri CreateUri(string iri)

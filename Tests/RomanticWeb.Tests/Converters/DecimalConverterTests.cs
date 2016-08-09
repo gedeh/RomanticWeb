@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
@@ -38,18 +39,16 @@ namespace RomanticWeb.Tests.Converters
         }
 
         [Test]
-        [ExpectedException]
         public void Should_not_convert_scientific_notation()
         {
-            Converter.Convert(Node.ForLiteral("2e10"), new Mock<IEntityContext>().Object);
+            Converter.Invoking(instance => instance.Convert(Node.ForLiteral("2e10"), new Mock<IEntityContext>().Object)).ShouldThrow<FormatException>();
         }
 
         [TestCase("some text")]
         [TestCase("2010-09-05")]
-        [ExpectedException]
         public void Should_not_convert_non_numbers(string literal)
         {
-            Converter.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object);
+            Converter.Invoking(instance => instance.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object)).ShouldThrow<FormatException>();
         }
 
         private static IEnumerable LiteralsToConvert()

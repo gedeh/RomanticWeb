@@ -41,8 +41,7 @@ namespace RomanticWeb.Linq
         #region Constructors
         /// <summary>Default constructor with mappings repository passed.</summary>
         /// <param name="entityContext">Entity context.</param>
-        public EntityQueryModelVisitor(IEntityContext entityContext)
-            : this(new Query(), entityContext)
+        public EntityQueryModelVisitor(IEntityContext entityContext) : this(new Query(new UniqueVariableNamingStrategy(), new CamelCaseVariableNamingConvention()), entityContext)
         {
         }
 
@@ -86,7 +85,7 @@ namespace RomanticWeb.Linq
         {
             queryModel.MainFromClause.Accept(this, queryModel);
             QuerySourceReferenceExpression querySource = FindQuerySource(selectClause.Selector);
-            _visitor.VisitExpression(selectClause.Selector);
+            _visitor.Visit(selectClause.Selector);
             QueryComponent component = _visitor.RetrieveComponent();
             _query = _visitor.Query;
             _mainFromComponent = _query.FindAllComponents<StrongEntityAccessor>().Where(item => item.SourceExpression == querySource.ReferencedQuerySource).First();
@@ -113,7 +112,7 @@ namespace RomanticWeb.Linq
         public override void VisitWhereClause(WhereClause whereClause, Remotion.Linq.QueryModel queryModel, int index)
         {
             _visitor.ConstantFromClause = _auxFromComponent;
-            _visitor.VisitExpression(whereClause.Predicate);
+            _visitor.Visit(whereClause.Predicate);
             QueryComponent queryComponent = _visitor.RetrieveComponent();
             IQueryComponentNavigator queryComponentNavigator = queryComponent.GetQueryComponentNavigator();
             if (queryComponentNavigator != null)
@@ -201,8 +200,8 @@ namespace RomanticWeb.Linq
                 System.Linq.Expressions.MemberExpression memberExpression = (System.Linq.Expressions.MemberExpression)fromClause.FromExpression;
                 if (memberExpression.Member is PropertyInfo)
                 {
-                    _visitor.VisitExpression(memberExpression.Expression);
-                    _visitor.VisitExpression(memberExpression);
+                    _visitor.Visit(memberExpression.Expression);
+                    _visitor.Visit(memberExpression);
                 }
             }
 
@@ -235,9 +234,11 @@ namespace RomanticWeb.Linq
         /// <param name="queryModel">Query model containing given body clause.</param>
         protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, Remotion.Linq.QueryModel queryModel)
         {
-            foreach (var indexValuePair in bodyClauses.AsChangeResistantEnumerableWithIndex())
+            int index = 0;
+            foreach (var bodyClause in bodyClauses)
             {
-                indexValuePair.Value.Accept(this, queryModel, indexValuePair.Index);
+                bodyClause.Accept(this, queryModel, index);
+                index++;
             }
         }
 
@@ -249,7 +250,7 @@ namespace RomanticWeb.Linq
         {
             foreach (Ordering ordering in orderings)
             {
-                _visitor.VisitExpression(ordering.Expression);
+                _visitor.Visit(ordering.Expression);
                 QueryComponent component = _visitor.RetrieveComponent();
                 if (component is IExpression)
                 {
@@ -281,7 +282,7 @@ namespace RomanticWeb.Linq
             }
             else
             {
-                _visitor.VisitExpression(fromClause.FromExpression);
+                _visitor.Visit(fromClause.FromExpression);
             }
         }
 
@@ -303,7 +304,7 @@ namespace RomanticWeb.Linq
         {
             if (_query.IsSubQuery)
             {
-                _visitor.VisitExpression(containsResultOperator.Item);
+                _visitor.Visit(containsResultOperator.Item);
                 QueryComponent item = _visitor.RetrieveComponent();
                 if (item is IExpression)
                 {

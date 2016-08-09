@@ -80,7 +80,7 @@ namespace RomanticWeb.Tests
             immediateParents.Should().BeEmpty();
         }
 
-        [TestCaseSource("GetCollectionsWithDerivingTypes")]
+        [TestCaseSource(typeof(TypeExtensionsTests), "GetCollectionsWithDerivingTypes")]
         public void GetMostDerivedTypes_should_exclude_base_types(ICollection<Type> types)
         {
             // when

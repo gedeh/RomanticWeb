@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.Parsing;
 using RomanticWeb.Entities;
 using RomanticWeb.Linq.Expressions;
@@ -18,7 +18,7 @@ using RomanticWeb.Vocabularies;
 namespace RomanticWeb.Linq
 {
     /// <summary>Visits query expressions.</summary>
-    public class EntityQueryVisitor : ThrowingExpressionTreeVisitor, IQueryVisitor
+    public class EntityQueryVisitor : ThrowingExpressionVisitor, IQueryVisitor
     {
         #region Fields
         private readonly IEntityContext _entityContext;
@@ -117,7 +117,7 @@ namespace RomanticWeb.Linq
                         SafeVisitExpression(memberExpression);
                     }
 
-                    result = new FromPropertyClause(itemName, propertyInfo.PropertyType.FindItemType(), memberExpression);
+                    result = new AdditionalFromClause(itemName, propertyInfo.PropertyType.FindItemType(), memberExpression);
                 }
                 else
                 {
@@ -137,7 +137,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits a query source expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited.</returns>
-        protected override System.Linq.Expressions.Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+        protected override System.Linq.Expressions.Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
         {
             Remotion.Linq.Clauses.FromClauseBase sourceExpression = GetSourceExpression(expression);
             StrongEntityAccessor entityAccessor = this.GetEntityAccessor(sourceExpression);
@@ -163,7 +163,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits a binary expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitBinaryExpression(System.Linq.Expressions.BinaryExpression expression)
+        protected override System.Linq.Expressions.Expression VisitBinary(System.Linq.Expressions.BinaryExpression expression)
         {
             MethodNames operatorName;
             System.Linq.Expressions.ExpressionType expressionType = expression.NodeType;
@@ -183,7 +183,7 @@ namespace RomanticWeb.Linq
                     }
                     else
                     {
-                        return base.VisitBinaryExpression(expression);
+                        return base.VisitBinary(expression);
                     }
 
                     break;
@@ -192,10 +192,10 @@ namespace RomanticWeb.Linq
             BinaryOperator binaryOperator = new BinaryOperator(operatorName);
             HandleComponent(binaryOperator);
 
-            VisitExpression(expression.Left);
+            Visit(expression.Left);
             CleanupComponent(_lastComponent);
 
-            VisitExpression(expression.Right);
+            Visit(expression.Right);
             CleanupComponent(_lastComponent);
 
             _lastComponent = binaryOperator;
@@ -205,7 +205,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits an unary expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitUnaryExpression(System.Linq.Expressions.UnaryExpression expression)
+        protected override System.Linq.Expressions.Expression VisitUnary(System.Linq.Expressions.UnaryExpression expression)
         {
             MethodNames operatorName;
             System.Linq.Expressions.ExpressionType expressionType = expression.NodeType;
@@ -213,7 +213,7 @@ namespace RomanticWeb.Linq
             {
                 case System.Linq.Expressions.ExpressionType.Convert:
                 case System.Linq.Expressions.ExpressionType.TypeAs:
-                    return VisitExpression(expression.Operand);
+                    return Visit(expression.Operand);
                 default:
                     string methodName = Enum.GetNames(typeof(MethodNames)).Where(item => item == expressionType.ToString()).FirstOrDefault();
                     if (!System.String.IsNullOrEmpty(methodName))
@@ -222,7 +222,7 @@ namespace RomanticWeb.Linq
                     }
                     else
                     {
-                        return base.VisitUnaryExpression(expression);
+                        return base.VisitUnary(expression);
                     }
 
                     break;
@@ -231,7 +231,7 @@ namespace RomanticWeb.Linq
             UnaryOperator unaryOperator = new UnaryOperator(operatorName);
             HandleComponent(unaryOperator);
 
-            VisitExpression(expression.Operand);
+            Visit(expression.Operand);
             CleanupComponent(_lastComponent);
 
             _lastComponent = unaryOperator;
@@ -241,7 +241,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits a method call expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitMethodCallExpression(System.Linq.Expressions.MethodCallExpression expression)
+        protected override System.Linq.Expressions.Expression VisitMethodCall(System.Linq.Expressions.MethodCallExpression expression)
         {
             Call call = null;
             bool isEntityExtensionMethod = ((expression.Method.DeclaringType == typeof(EntityExtensions)) && (expression.Arguments.Count == 2) &&
@@ -283,7 +283,7 @@ namespace RomanticWeb.Linq
                 default:
                     if (call == null)
                     {
-                        return base.VisitMethodCallExpression(expression);
+                        return base.VisitMethodCall(expression);
                     }
 
                     break;
@@ -292,13 +292,13 @@ namespace RomanticWeb.Linq
             HandleComponent(call);
             if ((!expression.Method.IsStatic) && (expression.Object != null))
             {
-                VisitExpression(expression.Object);
+                Visit(expression.Object);
                 CleanupComponent(_lastComponent);
             }
 
             foreach (System.Linq.Expressions.Expression argument in expression.Arguments)
             {
-                VisitExpression(argument);
+                Visit(argument);
                 CleanupComponent(_lastComponent);
             }
 
@@ -350,12 +350,12 @@ namespace RomanticWeb.Linq
                 }
                 else
                 {
-                    return base.VisitMethodCallExpression(expression);
+                    return base.VisitMethodCall(expression);
                 }
             }
             else
             {
-                return base.VisitMethodCallExpression(expression);
+                return base.VisitMethodCall(expression);
             }
         }
 
@@ -373,7 +373,7 @@ namespace RomanticWeb.Linq
                     predicate = new Uri(_entityContext.BaseUriSelector.SelectBaseUri(new EntityId(predicate)), predicate.ToString());
                 }
 
-                VisitExpression(expression.Arguments[0]);
+                Visit(expression.Arguments[0]);
                 StrongEntityAccessor entityAccessor = null;
                 Remotion.Linq.Clauses.FromClauseBase sourceExpression = null;
                 if (expression.Arguments[0] is System.Linq.Expressions.MemberExpression)
@@ -382,12 +382,12 @@ namespace RomanticWeb.Linq
                     if (memberExpression.Member is PropertyInfo)
                     {
                         PropertyInfo propertyInfo = (PropertyInfo)memberExpression.Member;
-                        sourceExpression = new FromPropertyClause(propertyInfo.Name, propertyInfo.PropertyType, memberExpression);
+                        sourceExpression = new AdditionalFromClause(propertyInfo.Name, propertyInfo.PropertyType, memberExpression);
                         _query.AddEntityAccessor(entityAccessor = this.GetEntityAccessor(sourceExpression));
                     }
                     else
                     {
-                        return base.VisitMethodCallExpression(expression);
+                        return base.VisitMethodCall(expression);
                     }
                 }
                 else
@@ -404,14 +404,14 @@ namespace RomanticWeb.Linq
             }
             else
             {
-                return base.VisitMethodCallExpression(expression);
+                return base.VisitMethodCall(expression);
             }
         }
 
         /// <summary>Visits a member expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitMemberExpression(System.Linq.Expressions.MemberExpression expression)
+        protected override System.Linq.Expressions.Expression VisitMember(System.Linq.Expressions.MemberExpression expression)
         {
             if ((expression.Member.Name == "Id") && (typeof(IEntity).IsAssignableFrom(expression.Member.DeclaringType)))
             {
@@ -438,17 +438,17 @@ namespace RomanticWeb.Linq
                 }
                 else
                 {
-                    return VisitPropertyExpression(expression);
+                    return VisitProperty(expression);
                 }
             }
 
-            return base.VisitMemberExpression(expression);
+            return base.VisitMember(expression);
         }
 
         /// <summary>Visits a property expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected virtual System.Linq.Expressions.Expression VisitPropertyExpression(System.Linq.Expressions.MemberExpression expression)
+        protected virtual System.Linq.Expressions.Expression VisitProperty(System.Linq.Expressions.MemberExpression expression)
         {
             var propertyInfo = (PropertyInfo)expression.Member;
             Call call = null;
@@ -489,7 +489,7 @@ namespace RomanticWeb.Linq
                 default:
                     if (call == null)
                     {
-                        return base.VisitMemberExpression(expression);
+                        return base.VisitMember(expression);
                     }
 
                     break;
@@ -498,7 +498,7 @@ namespace RomanticWeb.Linq
             HandleComponent(call);
             if (!isParameterles)
             {
-                VisitExpression(expression.Expression);
+                Visit(expression.Expression);
                 CleanupComponent(_lastComponent);
             }
 
@@ -510,7 +510,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits a constant expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitConstantExpression(System.Linq.Expressions.ConstantExpression expression)
+        protected override System.Linq.Expressions.Expression VisitConstant(System.Linq.Expressions.ConstantExpression expression)
         {
             if ((expression.Value is IEnumerable) && (!(expression.Value is string)))
             {
@@ -554,7 +554,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits a sub-query expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitSubQueryExpression(SubQueryExpression expression)
+        protected override System.Linq.Expressions.Expression VisitSubQuery(SubQueryExpression expression)
         {
             Remotion.Linq.Clauses.FromClauseBase sourceExpression = (Remotion.Linq.Clauses.FromClauseBase)((QuerySourceReferenceExpression)expression.QueryModel.SelectClause.Selector).ReferencedQuerySource;
             StrongEntityAccessor entityAccessor = (sourceExpression.FromExpression is System.Linq.Expressions.ConstantExpression ? null : this.GetEntityAccessor(sourceExpression));
@@ -705,7 +705,7 @@ namespace RomanticWeb.Linq
         /// <summary>Visits a type binary expression.</summary>
         /// <param name="expression">Expression to be visited.</param>
         /// <returns>Expression visited</returns>
-        protected override System.Linq.Expressions.Expression VisitTypeBinaryExpression(System.Linq.Expressions.TypeBinaryExpression expression)
+        protected override System.Linq.Expressions.Expression VisitTypeBinary(System.Linq.Expressions.TypeBinaryExpression expression)
         {
             var classMappings = MappingsRepository.FindMappedClasses(expression.TypeOperand);
             if (classMappings.Any())
@@ -731,7 +731,7 @@ namespace RomanticWeb.Linq
             }
             else
             {
-                return base.VisitTypeBinaryExpression(expression);
+                return base.VisitTypeBinary(expression);
             }
 
             return expression;
@@ -744,7 +744,7 @@ namespace RomanticWeb.Linq
         protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
         {
             System.Linq.Expressions.Expression expression = unhandledItem as System.Linq.Expressions.Expression;
-            return new NotSupportedException(expression != null ? FormattingExpressionTreeVisitor.Format(expression) : unhandledItem.ToString());
+            return new NotSupportedException(expression != null ? expression.ToString() : unhandledItem.ToString());
         }
         #endregion
 
@@ -787,7 +787,7 @@ namespace RomanticWeb.Linq
             }
 
             System.Linq.Expressions.MemberExpression propertyExpression = System.Linq.Expressions.Expression.Property(expression.Arguments[0], type, name);
-            return VisitMemberExpression(propertyExpression);
+            return VisitMember(propertyExpression);
         }
 
         private System.Linq.Expressions.Expression VisitPredicateMethodCallUnsafe(System.Linq.Expressions.MethodCallExpression expression, Uri predicate, StrongEntityAccessor entityAccessor)
@@ -881,7 +881,7 @@ namespace RomanticWeb.Linq
                     {
                         Stack<IQueryComponentNavigator> currentComponent = _currentComponent;
                         _currentComponent = new Stack<IQueryComponentNavigator>();
-                        VisitExpression(result.FromExpression);
+                        Visit(result.FromExpression);
                         _currentComponent = currentComponent;
                         isChange = true;
                     }
@@ -974,7 +974,7 @@ namespace RomanticWeb.Linq
             Stack<IQueryComponentNavigator> currentStack = _currentComponent;
             QueryComponent lastComponent = _lastComponent;
             _currentComponent = new Stack<IQueryComponentNavigator>();
-            VisitExpression(expression);
+            Visit(expression);
             _currentComponent = currentStack;
             _lastComponent = lastComponent;
         }

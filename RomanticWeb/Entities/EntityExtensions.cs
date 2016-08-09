@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ImpromptuInterface;
 using NullGuard;
-using RomanticWeb.Converters;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Model;
 
@@ -141,7 +140,7 @@ namespace RomanticWeb.Entities
             else
             {
                 ICollection<object> output = new List<object>();
-                IEnumerable<Node> objects =
+                IEnumerable<INode> objects =
                     entity.Context.Store.Quads.WhereQuadDescribesEntity(entity)
                           .Where(item => item.Predicate.Uri.AbsoluteUri == predicate.AbsoluteUri)
                           .Select(item => item.Object);
@@ -202,7 +201,7 @@ namespace RomanticWeb.Entities
             return entity;
         }
 
-        private static IEnumerable<EntityQuad> WhereQuadDescribesEntity(this IEnumerable<EntityQuad> quads, IEntity entity)
+        private static IEnumerable<IEntityQuad> WhereQuadDescribesEntity(this IEnumerable<IEntityQuad> quads, IEntity entity)
         {
             return quads.Where(item => (item.EntityId == entity.Id) &&
                 (((item.Subject.IsUri) && (!(entity.Id is BlankId)) && (item.Subject.Uri.AbsoluteUri == entity.Id.Uri.AbsoluteUri)) ||

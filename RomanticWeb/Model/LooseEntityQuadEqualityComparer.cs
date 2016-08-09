@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImpromptuInterface.Dynamic;
+﻿using System.Collections.Generic;
 
 namespace RomanticWeb.Model
 {
-    internal class LooseEntityQuadEqualityComparer : IEqualityComparer<EntityQuad>
+    internal class LooseEntityQuadEqualityComparer : IEqualityComparer<IEntityQuad>
     {
         internal static readonly LooseEntityQuadEqualityComparer Instance = new LooseEntityQuadEqualityComparer();
 
@@ -16,12 +10,12 @@ namespace RomanticWeb.Model
         {
         }
 
-        public bool Equals(EntityQuad x, EntityQuad y)
+        public bool Equals(IEntityQuad x, IEntityQuad y)
         {
             return GetHashCode(x).Equals(GetHashCode(y));
         }
 
-        public int GetHashCode(EntityQuad obj)
+        public int GetHashCode(IEntityQuad obj)
         {
             unchecked
             {

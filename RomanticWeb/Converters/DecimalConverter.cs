@@ -14,7 +14,7 @@ namespace RomanticWeb.Converters
         protected override IEnumerable<Uri> SupportedDataTypes { get { yield return Xsd.Decimal; } }
 
         /// <summary>Converts the decimal value to a literal node.</summary>
-        public override Node ConvertBack(object value, IEntityContext context)
+        public override INode ConvertBack(object value, IEntityContext context)
         {
             return Node.ForLiteral(XmlConvert.ToString((Decimal)value), Xsd.Decimal);
         }
@@ -27,7 +27,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        protected override object ConvertInternal(Node literalNode)
+        protected override object ConvertInternal(INode literalNode)
         {
             return XmlConvert.ToDecimal(literalNode.Literal);
         }

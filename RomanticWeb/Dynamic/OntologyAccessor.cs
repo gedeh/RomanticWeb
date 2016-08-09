@@ -15,9 +15,7 @@ using RomanticWeb.Ontologies;
 
 namespace RomanticWeb.Dynamic
 {
-    /// <summary>
-    /// Allows dynamic resolution of prediacte URIs based dynamic member name and Ontology prefix
-    /// </summary>
+    /// <summary>Allows dynamic resolution of prediacte URIs based dynamic member name and Ontology prefix.</summary>
     /// todo: make a DynamicObject
     [DebuggerDisplay("Ontology Accessor")]
     [NullGuard(ValidationFlags.OutValues)]
@@ -27,12 +25,12 @@ namespace RomanticWeb.Dynamic
         private readonly IEntityStore _tripleStore;
         private readonly IEntityContext _context;
         private readonly Entity _entity;
-        private readonly Ontology _ontology;
+        private readonly IOntology _ontology;
         private readonly IResultTransformerCatalog _resultTransformers;
         private readonly INodeConverter _nodeConverter;
 
         /// <summary>Creates a new instance of <see cref="OntologyAccessor"/>.</summary>
-        internal OntologyAccessor(Entity entity, Ontology ontology, INodeConverter nodeConverter, IResultTransformerCatalog resultTransformers)
+        internal OntologyAccessor(Entity entity, IOntology ontology, INodeConverter nodeConverter, IResultTransformerCatalog resultTransformers)
         {
             _tripleStore = entity.Context.Store;
             _entity = entity;
@@ -43,7 +41,7 @@ namespace RomanticWeb.Dynamic
         }
 
         /// <summary>Gets the underlying <see cref="Ontologies.Ontology"/>.</summary>
-        public Ontology Ontology { get { return _ontology; } }
+        public IOntology Ontology { get { return _ontology; } }
 
         /// <summary>Tries to retrieve subjects from the backing RDF source for a dynamically resolved property.</summary>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -57,7 +55,7 @@ namespace RomanticWeb.Dynamic
                 return false;
             }
 
-            var property = Ontology.Properties.SingleOrDefault(p => p.PropertyName == propertySpec.Name);
+            var property = Ontology.Properties.SingleOrDefault(p => p.Name == propertySpec.Name);
             if (property == null)
             {
                 property = new Property(propertySpec.Name).InOntology(Ontology);
@@ -80,15 +78,15 @@ namespace RomanticWeb.Dynamic
             return true;
         }
 
-        internal Property GetProperty(string binderName)
+        internal IProperty GetProperty(string binderName)
         {
             var spec = new DynamicPropertyAggregate(binderName);
             return (from prop in Ontology.Properties
-                    where prop.PropertyName == spec.Name
+                    where prop.Name == spec.Name
                     select prop).SingleOrDefault();
         }
 
-        internal object GetObjects(EntityId entityId, Property property, DynamicPropertyAggregate aggregate)
+        internal object GetObjects(EntityId entityId, IProperty property, DynamicPropertyAggregate aggregate)
         {
             LogTo.Trace("Reading property {0}", property.Uri);
             var objectValues = _tripleStore.GetObjectsForPredicate(entityId, property.Uri, null);
@@ -98,7 +96,7 @@ namespace RomanticWeb.Dynamic
             return aggregator.Aggregate(objects);
         }
 
-        private object ConvertObject(Node node)
+        private object ConvertObject(INode node)
         {
             var convertObject = _nodeConverter.Convert(node, _context);
 
@@ -122,7 +120,7 @@ namespace RomanticWeb.Dynamic
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public Ontology Ontology
+            public IOntology Ontology
             {
                 get
                 {

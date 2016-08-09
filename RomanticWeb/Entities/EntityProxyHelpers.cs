@@ -6,10 +6,10 @@ namespace RomanticWeb.Entities
 {
     internal static class EntityProxyHelpers
     {
-        internal static IEnumerable<Node> WhereMatchesContextRequirements(this IEnumerable<Node> nodes, IEntityContext context)
+        internal static IEnumerable<INode> WhereMatchesContextRequirements(this IEnumerable<INode> nodes, IEntityContext context)
         {
-            var invariantCandidates = new List<Node>();
-            var objects = new List<Node>();
+            var invariantCandidates = new List<INode>();
+            var objects = new List<INode>();
             bool ignoreInvariantNodes = false;
             foreach (var node in nodes)
             {

@@ -27,11 +27,11 @@ namespace RomanticWeb.Tests.JsonLd
             _processor = new JsonLdProcessor();
         }
 
-        [TestCaseSource("RdfToJsonTestCases")]
+        [TestCaseSource(typeof(JsonLdTestSuiteTests), "RdfToJsonTestCases")]
         public void RDF_to_JSON_test_suite(string input, string expectedPath, JObject options)
         {
             // given
-            IEnumerable<EntityQuad> quads = GetQuads(input);
+            IEnumerable<IEntityQuad> quads = GetQuads(input);
             Func<string> processDatasetFunc = () => _processor.FromRdf(quads);
             if (options != null)
             {
@@ -50,7 +50,7 @@ namespace RomanticWeb.Tests.JsonLd
             ExecuteTest(processDatasetFunc, expectedPath);
         }
 
-        [TestCaseSource("ExpandTestsCases")]
+        [TestCaseSource(typeof(JsonLdTestSuiteTests), "ExpandTestsCases")]
         public void Expand_test_suite(string input, string expectedPath, JObject options)
         {
             // given
@@ -75,13 +75,13 @@ namespace RomanticWeb.Tests.JsonLd
             ExecuteTest(expandTestFunc, expectedPath);
         }
 
-        [TestCaseSource("JsonToRdfTestsCases")]
+        [TestCaseSource(typeof(JsonLdTestSuiteTests), "JsonToRdfTestsCases")]
         public void JSON_to_RDF_test_suite(string input, string expectedPath, JObject options)
         {
             // given
             string inputJson = File.ReadAllText(input);
             var jsonOptions = new JsonLdOptions() { BaseUri = new Uri("http://json-ld.org/test-suite/tests/" + System.IO.Path.GetFileName(input)) };
-            Func<IEnumerable<EntityQuad>> processTestFunc = () => _processor.ToRdf(inputJson, jsonOptions);
+            Func<IEnumerable<IEntityQuad>> processTestFunc = () => _processor.ToRdf(inputJson, jsonOptions);
             if (options != null)
             {
                 if (options.Property("produceGeneralizedRdf") != null)
@@ -91,10 +91,10 @@ namespace RomanticWeb.Tests.JsonLd
             }
 
             // given
-            IEnumerable<EntityQuad> expectedStore = GetQuads(expectedPath, (options == null) || (options.Property("produceGeneralizedRdf") == null) || !(bool)options["produceGeneralizedRdf"]);
+            IEnumerable<IEntityQuad> expectedStore = GetQuads(expectedPath, (options == null) || (options.Property("produceGeneralizedRdf") == null) || !(bool)options["produceGeneralizedRdf"]);
 
             // when
-            IEnumerable<EntityQuad> actualStore = processTestFunc();
+            IEnumerable<IEntityQuad> actualStore = processTestFunc();
 
             // then
             Assert.That(actualStore, Is.EquivalentTo(expectedStore));
@@ -152,7 +152,7 @@ namespace RomanticWeb.Tests.JsonLd
             return ReadTestManifests("JSON-LD to RDF test", _testsRoot, "toRdf-manifest.jsonld");
         }
 
-        private IEnumerable<EntityQuad> GetQuads(string fileName, bool useNQuads = true)
+        private IEnumerable<IEntityQuad> GetQuads(string fileName, bool useNQuads = true)
         {
             var store = new TripleStore();
             if (useNQuads)
@@ -226,7 +226,7 @@ namespace RomanticWeb.Tests.JsonLd
             return result;
         }
 
-        private Node WrapNode(INode node)
+        private Node WrapNode(VDS.RDF.INode node)
         {
             var literal = node as ILiteralNode;
             if (literal != null)

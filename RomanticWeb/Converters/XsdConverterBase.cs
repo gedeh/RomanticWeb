@@ -12,7 +12,7 @@ namespace RomanticWeb.Converters
         protected abstract IEnumerable<Uri> SupportedDataTypes { get; }
 
         /// <summary>Check if a converter can convert the given XSD datatype.</summary>
-        public override LiteralConversionMatch CanConvert(Node literalNode)
+        public override LiteralConversionMatch CanConvert(INode literalNode)
         {
             var match = new LiteralConversionMatch
             {

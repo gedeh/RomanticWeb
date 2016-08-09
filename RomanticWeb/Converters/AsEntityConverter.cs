@@ -4,9 +4,7 @@ using RomanticWeb.Model;
 
 namespace RomanticWeb.Converters
 {
-    /// <summary>
-    /// Changes <see cref="IEntity"/> type by calling <see cref="EntityExtensions.AsEntity{TInterface}"/> method
-    /// </summary>
+    /// <summary>Changes <see cref="IEntity"/> type by calling <see cref="EntityExtensions.AsEntity{TInterface}"/> method.</summary>
     public class AsEntityConverter<TEntity> : INodeConverter where TEntity : IEntity
     {
         private static readonly MethodInfo AsEntityMethod = Info.OfMethod("RomanticWeb", "RomanticWeb.Entities.EntityExtensions", "AsEntity", "IEntity").MakeGenericMethod(typeof(TEntity));
@@ -25,19 +23,15 @@ namespace RomanticWeb.Converters
             _entityIdConverter = new EntityIdConverter(baseUriSelectionPolicy);
         }
 
-        /// <summary>
-        /// Converts entity
-        /// </summary>
-        public object Convert(Node node, IEntityContext context)
+        /// <summary>Converts entity.</summary>
+        public object Convert(INode node, IEntityContext context)
         {
             var entityId = (EntityId)_entityIdConverter.Convert(node, context);
             return AsEntityMethod.Invoke(null, new object[] { context.Load<IEntity>(entityId) });
         }
 
-        /// <summary>
-        /// Converts an entity back to <see cref="Node" />.
-        /// </summary>
-        public Node ConvertBack(object obj, IEntityContext context)
+        /// <summary>Converts an entity back to <see cref="Node" />.</summary>
+        public INode ConvertBack(object obj, IEntityContext context)
         {
             return _entityIdConverter.ConvertBack(((IEntity)obj).Id, context);
         }

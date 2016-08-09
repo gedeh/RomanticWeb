@@ -4,7 +4,7 @@ using NullGuard;
 namespace RomanticWeb.Linq.Model
 {
     /// <summary>Expresses a prefix in the query.</summary>
-    public class Prefix : QueryComponent
+    public class Prefix : QueryComponent, IPrefix
     {
         #region Fields
         private string _namespacePrefix;
@@ -14,7 +14,6 @@ namespace RomanticWeb.Linq.Model
         #region Constructors
         /// <summary>Default parameterles constructor.</summary>
         public Prefix()
-            : base()
         {
         }
 

@@ -6,12 +6,12 @@ namespace RomanticWeb.Tests.IntegrationTests.TestMappings
 {
     public class AsStringConverter : INodeConverter
     {
-        public object Convert(Node objectNode, IEntityContext context)
+        public object Convert(INode objectNode, IEntityContext context)
         {
             return (objectNode.IsUri ? objectNode.Uri.ToString() : objectNode.IsBlank ? objectNode.BlankNode : objectNode.Literal);
         }
 
-        public Node ConvertBack(object value, IEntityContext context)
+        public INode ConvertBack(object value, IEntityContext context)
         {
             throw new NotImplementedException();
         }

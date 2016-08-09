@@ -9,7 +9,7 @@ namespace RomanticWeb.Model
     /// <remarks>Blank nodes are not supported currently.</remarks>
     [DebuggerDisplay("{DebuggerString,nq}")]
     [DebuggerTypeProxy(typeof(DebuggerViewProxy))]
-    public sealed class Node : IComparable, IComparable<Node>, IEquatable<Node>
+    public sealed class Node : INode
     {
         /// <summary>Gets a reference for node with rdf:type predicate usually shortened in Turtle syntax to 'a'.</summary>
         private static readonly Node A = new Node(Vocabularies.Rdf.type);
@@ -20,8 +20,6 @@ namespace RomanticWeb.Model
         private readonly Uri _uri;
         private readonly BlankId _blankNodeId;
         private readonly string _identifier;
-        private readonly Uri _graphUri;
-        private readonly EntityId _entityId;
         private readonly int _hashCode;
 
         private Node(Uri uri)
@@ -43,11 +41,9 @@ namespace RomanticWeb.Model
             _hashCode = CalculateHashCode();
         }
 
-        private Node(string identifier, Uri graphUri, [AllowNull]EntityId entityId)
+        private Node(string identifier, Uri graphUri, [AllowNull] EntityId entityId)
         {
             _identifier = identifier;
-            _graphUri = graphUri;
-            _entityId = entityId;
             _blankNodeId = new BlankId(identifier, entityId, graphUri);
             _uri = _blankNodeId.Uri;
             _hashCode = CalculateHashCode();
@@ -229,9 +225,13 @@ namespace RomanticWeb.Model
         /// <summary>Determines whether the specified System.Object is equal to the current node.</summary>
         public override bool Equals([AllowNull]object obj)
         {
-            if (ReferenceEquals(null, obj)) { return false; }
-            if (ReferenceEquals(this, obj)) { return true; }
-            return obj is Node && Equals((Node)obj);
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            var otherNode = obj as Node;
+            return (otherNode != null && Equals(otherNode));
         }
 
         /// <summary>Gets hash code for the node.</summary>
@@ -242,10 +242,10 @@ namespace RomanticWeb.Model
 
         int IComparable.CompareTo(object obj)
         {
-            return ((IComparable<Node>)this).CompareTo(obj as Node);
+            return ((IComparable<INode>)this).CompareTo(obj as Node);
         }
 
-        int IComparable<Node>.CompareTo(Node other)
+        int IComparable<INode>.CompareTo(INode other)
         {
             var compare = FluentCompare<Node>.Arguments(this, other);
 
@@ -258,7 +258,7 @@ namespace RomanticWeb.Model
 
                 if ((IsBlank) && (other.IsBlank))
                 {
-                    return compare.By(n => n._blankNodeId).End();
+                    return compare.By(n => n.BlankNode).End();
                 }
 
                 if (((IsUri) && (!other.IsUri)) || (IsBlank && other.IsLiteral))
@@ -283,9 +283,27 @@ namespace RomanticWeb.Model
             return -1;
         }
 
-        bool IEquatable<Node>.Equals(Node other)
+        bool IEquatable<INode>.Equals(INode other)
         {
-            return Equals(other);
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            var otherNode = other as Node;
+            if (otherNode != null)
+            {
+                return Equals(otherNode);
+            }
+
+            return (IsUri && other.IsUri && AbsoluteUriComparer.Default.Equals(Uri, other.Uri)) ||
+                (IsBlank && other.IsBlank && BlankNode.Equals(other.BlankNode)) ||
+                (IsLiteral && other.IsLiteral && Equals(Literal, other.Literal) && (Equals(Language, other.Language)));
         }
 
         /// <summary>Gets the string representation of a node.</summary>
@@ -365,18 +383,7 @@ namespace RomanticWeb.Model
 
         private bool Equals(Node other)
         {
-            if ((ReferenceEquals(other, null)) || (other.GetType() != GetType()))
-            {
-                return false;
-            }
-
             return _hashCode == other._hashCode;
-            ////if (IsLiteral)
-            ////{
-            ////    return string.Equals(_literal, other._literal) && string.Equals(_language, other._language) && Equals(_dataType, other._dataType);
-            ////}
-
-            ////return AbsoluteUriComparer.Default.Compare(_uri, other._uri) == 0;
         }
 
         private int CalculateHashCode()

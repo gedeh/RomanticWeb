@@ -16,7 +16,7 @@ namespace RomanticWeb.Tests.Helpers
                 Node.ForUri(triple.GraphUri));
         }
 
-        private static Node ToNode(this INode node, EntityId id)
+        private static Node ToNode(this VDS.RDF.INode node, EntityId id)
         {
             if (node is IUriNode)
             {

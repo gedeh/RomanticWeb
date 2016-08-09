@@ -12,25 +12,19 @@ using RomanticWeb.NamedGraphs;
 
 namespace RomanticWeb.Entities.ResultPostprocessing
 {
-    /// <summary>
-    /// Transforms the resulting nodes to an RDF:list adapter
-    /// </summary>
+    /// <summary>Transforms the resulting nodes to an RDF:list adapter.</summary>
     internal class RdfListTransformer : SimpleTransformer
     {
         private readonly EmitHelper _emitHelper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RdfListTransformer"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="RdfListTransformer"/> class.</summary>
         public RdfListTransformer(EmitHelper emitHelper) : base(new SingleOrDefault())
         {
             _emitHelper = emitHelper;
         }
 
-        /// <summary>
-        /// Transforms the resulting <paramref name="nodes"/> to a <see cref="IRdfListAdapter{T}"/>
-        /// </summary>
-        public override object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, [AllowNull] IEnumerable<Node> nodes)
+        /// <summary>Transforms the resulting <paramref name="nodes"/> to a <see cref="IRdfListAdapter{T}"/>.</summary>
+        public override object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, [AllowNull] IEnumerable<INode> nodes)
         {
             var listHead = (IEntity)base.FromNodes(parent, property, context, nodes);
             var ownerType = GetOwnerType(property);
@@ -59,12 +53,10 @@ namespace RomanticWeb.Entities.ResultPostprocessing
             return ctor.Invoke(new[] { context, parent, head, paremeters });
         }
 
-        /// <summary>
-        /// Converts a list <paramref name="value"/> to an <see cref="IRdfListAdapter{T}"/> if necessary and return the RDF:List's head
-        /// </summary>
+        /// <summary>Converts a list <paramref name="value"/> to an <see cref="IRdfListAdapter{T}"/> if necessary and return the RDF:List's head.</summary>
         /// <returns>an <see cref="IEntity"/></returns>
-        /// <exception cref="ArgumentException">when value is not a collection</exception>
-        public override IEnumerable<Node> ToNodes(object value, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
+        /// <exception cref="ArgumentException">Thrown when value is not a collection</exception>
+        public override IEnumerable<INode> ToNodes(object value, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
         {
             if (!(value is IEnumerable))
             {
@@ -96,7 +88,7 @@ namespace RomanticWeb.Entities.ResultPostprocessing
             }
         }
 
-        protected override object Transform(Node node, IPropertyMapping property, IEntityContext context)
+        protected override object Transform(INode node, IPropertyMapping property, IEntityContext context)
         {
             return property.Converter.Convert(node, context);
         }

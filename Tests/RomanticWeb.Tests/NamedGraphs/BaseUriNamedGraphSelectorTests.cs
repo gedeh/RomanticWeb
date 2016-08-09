@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NUnit.Core;
 using NUnit.Framework;
 using RomanticWeb.Entities;
 using RomanticWeb.NamedGraphs;

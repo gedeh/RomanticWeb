@@ -89,17 +89,8 @@ namespace RomanticWeb.Linq.Model
         [AllowNull]
         public Identifier UnboundGraphName { [return: AllowNull] get; set; }
 
-        /// <summary>Gets an enumeration of selectable expressions.</summary>
-        IEnumerable<IExpression> ISelectableQueryComponent.Expressions { get { return new IExpression[] { this }; } }
-
-        /// <summary>Gets a source type of this accessor.</summary>
-        internal SourceTypes Source { get { return _source; } }
-
-        /// <summary>Gets a source entity type of this accessor.</summary>
-        internal Remotion.Linq.Clauses.FromClauseBase SourceExpression { get { return _sourceExpression; } }
-
         /// <summary>Gets an owning query.</summary>
-        internal override Query OwnerQuery
+        public override IQuery OwnerQuery
         {
             get
             {
@@ -120,6 +111,15 @@ namespace RomanticWeb.Linq.Model
                 }
             }
         }
+
+        /// <summary>Gets an enumeration of selectable expressions.</summary>
+        IEnumerable<IExpression> ISelectableQueryComponent.Expressions { get { return new IExpression[] { this }; } }
+
+        /// <summary>Gets a source type of this accessor.</summary>
+        internal SourceTypes Source { get { return _source; } }
+
+        /// <summary>Gets a source entity type of this accessor.</summary>
+        internal Remotion.Linq.Clauses.FromClauseBase SourceExpression { get { return _sourceExpression; } }
         #endregion
 
         #region Public methods

@@ -67,10 +67,10 @@ namespace RomanticWeb.Tests
             factory.MetaGraphUri.Should().Be(new Uri("http://meta.romanticweb.com/"));
         }
 
-        [Test, ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Should_require_meta_graph_uri()
         {
-            ConfigurationManager.GetSection("missingMetaGraph");
+            Assert.Throws<ConfigurationErrorsException>(() => ConfigurationManager.GetSection("missingMetaGraph"));
         }
 
         [Test]

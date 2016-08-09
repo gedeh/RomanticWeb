@@ -103,7 +103,7 @@ namespace RomanticWeb.Linq.Sparql
 
         /// <summary>Visit a query.</summary>
         /// <param name="query">Query to be visited.</param>
-        public override void VisitQuery(Query query)
+        public override void VisitQuery(IQuery query)
         {
             InitQuery(query.IsSubQuery ? null : query.Prefixes);
             BeginQuery(query.IsSubQuery, query.QueryForm, query.Select, query.CreateVariableName, query.Elements.OfType<StrongEntityAccessor>().FirstOrDefault());
@@ -430,7 +430,7 @@ namespace RomanticWeb.Linq.Sparql
 
         /// <summary>Visit a prefix.</summary>
         /// <param name="prefix">Prefix to be visited.</param>
-        protected override void VisitPrefix(Prefix prefix)
+        protected override void VisitPrefix(IPrefix prefix)
         {
             _commandText.AppendFormat("PREFIX {0}: <{1}> ", prefix.NamespacePrefix, prefix.NamespaceUri);
         }
@@ -948,7 +948,7 @@ namespace RomanticWeb.Linq.Sparql
             }
         }
 
-        private void InitQuery(IEnumerable<Prefix> prefixes)
+        private void InitQuery(IEnumerable<IPrefix> prefixes)
         {
             if (_commandText == null)
             {
@@ -963,7 +963,7 @@ namespace RomanticWeb.Linq.Sparql
             {
                 VisitComponent(new Prefix("xsd", new Uri(Vocabularies.Xsd.BaseUri)));
 
-                foreach (Prefix prefix in prefixes)
+                foreach (var prefix in prefixes)
                 {
                     VisitComponent(prefix);
                 }

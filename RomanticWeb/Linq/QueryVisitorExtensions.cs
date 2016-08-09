@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Remotion.Linq.Clauses;
 using RomanticWeb.Entities;
 using RomanticWeb.Linq.Expressions;
 using RomanticWeb.Linq.Model;
@@ -108,11 +109,11 @@ namespace RomanticWeb.Linq
                 if (!TransformedExpressionsCache.TryGetValue(sourceExpression, out item))
                 {
                     TransformedExpressionsCache[sourceExpression] = result =
-                        new RomanticWeb.Linq.Expressions.FromPropertyClause(sourceExpression.ItemName, sourceExpression.ItemType, (System.Linq.Expressions.MemberExpression)expression);
+                        new AdditionalFromClause(sourceExpression.ItemName, sourceExpression.ItemType, (System.Linq.Expressions.MemberExpression)expression);
                 }
                 else
                 {
-                    result = (RomanticWeb.Linq.Expressions.FromPropertyClause)item;
+                    result = (AdditionalFromClause)item;
                 }
             }
 

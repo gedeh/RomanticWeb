@@ -221,7 +221,7 @@ namespace RomanticWeb.Entities
         {
             var matchingPredicates = (from ontology in _context.Ontologies.Ontologies
                                       from property in ontology.Properties
-                                      where property.PropertyName == binder.Name
+                                      where property.Name == binder.Name
                                       select new { ontology, property }).ToList();
 
             if (matchingPredicates.Count == 1)

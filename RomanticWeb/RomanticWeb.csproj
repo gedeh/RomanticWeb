@@ -12,7 +12,7 @@
     <AssemblyName>RomanticWeb</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <GitVersionOnlyMajorAndMinorInAssemblyVersion>true</GitVersionOnlyMajorAndMinorInAssemblyVersion>
@@ -71,7 +71,6 @@
     <Compile Include="ComponentModel\IComponentRegistry.cs" />
     <Compile Include="ComponentModel\OntologyLoaderCompositionRoot.cs" />
     <Compile Include="ComponentModel\MappingCompositionRoot.cs" />
-    <Compile Include="ComponentModel\EntityIdTypeConverter.cs" />
     <Compile Include="ComponentModel\CompositionRoot.cs" />
     <Compile Include="Configuration\BaseUriElement.cs" />
     <Compile Include="Configuration\FactoriesCollection.cs" />
@@ -93,9 +92,6 @@
     <Compile Include="Converters\IConverterCatalog.cs" />
     <Compile Include="Converters\EntityIdConverter.cs" />
     <Compile Include="Converters\GuidConverter.cs" />
-    <Compile Include="Converters\IFallbackNodeConverter.cs" />
-    <Compile Include="Converters\ILiteralNodeConverter.cs" />
-    <Compile Include="Converters\LiteralConversionMatch.cs" />
     <Compile Include="Converters\FallbackNodeConverter.cs" />
     <Compile Include="Converters\StringConverter.cs" />
     <Compile Include="DefaultUriBuilder.cs" />
@@ -108,20 +104,16 @@
     <Compile Include="Dynamic\IDictionaryTypeProvider.cs" />
     <Compile Include="Dynamic\OntologyAccessor.cs" />
     <Compile Include="Dynamic\TypeDictionaryEntityNames.cs" />
+    <Compile Include="Entities\BlankId.cs" />
     <Compile Include="Entities\ConstantBaseUri.cs" />
     <Compile Include="Entities\DefaultBlankNodeIdGenerator.cs" />
     <Compile Include="Entities\EntityIdExtensions.cs" />
     <Compile Include="Entities\EntityProxyHelpers.cs" />
-    <Compile Include="Entities\IBaseUriSelectionPolicy.cs" />
-    <Compile Include="Entities\IBlankNodeIdGenerator.cs" />
-    <Compile Include="Entities\IEntityProxy.cs" />
     <Compile Include="Entities\ResultPostprocessing\DictionaryTransformer.cs" />
     <Compile Include="Entities\ResultTransformerCatalog.cs" />
-    <Compile Include="Entities\IResultTransformerCatalog.cs" />
     <Compile Include="Entities\ITypedEntity.cs" />
     <Compile Include="Entities\ResultAggregations\AnyResultCheck.cs" />
     <Compile Include="Entities\CardinalityException.cs" />
-    <Compile Include="Entities\ResultAggregations\Aggregation.cs" />
     <Compile Include="Entities\AmbiguousPropertyException.cs" />
     <Compile Include="Converters\BooleanConverter.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
@@ -132,12 +124,10 @@
     <Compile Include="Converters\XsdConverterBase.cs" />
     <Compile Include="Entities\ResultAggregations\FirstOrDefault.cs" />
     <Compile Include="Entities\ResultAggregations\FirstResult.cs" />
-    <Compile Include="Entities\ResultAggregations\IResultAggregator.cs" />
     <Compile Include="Entities\ResultAggregations\OriginalResult.cs" />
     <Compile Include="Entities\ResultAggregations\SingleOrDefault.cs" />
     <Compile Include="Entities\ResultAggregations\SingleResult.cs" />
     <Compile Include="Entities\EntityExtensions.cs" />
-    <Compile Include="Entities\ResultPostprocessing\IResultTransformer.cs" />
     <Compile Include="Entities\ResultPostprocessing\SimpleTransformer.cs" />
     <Compile Include="Entities\ResultPostprocessing\ObservableCollectionTransformer.cs" />
     <Compile Include="Entities\ResultPostprocessing\RdfListTransformer.cs" />
@@ -149,69 +139,60 @@
     <Compile Include="EntityContextFactory.cs" />
     <Compile Include="EntityContextFactoryExtensions.cs" />
     <Compile Include="FluentCompare.cs" />
-    <Compile Include="Entities\BlankId.cs" />
     <Compile Include="EntityContext.cs" />
     <Compile Include="Entities\EntityProxy.cs" />
-    <Compile Include="Entities\IEntity.cs" />
     <Compile Include="ICache.cs" />
-    <Compile Include="IEntityContextFactory.cs" />
-    <Compile Include="IEntityStore.cs" />
     <Compile Include="LightInject\LightInject.cs" />
-    <Compile Include="LinkedData\IResourceResolutionStrategy.cs" />
     <Compile Include="Linq\CamelCaseVariableNamingConvention.cs" />
     <Compile Include="Linq\Expressions\ExpressionExtensions.cs" />
     <Compile Include="Linq\GenericQueryOptimizer.cs" />
     <Compile Include="Linq\IQueryOptimizer.cs" />
     <Compile Include="Linq\IQueryVisitor.cs" />
-    <Compile Include="Linq\IVariableNamingConvention.cs" />
     <Compile Include="Linq\Model\ConditionalConstrainSelector.cs" />
+    <Compile Include="Linq\Model\Identifier.cs" />
     <Compile Include="Linq\Model\IdentifierEntityAccessor.cs" />
+    <Compile Include="Linq\Model\IVariableNamingConvention.cs" />
+    <Compile Include="Linq\Model\IVariableNamingStrategy.cs" />
     <Compile Include="Linq\Model\Navigators\IdentifierEntityAccessorNavigator.cs" />
     <None Include="Linq\Model\Navigators\UnspecifiedEntityAccessorNavigator.cs" />
     <None Include="Linq\Model\UnspecifiedEntityAccessor.cs" />
     <Compile Include="Linq\Model\EntityTypeConstrain.cs" />
     <Compile Include="Linq\Model\Navigators\EntityTypeConstrainNavigator.cs" />
+    <Compile Include="Linq\Model\Navigators\IQueryComponentNavigator.cs" />
     <Compile Include="Linq\Model\Navigators\OptionalPatternNavigator.cs" />
+    <Compile Include="Linq\Model\Navigators\QueryComponentNavigatorAttribute.cs" />
+    <Compile Include="Linq\Model\Navigators\QueryComponentNavigatorBase.cs" />
+    <Compile Include="Linq\Model\Navigators\QueryNavigator.cs" />
+    <Compile Include="Linq\Model\Navigators\StrongEntityAccessorNavigator.cs" />
     <Compile Include="Linq\Model\OptionalPattern.cs" />
     <Compile Include="Linq\Model\List.cs" />
     <Compile Include="Linq\Model\Navigators\ListNavigator.cs" />
+    <Compile Include="Linq\Model\Prefix.cs" />
+    <Compile Include="Linq\Model\Query.cs" />
+    <Compile Include="Linq\Model\QueryComponent.cs" />
+    <Compile Include="Linq\Model\QueryElement.cs" />
+    <Compile Include="Linq\Model\StrongEntityAccessor.cs" />
     <Compile Include="Linq\NonEntityQueryModelVisitor.cs" />
     <Compile Include="Linq\Expressions\EntityIdentifierExpression.cs" />
     <Compile Include="Linq\Expressions\EntityPropertyExpression.cs" />
-    <Compile Include="Linq\Expressions\FromPropertyClause.cs" />
     <Compile Include="Linq\Model\Alias.cs" />
     <Compile Include="Linq\Model\Navigators\AliasNavigator.cs" />
     <Compile Include="Linq\Model\Navigators\UnboundConstrainNavigator.cs" />
     <Compile Include="Linq\Model\UnboundConstrain.cs" />
     <Compile Include="Linq\Model\QueryComponentExtensions.cs" />
-    <Compile Include="Linq\Model\IQueryComponent.cs" />
-    <Compile Include="Linq\Model\ISelectableQueryComponent.cs" />
-    <Compile Include="Linq\IVariableNamingStrategy.cs" />
     <Compile Include="Linq\Model\Navigators\BinaryOperatorNavigator.cs" />
     <Compile Include="Linq\Model\Navigators\CallNavigator.cs" />
-    <Compile Include="Linq\Model\Navigators\StrongEntityAccessorNavigator.cs" />
     <Compile Include="Linq\Model\Navigators\FilterNavigator.cs" />
     <Compile Include="Linq\Model\Navigators\EntityConstrainNavigator.cs" />
-    <Compile Include="Linq\Model\Navigators\QueryNavigator.cs" />
-    <Compile Include="Linq\Model\Navigators\QueryComponentNavigatorAttribute.cs" />
-    <Compile Include="Linq\Model\Navigators\QueryComponentNavigatorBase.cs" />
     <Compile Include="Linq\Model\Navigators\UnaryOperatorNavigator.cs" />
-    <Compile Include="Linq\Model\Prefix.cs" />
-    <Compile Include="Linq\Model\Navigators\IQueryComponentNavigator.cs" />
     <Compile Include="Linq\EntityQueryVisitor.cs" />
     <Compile Include="Linq\Model\Call.cs" />
     <Compile Include="Linq\Model\BinaryOperator.cs" />
-    <Compile Include="Linq\Model\QueryElement.cs" />
-    <Compile Include="Linq\Model\StrongEntityAccessor.cs" />
     <Compile Include="Linq\Model\Filter.cs" />
-    <Compile Include="Linq\Model\Identifier.cs" />
     <Compile Include="Linq\Model\UnaryOperator.cs" />
-    <Compile Include="Linq\Model\IExpression.cs" />
     <Compile Include="Linq\Model\Operator.cs" />
-    <Compile Include="Linq\Model\Query.cs" />
     <Compile Include="Linq\Model\Literal.cs" />
     <Compile Include="Linq\Model\EntityConstrain.cs" />
-    <Compile Include="Linq\Model\QueryComponent.cs" />
     <Compile Include="Linq\QueryVisitorExtensions.cs" />
     <Compile Include="Linq\Sparql\SparqlQueryVariables.cs" />
     <Compile Include="Linq\Sparql\VisitedComponentCollection.cs" />
@@ -250,7 +231,6 @@
     <Compile Include="Mapping\Conventions\ConventionsVisitor.cs" />
     <Compile Include="Mapping\Conventions\DefaultDictionaryKeyPredicateConvention.cs" />
     <Compile Include="Mapping\Conventions\DefaultDictionaryValuePredicateConvention.cs" />
-    <Compile Include="Mapping\Conventions\IConvention.cs" />
     <Compile Include="Mapping\Conventions\ICollectionConvention.cs" />
     <Compile Include="Mapping\Conventions\IDictionaryConvention.cs" />
     <Compile Include="Mapping\Conventions\IPropertyConvention.cs" />
@@ -268,8 +248,6 @@
     <Compile Include="Mapping\Fluent\StorageStrategyPart.cs" />
     <Compile Include="Mapping\Fluent\TermMap.cs" />
     <Compile Include="Mapping\MappingsRepository.cs" />
-    <Compile Include="Mapping\Model\ICollectionMapping.cs" />
-    <Compile Include="Mapping\Model\IDictionaryMapping.cs" />
     <Compile Include="Mapping\Model\MappingModelBuilder.cs" />
     <Compile Include="Mapping\Providers\IClassMappingProvider.cs" />
     <Compile Include="Mapping\Providers\ICollectionMappingProvider.cs" />
@@ -299,30 +277,26 @@
     <Compile Include="Mapping\Validation\MappingProvidersValidator.cs" />
     <Compile Include="Mapping\Visitors\IFluentMapsVisitor.cs" />
     <Compile Include="Mapping\Visitors\IMappingAttributesVisitor.cs" />
-    <Compile Include="Mapping\Visitors\IMappingModelVisitor.cs" />
     <Compile Include="Mapping\Visitors\IMappingProviderVisitor.cs" />
-    <Compile Include="Model\EntityQuadCollection2.cs" />
+    <Compile Include="Model\EntityQuad.cs" />
+    <Compile Include="Model\EntityQuadCollection.cs" />
     <Compile Include="Model\IEntityQuadCollection.cs" />
     <Compile Include="Model\Index.cs" />
     <Compile Include="Model\IndexCollection.cs" />
     <Compile Include="Model\LooseEntityQuadEqualityComparer.cs" />
+    <Compile Include="Model\Node.cs" />
+    <Compile Include="Model\Triple.cs" />
     <Compile Include="NamedGraphs\BaseUriNamedGraphSelector.cs" />
     <Compile Include="NamedGraphs\GraphSelectionStrategyBase.cs" />
     <Compile Include="IO\ContentTypeResolver.cs" />
     <Compile Include="IO\FileExtensionContentTypeResolver.cs" />
     <Compile Include="IO\HeadersContentTypeResolver.cs" />
     <Compile Include="IO\IContentTypeResolver.cs" />
-    <Compile Include="IEntitySource.cs" />
-    <Compile Include="Converters\INodeConverter.cs" />
     <Compile Include="Linq\ExceptionHelper.cs" />
     <Compile Include="Mapping\MappingContext.cs" />
     <Compile Include="Mapping\MappingException.cs" />
     <Compile Include="Mapping\Model\CollectionMapping.cs" />
-    <Compile Include="Mapping\Model\IEntityMapping.cs" />
-    <Compile Include="Mapping\IMappingsRepository.cs" />
-    <Compile Include="Mapping\Model\IPropertyMapping.cs" />
     <Compile Include="Converters\LiteralNodeConverter.cs" />
-    <Compile Include="Mapping\Model\IClassMapping.cs" />
     <Compile Include="Mapping\Fluent\CollectionMap.cs" />
     <Compile Include="Mapping\Fluent\EntityMap.cs" />
     <Compile Include="Mapping\Model\EntityMapping.cs" />
@@ -333,18 +307,15 @@
     <Compile Include="Mapping\Attributes\PropertyAttribute.cs" />
     <Compile Include="Mapping\Attributes\ClassAttribute.cs" />
     <Compile Include="Mapping\Model\ClassMapping.cs" />
-    <Compile Include="Mapping\Model\StoreAs.cs" />
     <Compile Include="Mapping\ReflectionHelper.cs" />
     <Compile Include="Mapping\TypeExtensions.cs" />
     <Compile Include="Mapping\UnMappedTypeException.cs" />
-    <Compile Include="Model\Triple.cs" />
-    <Compile Include="NamedGraphs\INamedGraphSelector.cs" />
     <Compile Include="NamedGraphs\NamedGraphSelector.cs" />
     <Compile Include="NamedGraphs\NamedGraphMatch.cs" />
     <Compile Include="NamedGraphs\OverridingGraphSelector.cs" />
-    <Compile Include="NamedGraphs\ISourceGraphSelectionOverride.cs" />
     <Compile Include="NamedGraphs\UnionGraphSelector.cs" />
     <Compile Include="Net\StreamWebResponse.cs" />
+    <Compile Include="Ontologies\Class.cs" />
     <Compile Include="Ontologies\CNT.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -364,15 +335,12 @@
     </Compile>
     <Compile Include="Ontologies\DefaultOntologiesProvider.cs" />
     <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Entities\EntityId.cs" />
-    <Compile Include="IEntityContext.cs" />
     <Compile Include="Ontologies\FOAF.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FOAF.tt</DependentUpon>
     </Compile>
     <Compile Include="Ontologies\IOntologyLoader.cs" />
-    <Compile Include="Ontologies\IOntologyProvider.cs" />
     <Compile Include="Ontologies\LDP.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -381,6 +349,7 @@
     <Compile Include="Ontologies\NamespaceSpecification.cs" />
     <Compile Include="Ontologies\ObjectProperty.cs" />
     <Compile Include="Ontologies\Ontology.cs" />
+    <Compile Include="Ontologies\OntologyExtensions.cs" />
     <Compile Include="Ontologies\OntologyFactory.cs" />
     <Compile Include="Ontologies\OntologyProviderBase.cs" />
     <Compile Include="Ontologies\OntologyProviderExtensions.cs" />
@@ -389,6 +358,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>OWL.tt</DependentUpon>
     </Compile>
+    <Compile Include="Ontologies\Property.cs" />
     <Compile Include="Ontologies\RDF.cs">
       <DependentUpon>RDF.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -420,15 +390,10 @@
       <DependentUpon>SPIN.tt</DependentUpon>
     </Compile>
     <Compile Include="Ontologies\Term.cs" />
-    <Compile Include="Ontologies\OntologyExtensions.cs" />
     <Compile Include="Ontologies\XmlOntologyLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Ontologies\Property.cs" />
-    <Compile Include="Ontologies\Class.cs" />
-    <Compile Include="Model\Node.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="EntityStore.cs" />
-    <Compile Include="Model\EntityQuad.cs" />
     <Compile Include="AbsoluteUriComparer.cs" />
     <Compile Include="TypeComparer.cs" />
     <Compile Include="TypeExtensions.cs" />
@@ -437,7 +402,6 @@
     <Compile Include="Updates\EntityDelete.cs" />
     <Compile Include="Updates\GraphReconstruct.cs" />
     <Compile Include="Updates\GraphUpdate.cs" />
-    <Compile Include="Updates\IDatasetChanges.cs" />
     <Compile Include="Updates\IDatasetChangesTracker.cs" />
     <Compile Include="Updates\RemoveReferences.cs" />
     <Compile Include="UriExtensions.cs" />
@@ -523,16 +487,12 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SPIN.cs</LastGenOutput>
     </None>
+    <None Include="RomanticWeb.project.json" />
     <None Include="Vocabularies\Vocabulary.t4">
       <LastGenOutput>OntologyVocabulary1.cs</LastGenOutput>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Anotar.NLog">
-      <HintPath>..\packages\Anotar.NLog.Fody.2.8.2.0\Lib\portable-net4+sl4+wp7+windows8\Anotar.NLog.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ImpromptuInterface">
       <HintPath>..\packages\ImpromptuInterface.6.2.2\lib\net40\ImpromptuInterface.dll</HintPath>
     </Reference>
@@ -541,21 +501,13 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MethodCache.Attributes">
-      <HintPath>..\packages\MethodCache.Fody.1.3.2\lib\net40\MethodCache.Attributes.dll</HintPath>
+      <HintPath>..\packages\MethodCache.Fody.1.4.1\lib\net40\MethodCache.Attributes.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="NullGuard">
-      <HintPath>..\packages\NullGuard.Fody.1.2.0.0\Lib\portable-net4+sl4+wp7+win8+MonoAndroid16+MonoTouch40\NullGuard.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=1.15.13.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Remotion.Linq.1.15.13.0\lib\portable-net45+wp80+win\Remotion.Linq.dll</HintPath>
+      <HintPath>..\packages\Remotion.Linq.2.1.1\lib\portable-net45+win+wpa81+wp80\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll</HintPath>
@@ -567,23 +519,28 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\RomanticWeb.Contracts\RomanticWeb.Contracts.csproj">
+      <Project>{17315f2e-393a-422f-80ba-575794350285}</Project>
+      <Name>RomanticWeb.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  <Import Project="..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" />
-  <Import Project="..\packages\Fody.1.24.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.24.0\build\Fody.targets')" />
-  <Import Project="..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets" Condition="Exists('..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets')" />
+  <Import Project="..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />
+  <Import Project="..\packages\Fody.1.29.4\build\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\Fody.targets')" />
+  <Import Project="..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets" Condition="Exists('..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PepitaPackage.1.21.2\build\PepitaPackage.targets'))" />
-    <Error Condition="!Exists('..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets'))" />
+    <Error Condition="!Exists('..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PepitaPackage.1.21.4\build\PepitaPackage.targets'))" />
+    <Error Condition="!Exists('..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets'))" />
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets" Condition="Exists('..\packages\Zoltu.Versioning.1.1.23.0\build\Zoltu.Versioning.targets')" />
+  <Import Project="..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets" Condition="Exists('..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

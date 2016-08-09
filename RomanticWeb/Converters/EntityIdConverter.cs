@@ -44,7 +44,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        public object Convert(Node node, IEntityContext context)
+        public object Convert(INode node, IEntityContext context)
         {
             if (node.IsBlank)
             {
@@ -61,7 +61,7 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        public Node ConvertBack(object obj, IEntityContext context)
+        public INode ConvertBack(object obj, IEntityContext context)
         {
             if (obj is BlankId)
             {

@@ -38,28 +38,28 @@ namespace RomanticWeb.Tests
             Assert.That(triple.Object, Is.SameAs(_validObject));
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
-        [TestCaseSource("_nonUriNodes")]
+        [Test]
+        [TestCaseSource(typeof(EntityTripleTests), "_nonUriNodes")]
         public void Predicate_must_be_either_an_URI_node_or_Blank_node(Node predicate)
         {
-            new EntityQuad(_entityId, _validSubject, predicate, _validObject, _graph);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new EntityQuad(_entityId, _validSubject, predicate, _validObject, _graph));
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
-        [TestCaseSource("_nonUriNodes")]
+        [Test]
+        [TestCaseSource(typeof(EntityTripleTests), "_nonUriNodes")]
         public void Graph_must_be_either_an_URI_node_or_Blank_node(Node graph)
         {
-            new EntityQuad(_entityId, _validSubject, _validPredicate, _validObject, graph);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new EntityQuad(_entityId, _validSubject, _validPredicate, _validObject, graph));
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void Subject_must_not_be_a_literal_node()
         {
             // given
             var subject = Node.ForLiteral("literal");
 
             // then
-            new EntityQuad(_entityId, subject, _validPredicate, _validObject, _graph);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new EntityQuad(_entityId, subject, _validPredicate, _validObject, _graph));
         }
 
         [Test]

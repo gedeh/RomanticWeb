@@ -10,8 +10,8 @@ namespace RomanticWeb.Updates
     {
         private const int GraphChangesCapacity = 16;
         private readonly object _syncLock = new object();
-        private readonly List<DatasetChange> _frozenChanges = new List<DatasetChange>(16);
-        private readonly IDictionary<EntityId, Stack<DatasetChange>> _graphChanges = new Dictionary<EntityId, Stack<DatasetChange>>();
+        private readonly List<IDatasetChange> _frozenChanges = new List<IDatasetChange>(16);
+        private readonly IDictionary<EntityId, Stack<IDatasetChange>> _graphChanges = new Dictionary<EntityId, Stack<IDatasetChange>>();
 
         /// <inheritdoc/>
         public bool HasChanges
@@ -22,7 +22,7 @@ namespace RomanticWeb.Updates
             }
         }
 
-        private IEnumerable<DatasetChange> CurrentChanges
+        private IEnumerable<IDatasetChange> CurrentChanges
         {
             get
             {
@@ -31,7 +31,7 @@ namespace RomanticWeb.Updates
         }
 
         /// <inheritdoc/>
-        public IEnumerable<DatasetChange> this[EntityId graphUri]
+        public IEnumerable<IDatasetChange> this[EntityId graphUri]
         {
             get
             {
@@ -40,7 +40,7 @@ namespace RomanticWeb.Updates
         }
 
         /// <inheritdoc/>
-        public void Add(DatasetChange datasetChange)
+        public void Add(IDatasetChange datasetChange)
         {
             if (datasetChange.IsEmpty)
             {
@@ -65,27 +65,23 @@ namespace RomanticWeb.Updates
             _frozenChanges.Clear();
         }
 
-        /// <summary>
-        /// Gets the enumerator of changes
-        /// </summary>
-        public IEnumerator<DatasetChange> GetEnumerator()
+        /// <summary>Gets the enumerator of changes.</summary>
+        public IEnumerator<IDatasetChange> GetEnumerator()
         {
             return _frozenChanges.Union(CurrentChanges).GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the enumerator of changes grouped by named graphs
-        /// </summary>
+        /// <summary>Gets the enumerator of changes grouped by named graphs.</summary>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        private Stack<DatasetChange> ChangesFor(EntityId graph)
+        private Stack<IDatasetChange> ChangesFor(EntityId graph)
         {
             if (!_graphChanges.ContainsKey(graph))
             {
-                _graphChanges[graph] = new Stack<DatasetChange>(GraphChangesCapacity);
+                _graphChanges[graph] = new Stack<IDatasetChange>(GraphChangesCapacity);
             }
 
             return _graphChanges[graph];
@@ -96,7 +92,7 @@ namespace RomanticWeb.Updates
             _frozenChanges.AddRange(CurrentChanges);
         }
 
-        private void AppendAndMerge(DatasetChange datasetChange)
+        private void AppendAndMerge(IDatasetChange datasetChange)
         {
             var nextChange = datasetChange;
 

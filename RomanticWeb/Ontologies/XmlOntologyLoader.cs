@@ -18,12 +18,12 @@ namespace RomanticWeb.Ontologies
         /// <summary>Creates an ontology from given stream.</summary>
         /// <param name="fileStream"></param>
         /// <returns>Ontology filled with terms.</returns>
-        public Ontology Create(Stream fileStream)
+        public IOntology Create(Stream fileStream)
         {
             return CreateFromXML(fileStream);
         }
 
-        private Ontology CreateFromXML(Stream fileStream)
+        private IOntology CreateFromXML(Stream fileStream)
         {
             bool isOwlBasedFile = true;
             XDocument document = XDocument.Load(fileStream);

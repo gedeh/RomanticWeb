@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using RomanticWeb.Linq.Model;
 
 namespace RomanticWeb.Linq
@@ -8,36 +8,13 @@ namespace RomanticWeb.Linq
     /// <summary>Provides constistent and non-coliding names for identifiers.</summary>
     internal class UniqueVariableNamingStrategy : IVariableNamingStrategy
     {
-        #region Fields
-        private static readonly Dictionary<Query, Dictionary<string, int>> NextIdentifiers = new Dictionary<Query, Dictionary<string, int>>();
-        private static object _lock = new object();
-        private Query _context;
-        #endregion
+        private static readonly IDictionary<int, IDictionary<string, int>> NextIdentifiers = new ConcurrentDictionary<int, IDictionary<string, int>>();
 
-        #region Constructors
-        /// <summary>Default constructor with query context provided.</summary>
-        /// <param name="context">Query context to be used as name distinction mechanism.</param>
-        internal UniqueVariableNamingStrategy(Query context)
-        {
-            _context = context;
-        }
-        #endregion
-
-        #region Destructors
-        ~UniqueVariableNamingStrategy()
-        {
-            if (NextIdentifiers.ContainsKey(_context))
-            {
-                NextIdentifiers.Remove(_context);
-            }
-        }
-        #endregion
-
-        #region Public methods
         /// <summary>Gets a variable name for given identifier.</summary>
+        /// <param name="queryContext">Query context.</param>
         /// <param name="identifier">Base identifier for which the name must be created.</param>
         /// <returns>Name of the variale coresponding for given identifier.</returns>
-        public string GetNameForIdentifier(string identifier)
+        public string GetNameForIdentifier(IQuery queryContext, string identifier)
         {
             if (identifier.Length == 0)
             {
@@ -50,20 +27,17 @@ namespace RomanticWeb.Linq
             }
 
             string result = identifier;
-            lock (_lock)
+            if (!NextIdentifiers.ContainsKey(queryContext.GetHashCode()))
             {
-                if (!NextIdentifiers.ContainsKey(_context))
-                {
-                    NextIdentifiers[_context] = new Dictionary<string, int>();
-                }
-
-                if (!NextIdentifiers[_context].ContainsKey(identifier))
-                {
-                    NextIdentifiers[_context][identifier] = 0;
-                }
-
-                result += (NextIdentifiers[_context][identifier]++).ToString();
+                NextIdentifiers[queryContext.GetHashCode()] = new ConcurrentDictionary<string, int>();
             }
+
+            if (!NextIdentifiers[queryContext.GetHashCode()].ContainsKey(identifier))
+            {
+                NextIdentifiers[queryContext.GetHashCode()][identifier] = 0;
+            }
+
+            result += (NextIdentifiers[queryContext.GetHashCode()][identifier]++).ToString();
 
             return result;
         }
@@ -86,6 +60,5 @@ namespace RomanticWeb.Linq
 
             return result;
         }
-        #endregion
     }
 }

@@ -49,7 +49,7 @@ namespace RomanticWeb.Tests.Configuration
             store.CreateTripleStore().Should().BeOfType<FileTripleStore>();
         }
 
-        [TestCaseSource("GetProviderConfigurations")]
+        [TestCaseSource(typeof(StoresConfigurationTests), "GetProviderConfigurations")]
         public void Should_load_persistent_storage_provider(string sourceName, Type storeType)
         {
             // given

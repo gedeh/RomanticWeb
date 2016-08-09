@@ -24,15 +24,15 @@ namespace RomanticWeb.JsonLd
         internal const string Base = "@base";
         internal const string Default = "@default";
 
-        private static readonly Node RdfFirst = Node.ForUri(Rdf.first);
-        private static readonly Node RdfType = Node.ForUri(Rdf.type);
-        private static readonly Node RdfRest = Node.ForUri(Rdf.rest);
-        private static readonly Node RdfNil = Node.ForUri(Rdf.nil);
+        private static readonly INode RdfFirst = Node.ForUri(Rdf.first);
+        private static readonly INode RdfType = Node.ForUri(Rdf.type);
+        private static readonly INode RdfRest = Node.ForUri(Rdf.rest);
+        private static readonly INode RdfNil = Node.ForUri(Rdf.nil);
 
         private readonly JArray _listInGraph = new JArray();
-        private List<Node> _nodesInList = new List<Node>();
+        private List<INode> _nodesInList = new List<INode>();
 
-        public string FromRdf(IEnumerable<EntityQuad> quads, bool userRdfType = false, bool useNativeTypes = false)
+        public string FromRdf(IEnumerable<IEntityQuad> quads, bool userRdfType = false, bool useNativeTypes = false)
         {
             IDictionary<JToken, JObject> subjectMap = new Dictionary<JToken, JObject>();
             var dataset = from triple in quads
@@ -42,16 +42,16 @@ namespace RomanticWeb.JsonLd
             foreach (var graph in dataset)
             {
                 var lists = GetListsFromGraph(graph, useNativeTypes);
-                IGrouping<Node, EntityQuad> graph1 = graph;
+                IGrouping<INode, IEntityQuad> graph1 = graph;
                 var distinctSubjects = (from q in graph
-                                        where q.Graph == graph1.Key && (!_nodesInList.Contains(q.Subject))
+                                        where q.Graph.Equals(graph1.Key) && (!_nodesInList.Contains(q.Subject))
                                         orderby q.Subject.IsBlank ? "_:" + q.Subject.BlankNode : q.Subject.ToString() // todo: remove ordering (will need to change tests)
                                         select q.Subject).Distinct();
 
                 foreach (var subject in distinctSubjects)
                 {
-                    Node subject1 = subject;
-                    var entitySerialized = SerializeEntity(subject, graph.Where(n => n.Subject == subject1), graph.Key, useNativeTypes, userRdfType, lists);
+                    INode subject1 = subject;
+                    var entitySerialized = SerializeEntity(subject, graph.Where(n => n.Subject.Equals(subject1)), graph.Key, useNativeTypes, userRdfType, lists);
 
                     if (graph.Key != null)
                     {
@@ -85,12 +85,12 @@ namespace RomanticWeb.JsonLd
             return json;
         }
 
-        private JObject SerializeEntity(Node subject, IEnumerable<EntityQuad> quads, Node graphName, bool nativeTypes, bool useRdfType, JObject listsInGraph)
+        private JObject SerializeEntity(INode subject, IEnumerable<IEntityQuad> quads, INode graphName, bool nativeTypes, bool useRdfType, JObject listsInGraph)
         {
             var groups = from quad in quads
-                         where quad.Subject == subject && quad.Graph == graphName
+                         where quad.Subject.Equals(subject) && quad.Graph.Equals(graphName)
                          group quad.Object by quad.Predicate into g
-                         select new { Predicate = (g.Key == RdfType ? useRdfType ? RdfType : Node.ForLiteral(Type) : g.Key), Objects = g }
+                         select new { Predicate = (g.Key.Equals(RdfType) ? useRdfType ? RdfType : Node.ForLiteral(Type) : g.Key), Objects = g }
                              into selection
                              orderby selection.Predicate
                              select selection;
@@ -101,7 +101,7 @@ namespace RomanticWeb.JsonLd
             foreach (var objectGroup in groups)
             {
                 JProperty res;
-                if (objectGroup.Predicate == RdfType || objectGroup.Predicate == Node.ForLiteral(Type))
+                if (objectGroup.Predicate.Equals(RdfType) || objectGroup.Predicate.Equals(Node.ForLiteral(Type)))
                 {
                     if (useRdfType)
                     {
@@ -129,9 +129,9 @@ namespace RomanticWeb.JsonLd
             return result;
         }
 
-        private JObject GetListsFromGraph(IEnumerable<EntityQuad> quads, bool useNativeTypes)
+        private JObject GetListsFromGraph(IEnumerable<IEntityQuad> quads, bool useNativeTypes)
         {
-            var lists = quads.Where(q => (q.Subject.IsBlank && q.Predicate == RdfRest && q.Object == RdfNil));
+            var lists = quads.Where(q => (q.Subject.IsBlank && q.Predicate.Equals(RdfRest) && q.Object.Equals(RdfNil)));
             var locList = new JObject();
             foreach (var list in lists)
             {
@@ -146,23 +146,23 @@ namespace RomanticWeb.JsonLd
             return locList;
         }
 
-        private void PrepareLists(EntityQuad list, IEnumerable<EntityQuad> quads, bool useNativeTypes)
+        private void PrepareLists(IEntityQuad list, IEnumerable<IEntityQuad> quads, bool useNativeTypes)
         {
-            Node localSubject = list.Subject;
-            int anotherPropertyInList = quads.Count(q => q.Subject == localSubject && q.Predicate != RdfType);
-            var firstValues = quads.Where(q => (q.Subject == localSubject && q.Predicate == RdfFirst)).Select(q => q.Object);
-            Node firstValue = firstValues.First();
-            Node restValue = list.Object;
+            var localSubject = list.Subject;
+            int anotherPropertyInList = quads.Count(q => q.Subject.Equals(localSubject) && !q.Predicate.Equals(RdfType));
+            var firstValues = quads.Where(q => (q.Subject.Equals(localSubject) && q.Predicate.Equals(RdfFirst))).Select(q => q.Object);
+            var firstValue = firstValues.First();
+            var restValue = list.Object;
             _listInGraph.AddFirst(ReturnListProperties(firstValue, useNativeTypes));
             _nodesInList.Add(localSubject);
 
-            IEnumerable<EntityQuad> quad = quads.Where(q => (q.Subject.IsBlank && q.Predicate == RdfRest && q.Object == localSubject));
+            IEnumerable<IEntityQuad> quad = quads.Where(q => (q.Subject.IsBlank && q.Predicate.Equals(RdfRest) && q.Object.Equals(localSubject)));
             if (anotherPropertyInList > 2 || firstValues.Count() > 1)
             {
                 if (_listInGraph.Count() > 1)
                 {
                     _listInGraph.First.Remove();
-                    _nodesInList = _nodesInList.Where(n => n != localSubject).ToList();
+                    _nodesInList = _nodesInList.Where(n => !n.Equals(localSubject)).ToList();
                 }
 
                 _listInGraph.AddFirst(restValue.ToString());
@@ -174,11 +174,11 @@ namespace RomanticWeb.JsonLd
                 }
                 else
                 {
-                    IEnumerable<EntityQuad> firstQuad = quads.Where(q => (q.Subject.IsBlank && q.Predicate == RdfFirst && q.Object == localSubject));
+                    IEnumerable<IEntityQuad> firstQuad = quads.Where(q => (q.Subject.IsBlank && q.Predicate.Equals(RdfFirst) && q.Object.Equals(localSubject)));
                     if (firstQuad.Count() == 1)
                     {
                         _listInGraph.First.Remove();
-                        _nodesInList = _nodesInList.Where(n => n != localSubject).ToList();
+                        _nodesInList = _nodesInList.Where(n => !n.Equals(localSubject)).ToList();
                         _listInGraph.AddFirst((restValue.IsBlank && firstValue.IsBlank) ? localSubject.ToString() : restValue.ToString());
                     }
                     else
@@ -188,7 +188,7 @@ namespace RomanticWeb.JsonLd
                 }
         }
 
-        private JObject ReturnListProperties(Node @object, bool useNativeTypes)
+        private JObject ReturnListProperties(INode @object, bool useNativeTypes)
         {
             var returnObject = new JObject();
             if (!@object.IsLiteral)
@@ -204,7 +204,7 @@ namespace RomanticWeb.JsonLd
             return returnObject;
         }
 
-        private JObject GetPropertyValue(Node @object, bool nativeTypes, JObject lists)
+        private JObject GetPropertyValue(INode @object, bool nativeTypes, JObject lists)
         {
             if (!@object.IsLiteral)
             {
@@ -214,9 +214,9 @@ namespace RomanticWeb.JsonLd
             return new JObject(GetLiteralObjectProperties(@object, nativeTypes));
         }
 
-        private JProperty GetNonLiteralObjectPreoperties(Node @object, JObject lists)
+        private JProperty GetNonLiteralObjectPreoperties(INode @object, JObject lists)
         {
-            if (@object == RdfNil)
+            if (@object.Equals(RdfNil))
             {
                 return new JProperty(List, new JArray());
             }
@@ -237,7 +237,7 @@ namespace RomanticWeb.JsonLd
             return null;
         }
 
-        private IEnumerable<JProperty> GetLiteralObjectProperties(Node @object, bool useNativeTypes)
+        private IEnumerable<JProperty> GetLiteralObjectProperties(INode @object, bool useNativeTypes)
         {
             IList<JProperty> literalProperties = new List<JProperty>(3);
             object value = null;
@@ -275,7 +275,7 @@ namespace RomanticWeb.JsonLd
             return literalProperties;
         }
 
-        private object TryConvertValueToNative(Node @object)
+        private object TryConvertValueToNative(INode @object)
         {
             object contverted = null;
 

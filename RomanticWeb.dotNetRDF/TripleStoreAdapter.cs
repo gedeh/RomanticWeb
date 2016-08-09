@@ -24,9 +24,7 @@ namespace RomanticWeb.DotNetRDF
         private readonly ISparqlCommandFactory _sparqlCommandFactory;
         private bool _disposed;
 
-        /// <summary>
-        /// Creates a new instance of <see cref="TripleStoreAdapter" />
-        /// </summary>
+        /// <summary>Creates a new instance of <see cref="TripleStoreAdapter" />.</summary>
         /// <param name="store">The underlying triple store</param>
         /// <param name="sparqlCommandFactory"></param>
         public TripleStoreAdapter(ITripleStore store, ISparqlCommandFactory sparqlCommandFactory)
@@ -41,7 +39,7 @@ namespace RomanticWeb.DotNetRDF
         public Uri MetaGraphUri { get; set; }
 
         /// <summary>Loads an entity using SPARQL query and returns the resulting triples.</summary>
-        public IEnumerable<EntityQuad> LoadEntity(EntityId entityId)
+        public IEnumerable<IEntityQuad> LoadEntity(EntityId entityId)
         {
             var sparql = QueryBuilder.Select("s", "p", "o", "g")
                                      .Graph(MetaGraphUri, graph => graph.Where(triple => triple.Subject("g").PredicateUri("foaf:primaryTopic").Object(entityId.Uri)))
@@ -59,9 +57,9 @@ namespace RomanticWeb.DotNetRDF
         public bool EntityExist(EntityId entityId)
         {
             var ask = QueryBuilder.Ask()
-                                .Graph(
-                                    MetaGraphUri,
-                                    graph => graph.Where(triple => triple.Subject("g").PredicateUri("foaf:primaryTopic").Object(entityId.Uri)));
+                .Graph(
+                    MetaGraphUri,
+                    graph => graph.Where(triple => triple.Subject("g").PredicateUri("foaf:primaryTopic").Object(entityId.Uri)));
             ask.Prefixes.Import(_namespaces);
             return ExecuteAsk(ask.BuildQuery());
         }
@@ -70,7 +68,7 @@ namespace RomanticWeb.DotNetRDF
         /// <param name="queryModel">Query model to be executed.</param>
         /// <param name="resultingEntities">Enumeration of entity identifiers beeing in fact the resulting ones.</param>
         /// <returns>Enumeration of entity quads beeing a result of the query.</returns>
-        public IEnumerable<EntityQuad> ExecuteEntityQuery(Query queryModel, out IEnumerable<EntityId> resultingEntities)
+        public IEnumerable<IEntityQuad> ExecuteEntityQuery(IQuery queryModel, out IEnumerable<EntityId> resultingEntities)
         {
             SparqlQueryVariables variables;
             var resultSet = ExecuteSelect(GetSparqlQuery(queryModel, out variables));
@@ -97,7 +95,7 @@ namespace RomanticWeb.DotNetRDF
         /// <summary>Executes a SPARQL query with scalar result.</summary>
         /// <param name="queryModel">Query model to be executed.</param>
         /// <returns>Scalar value beeing a result of the query.</returns>
-        public int ExecuteScalarQuery(Query queryModel)
+        public int ExecuteScalarQuery(IQuery queryModel)
         {
             SparqlQueryVariables variables;
             var resultSet = ExecuteSelect(GetSparqlQuery(queryModel, out variables));
@@ -107,20 +105,20 @@ namespace RomanticWeb.DotNetRDF
         /// <summary>Executes a SPARQL ask query.</summary>
         /// <param name="queryModel">Query model to be executed.</param>
         /// <returns><b>true</b> in case a given query has solution, otherwise <b>false</b>.</returns>
-        public bool ExecuteAskQuery(Query queryModel)
+        public bool ExecuteAskQuery(IQuery queryModel)
         {
             return ExecuteSelect(GetSparqlQuery(queryModel)).Result;
         }
 
         /// <inheritdoc />
-        public string GetCommandText(Query queryModel)
+        public string GetCommandText(IQuery queryModel)
         {
             return GetSparqlQuery(queryModel).ToString();
         }
 
         /// <summary>One-by-one retracts deleted triples, asserts new triples and updates the meta graph.</summary>
-        /// <param name="changes"></param>
-        public void Commit(IEnumerable<DatasetChange> changes)
+        /// <param name="changes">Dataset changes.</param>
+        public void Commit(IEnumerable<IDatasetChange> changes)
         {
             var updateCommands = changes.SelectMany(CreateCommands);
             var commands = new SparqlUpdateCommandSet(updateCommands);
@@ -129,9 +127,7 @@ namespace RomanticWeb.DotNetRDF
             ExecuteCommandSet(commands);
         }
 
-        /// <summary>
-        /// Disposes this instance and the underlying store
-        /// </summary>
+        /// <summary> Disposes this instance and the underlying store.</summary>
         public void Dispose()
         {
             if (_disposed)
@@ -143,13 +139,13 @@ namespace RomanticWeb.DotNetRDF
             _disposed = true;
         }
 
-        private SparqlQuery GetSparqlQuery(Query sparqlQuery)
+        private SparqlQuery GetSparqlQuery(IQuery sparqlQuery)
         {
             SparqlQueryVariables variables;
             return GetSparqlQuery(sparqlQuery, out variables);
         }
 
-        private SparqlQuery GetSparqlQuery(Query sparqlQuery, out SparqlQueryVariables variables)
+        private SparqlQuery GetSparqlQuery(IQuery sparqlQuery, out SparqlQueryVariables variables)
         {
             GenericSparqlQueryVisitor queryVisitor = new SparqlQueryVisitor();
             queryVisitor.MetaGraphUri = MetaGraphUri;
@@ -197,7 +193,7 @@ namespace RomanticWeb.DotNetRDF
             return (SparqlResultSet)((INativelyQueryableStore)_store).ExecuteQuery(query.ToString());
         }
 
-        private IEnumerable<SparqlUpdateCommand> CreateCommands(DatasetChange change)
+        private IEnumerable<SparqlUpdateCommand> CreateCommands(IDatasetChange change)
         {
             LogTo.Info("Creating update command for change '{0}'", change);
             return _sparqlCommandFactory.CreateCommands(change);

@@ -2,31 +2,19 @@
 
 namespace RomanticWeb.Ontologies
 {
-    /// <summary>
-    /// A base classs for RDF properties
-    /// </summary>
-    public class Property : Term
+    /// <summary>A base classs for RDF properties.</summary>
+    public class Property : Term, IProperty
     {
-        /// <summary>
-        /// Creates a new Property
-        /// </summary>
-        internal Property(string predicateName)
-            : base(predicateName)
+        /// <summary>Creates a new Property. </summary>
+        internal Property(string predicateName) : base(predicateName)
         {
         }
-
-        /// <summary>
-        /// Gets the term name
-        /// </summary>
-        /// <remarks>See remarks under <see cref="Term.TermName"/></remarks>
-        public string PropertyName { get { return TermName; } }
 
 #pragma warning disable 1591
         [ExcludeFromCodeCoverage]
         public override string ToString()
         {
-            string prefix = Ontology == null ? "_" : Ontology.Prefix;
-            return string.Format("{0}:{1}", prefix, PropertyName);
+            return System.String.Format("{0}:{1}", Ontology == null ? "_" : Ontology.Prefix, Name);
         }
 #pragma warning restore
     }

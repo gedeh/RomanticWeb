@@ -15,18 +15,18 @@ namespace RomanticWeb
     {
         private readonly IDatasetChangesTracker _changesTracker;
         private readonly ISet<EntityId> _assertedEntities = new HashSet<EntityId>();
-        private readonly IDictionary<Node, int> _blankNodeRefCounts = new ConcurrentDictionary<Node, int>();
+        private readonly IDictionary<INode, int> _blankNodeRefCounts = new ConcurrentDictionary<INode, int>();
         private IEntityQuadCollection _entityQuads;
         private IEntityQuadCollection _initialQuads;
         private bool _disposed;
-        private bool _threadSafe = false;
+        private bool _threadSafe;
         private bool _trackChanges = true;
 
         public EntityStore(IDatasetChangesTracker changesTracker)
         {
             _changesTracker = changesTracker;
-            _entityQuads = new EntityQuadCollection2(_threadSafe);
-            _initialQuads = new EntityQuadCollection2(_threadSafe);
+            _entityQuads = new EntityQuadCollection(_threadSafe);
+            _initialQuads = new EntityQuadCollection(_threadSafe);
         }
 
         public bool ThreadSafe
@@ -49,12 +49,12 @@ namespace RomanticWeb
                 }
 
                 _threadSafe = value;
-                _entityQuads = new EntityQuadCollection2(_threadSafe);
-                _initialQuads = new EntityQuadCollection2(_threadSafe);
+                _entityQuads = new EntityQuadCollection(_threadSafe);
+                _initialQuads = new EntityQuadCollection(_threadSafe);
             }
         }
 
-        public IEnumerable<EntityQuad> Quads { get { return _entityQuads; } }
+        public IEnumerable<IEntityQuad> Quads { get { return _entityQuads; } }
 
         public bool TrackChanges
         {
@@ -77,14 +77,14 @@ namespace RomanticWeb
                 }
                 else
                 {
-                    _initialQuads = new EntityQuadCollection2(_threadSafe);
+                    _initialQuads = new EntityQuadCollection(_threadSafe);
                 }
             }
         }
 
         public IDatasetChanges Changes { get { return _changesTracker; } }
 
-        public IEnumerable<Node> GetObjectsForPredicate(EntityId entityId, Uri predicate, [AllowNull] Uri graph)
+        public IEnumerable<INode> GetObjectsForPredicate(EntityId entityId, Uri predicate, [AllowNull] Uri graph)
         {
             var quads = _entityQuads[Node.FromEntityId(entityId), Node.ForUri(predicate)];
 
@@ -96,17 +96,12 @@ namespace RomanticWeb
             return quads.Select(triple => triple.Object).ToList();
         }
 
-        public IEnumerable<EntityQuad> GetEntityQuads(EntityId entityId)
+        public IEnumerable<IEntityQuad> GetEntityQuads(EntityId entityId)
         {
             return _entityQuads[entityId];
         }
 
-        public IEnumerable<EntityQuad> GetEntityQuads(EntityId entityId, bool includeBlankNodes = true)
-        {
-            return GetEntityQuads(entityId);
-        }
-
-        public void AssertEntity(EntityId entityId, IEnumerable<EntityQuad> entityTriples)
+        public void AssertEntity(EntityId entityId, IEnumerable<IEntityQuad> entityTriples)
         {
             if (_assertedEntities.Contains(entityId))
             {
@@ -114,7 +109,7 @@ namespace RomanticWeb
                 return;
             }
 
-            var entityQuads = entityTriples as EntityQuad[] ?? entityTriples.ToArray();
+            var entityQuads = entityTriples as IEntityQuad[] ?? entityTriples.ToArray();
             _entityQuads.Add(entityId, entityQuads);
             if (_trackChanges)
             {
@@ -128,7 +123,7 @@ namespace RomanticWeb
             }
         }
 
-        public void ReplacePredicateValues(EntityId entityId, Node propertyUri, Func<IEnumerable<Node>> newValues, Uri graphUri, CultureInfo language)
+        public void ReplacePredicateValues(EntityId entityId, INode propertyUri, Func<IEnumerable<INode>> newValues, Uri graphUri, CultureInfo language)
         {
             var subjectNode = Node.FromEntityId(entityId);
             var removedQuads = RemoveTriples(subjectNode, propertyUri, graphUri, language).ToArray();
@@ -152,7 +147,7 @@ namespace RomanticWeb
 
         public void Delete(EntityId entityId, DeleteBehaviour deleteBehaviour = DeleteBehaviour.Default)
         {
-            IEnumerable<EntityQuad> deletes = DeleteQuads(entityId);
+            IEnumerable<IEntityQuad> deletes = DeleteQuads(entityId);
             if (!_trackChanges)
             {
                 return;
@@ -229,7 +224,7 @@ namespace RomanticWeb
             _disposed = true;
         }
 
-        private IEnumerable<EntityQuad> DeleteQuads(EntityId entityId)
+        private IEnumerable<IEntityQuad> DeleteQuads(EntityId entityId)
         {
             var deletes = (from entityQuad in _entityQuads[Node.FromEntityId(entityId)].ToList()
                            from removedQuad in RemoveTriple(entityQuad)
@@ -251,14 +246,14 @@ namespace RomanticWeb
             return deletes;
         } 
 
-        private DatasetChange CreateChangeForUpdate(EntityId entityId, EntityId graphUri, EntityQuad[] removedQuads, EntityQuad[] addedQuads)
+        private DatasetChange CreateChangeForUpdate(EntityId entityId, EntityId graphUri, IEntityQuad[] removedQuads, IEntityQuad[] addedQuads)
         {
             var update = new GraphUpdate(entityId, graphUri, removedQuads, addedQuads);
 
             if (update.RemovedQuads.Any(q => q.Subject.IsBlank || q.Object.IsBlank))
             {
                 var graphQuads = from entityQuad in GetEntityQuads(entityId is BlankId ? ((BlankId)entityId).RootEntityId : entityId)
-                                 where entityQuad.Graph == Node.FromEntityId(graphUri)
+                                 where entityQuad.Graph.Equals(Node.FromEntityId(graphUri))
                                  select entityQuad;
                 return new GraphReconstruct(entityId, graphUri, graphQuads);
             }
@@ -266,7 +261,7 @@ namespace RomanticWeb
             return update;
         }
 
-        private void DeleteOrphanedBlankNodes(IEnumerable<EntityQuad> removedQuads)
+        private void DeleteOrphanedBlankNodes(IEnumerable<IEntityQuad> removedQuads)
         {
             var orphanedBlankNodes = from removedQuad in removedQuads
                                      where removedQuad.Object.IsBlank
@@ -281,12 +276,9 @@ namespace RomanticWeb
 
         /// <summary>Removes triple and blank node's subgraph if present.</summary>
         /// <returns>a value indicating that the was a blank node object value</returns>
-        private IEnumerable<EntityQuad> RemoveTriples(Node entityId, Node predicate = null, Uri graphUri = null, CultureInfo language = null)
+        private IEnumerable<IEntityQuad> RemoveTriples(INode entityId, INode predicate = null, Uri graphUri = null, CultureInfo language = null)
         {
-            IEnumerable<EntityQuad> quadsRemoved;
-
-            quadsRemoved = (predicate == null ? _entityQuads[entityId] : _entityQuads[entityId, predicate]);
-
+            var quadsRemoved = (predicate == null ? _entityQuads[entityId] : _entityQuads[entityId, predicate]);
             if (graphUri != null)
             {
                 quadsRemoved = quadsRemoved.Where(quad => GraphEquals(quad, graphUri));
@@ -301,7 +293,7 @@ namespace RomanticWeb
             return quadsRemoved.ToList().SelectMany(RemoveTriple);
         }
 
-        private IEnumerable<EntityQuad> RemoveTriple(EntityQuad entityTriple)
+        private IEnumerable<IEntityQuad> RemoveTriple(IEntityQuad entityTriple)
         {
             if (_entityQuads.Remove(entityTriple) && entityTriple.Object.IsBlank)
             {
@@ -312,19 +304,19 @@ namespace RomanticWeb
         }
 
         // TODO: Make the GraphEquals method a bit less rigid.
-        private bool GraphEquals(EntityQuad triple, Uri graph)
+        private bool GraphEquals(IEntityQuad triple, Uri graph)
         {
             return (triple.Graph != null) && ((triple.Graph.Uri.AbsoluteUri == graph.AbsoluteUri) || 
                 ((triple.Subject.IsBlank) && (graph.AbsoluteUri.EndsWith(triple.Graph.Uri.AbsoluteUri))));
         }
 
-        private void DecrementRefCount(Node node)
+        private void DecrementRefCount(INode node)
         {
             AssertIsBlankNode(node);
             _blankNodeRefCounts[node] -= 1;
         }
 
-        private void IncrementRefCount(Node node)
+        private void IncrementRefCount(INode node)
         {
             AssertIsBlankNode(node);
 
@@ -336,14 +328,14 @@ namespace RomanticWeb
             _blankNodeRefCounts[node] += 1;
         }
 
-        private bool IsReferenced(Node node)
+        private bool IsReferenced(INode node)
         {
             AssertIsBlankNode(node);
 
             return _blankNodeRefCounts.ContainsKey(node) && _blankNodeRefCounts[node] > 0;
         }
 
-        private void AssertIsBlankNode(Node node)
+        private void AssertIsBlankNode(INode node)
         {
             if (!node.IsBlank)
             {

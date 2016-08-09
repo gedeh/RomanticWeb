@@ -89,7 +89,7 @@ namespace RomanticWeb.Linq
 
             Model.Query sparqlQuery = VisitQueryModel(queryModel);
             IEnumerable<EntityId> actualEntities;
-            IEnumerable<RomanticWeb.Model.EntityQuad> quads = _entitySource.ExecuteEntityQuery(sparqlQuery, out actualEntities);
+            IEnumerable<RomanticWeb.Model.IEntityQuad> quads = _entitySource.ExecuteEntityQuery(sparqlQuery, out actualEntities);
             IEnumerable<T> result = (!typeof(IEntity).IsAssignableFrom(typeof(T)) ? CreateLiteralResultSet<T>(quads, actualEntities) : CreateEntityResultSet<T>(quads, actualEntities));
 
             foreach (CastResultOperator resultOperator in resultOperators)
@@ -117,7 +117,7 @@ namespace RomanticWeb.Linq
             return _queryOptimizer.Optimize(_modelVisitor.Query);
         }
 
-        private IEnumerable<T> CreateLiteralResultSet<T>(IEnumerable<RomanticWeb.Model.EntityQuad> quads, IEnumerable<EntityId> actualEntities)
+        private IEnumerable<T> CreateLiteralResultSet<T>(IEnumerable<RomanticWeb.Model.IEntityQuad> quads, IEnumerable<EntityId> actualEntities)
         {
             IEnumerable<T> result;
             if (!(_modelVisitor.PropertyMapping is EntityQueryModelVisitor.IdentifierPropertyMapping))
@@ -132,7 +132,7 @@ namespace RomanticWeb.Linq
             return result;
         }
 
-        private IEnumerable<T> CreateEntityResultSet<T>(IEnumerable<RomanticWeb.Model.EntityQuad> quads, IEnumerable<EntityId> actualEntities)
+        private IEnumerable<T> CreateEntityResultSet<T>(IEnumerable<RomanticWeb.Model.IEntityQuad> quads, IEnumerable<EntityId> actualEntities)
         {
             var groupedTriples = from triple in quads
                                  group triple by triple.EntityId into tripleGroup

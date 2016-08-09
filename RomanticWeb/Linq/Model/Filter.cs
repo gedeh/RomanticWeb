@@ -34,7 +34,7 @@ namespace RomanticWeb.Linq.Model
         public IExpression Expression { get { return _expression; } set { _expression = value; } }
 
         /// <summary>Gets an owning query.</summary>
-        internal override Query OwnerQuery
+        public override IQuery OwnerQuery
         {
             get
             {

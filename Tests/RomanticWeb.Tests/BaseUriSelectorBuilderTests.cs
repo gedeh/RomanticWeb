@@ -31,14 +31,14 @@ namespace RomanticWeb.Tests
             policy.As<ConstantBaseUri>().BaseUri.Should().Be(baseUri);
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void Should_throw_if_default_Uri_is_relative()
         {
             // given
             var baseUri = new Uri("some/base/uri/", UriKind.Relative);
 
             // then
-            _builder.Default.Is(baseUri);
+            _builder.Invoking(instance => instance.Default.Is(baseUri)).ShouldThrow<ArgumentException>();
         }
     }
 }

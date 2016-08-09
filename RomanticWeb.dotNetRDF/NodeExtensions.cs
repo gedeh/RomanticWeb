@@ -9,8 +9,8 @@ namespace RomanticWeb.DotNetRDF
     /// <summary>Estension methods for <see cref="INode"/>s.</summary>
     public static class NodeExtensions
     {
-        /// <summary>Converts a dotNetRDF's <see cref="INode"/> into RomanticWeb's <see cref="Node"/>.</summary>
-        public static Node WrapNode(this INode node, [AllowNull] EntityId entityId)
+        /// <summary>Converts a dotNetRDF's <see cref="VDS.RDF.INode"/> into RomanticWeb's <see cref="Node"/>.</summary>
+        public static Node WrapNode(this VDS.RDF.INode node, [AllowNull] EntityId entityId)
         {
             var literal = node as ILiteralNode;
             if (literal != null)
@@ -43,8 +43,8 @@ namespace RomanticWeb.DotNetRDF
             throw new ArgumentException("The node was neither URI, literal nor blank", "node");
         }
 
-        /// <summary>Converts a RomanticWeb's <see cref="Node"/> into dotNetRDF's <see cref="INode"/>.</summary>
-        public static INode UnWrapNode(this Node node, INodeFactory nodeFactory)
+        /// <summary>Converts a RomanticWeb's <see cref="Node"/> into dotNetRDF's <see cref="VDS.RDF.INode"/>.</summary>
+        public static VDS.RDF.INode UnWrapNode(this Model.INode node, INodeFactory nodeFactory)
         {
             if (node.IsUri)
             {

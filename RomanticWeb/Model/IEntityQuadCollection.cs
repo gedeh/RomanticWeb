@@ -3,19 +3,16 @@ using RomanticWeb.Entities;
 
 namespace RomanticWeb.Model
 {
-    internal interface IEntityQuadCollection : ICollection<EntityQuad>
+    internal interface IEntityQuadCollection : ICollection<IEntityQuad>
     {
-        /// <summary>
-        /// Gets 
-        /// </summary>
-        IEnumerable<EntityQuad> this[EntityId entityId] { get; }
+        IEnumerable<IEntityQuad> this[EntityId entityId] { get; }
         
-        IEnumerable<EntityQuad> this[Node entityId] { get; }
+        IEnumerable<IEntityQuad> this[INode entityId] { get; }
 
-        IEnumerable<EntityQuad> this[Node entityId, Node predicate] { get; }
+        IEnumerable<IEntityQuad> this[INode entityId, INode predicate] { get; }
 
-        IEnumerable<EntityQuad> RemoveWhereObject(Node entityId);
+        IEnumerable<IEntityQuad> RemoveWhereObject(INode entityId);
 
-        void Add(EntityId entityId, IEnumerable<EntityQuad> entityQuads);
+        void Add(EntityId entityId, IEnumerable<IEntityQuad> entityQuads);
     }
 }
