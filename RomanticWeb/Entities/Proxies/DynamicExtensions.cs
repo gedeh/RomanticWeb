@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +18,8 @@ namespace RomanticWeb.Entities.Proxies
         private static readonly ModuleBuilder ModuleBuilder = AssemblyBuilder.DefineDynamicModule("RomanticWeb.Proxies.dll");
         private static readonly MethodInfo InvokeGetMethodInfo = typeof(DynamicExtensions).GetMethod("InvokeGet");
         private static readonly MethodInfo InvokeSetMethodInfo = typeof(DynamicExtensions).GetMethod("InvokeSet");
+        private static readonly IDictionary<int, CallSite<Func<CallSite, object, object>>> GetCallSites = new ConcurrentDictionary<int, CallSite<Func<CallSite, object, object>>>();
+        private static readonly IDictionary<int, CallSite<Action<CallSite, object, object>>> SetCallSites = new ConcurrentDictionary<int, CallSite<Action<CallSite, object, object>>>();
         private static readonly CSharpArgumentInfo[] InvokeGetArgs = { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) };
         private static readonly CSharpArgumentInfo[] InvokeSetArgs =
             {
@@ -57,10 +61,15 @@ namespace RomanticWeb.Entities.Proxies
         /// <returns>Value of the property.</returns>
         public static object InvokeGet(dynamic target, string propertyName)
         {
-            var binder = Microsoft.CSharp.RuntimeBinder.Binder.GetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeGetArgs);
-            var callsite = CallSite<Func<CallSite, object, object>>.Create(binder);
-            var result = callsite.Target(callsite, target);
-            return result;
+            int binderHash = propertyName.GetHashCode() ^ target.GetType().GetHashCode();
+            CallSite<Func<CallSite, object, object>> callSite;
+            if (!GetCallSites.TryGetValue(binderHash, out callSite))
+            {
+                var binder = Microsoft.CSharp.RuntimeBinder.Binder.GetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeGetArgs);
+                GetCallSites[binderHash] = callSite = CallSite<Func<CallSite, object, object>>.Create(binder);
+            }
+
+            return callSite.Target(callSite, target);
         }
 
         /// <summary>Sets a value of a given property of a dynamic <paramref name="target" /> object.</summary>
@@ -70,9 +79,15 @@ namespace RomanticWeb.Entities.Proxies
         /// <returns>Value of the property.</returns>
         public static void InvokeSet(dynamic target, string propertyName, object value)
         {
-            var binder = Microsoft.CSharp.RuntimeBinder.Binder.SetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeSetArgs);
-            var callsite = CallSite<Action<CallSite, object, object>>.Create(binder);
-            callsite.Target(callsite, target, value);
+            int binderHash = propertyName.GetHashCode() ^ target.GetType().GetHashCode();
+            CallSite<Action<CallSite, object, object>> callSite;
+            if (!SetCallSites.TryGetValue(binderHash, out callSite))
+            {
+                var binder = Microsoft.CSharp.RuntimeBinder.Binder.SetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeSetArgs);
+                SetCallSites[binderHash] = callSite = CallSite<Action<CallSite, object, object>>.Create(binder);
+            }
+
+            callSite.Target(callSite, target, value);
         }
 
         private static Type CompileResultType(string name, Type[] types)
