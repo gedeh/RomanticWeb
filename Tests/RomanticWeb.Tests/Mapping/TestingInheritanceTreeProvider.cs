@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ImpromptuInterface;
+using Moq;
 using RomanticWeb.Mapping.Providers;
 using RomanticWeb.Mapping.Visitors;
 using RomanticWeb.Ontologies;
@@ -62,11 +62,10 @@ namespace RomanticWeb.Tests.Mapping
             {
                 get
                 {
-                    yield return new
-                    {
-                        PropertyInfo = typeof(IParentLevel3).GetProperty("InParent3"),
-                        GetTerm = new Func<IOntologyProvider, Uri>(GetUri)
-                    }.ActLike<IPropertyMappingProvider>();
+                    var result = new Mock<IPropertyMappingProvider>();
+                    result.SetupGet(instance => instance.PropertyInfo).Returns(typeof(IParentLevel3).GetProperty("InParent3"));
+                    result.Setup(instance => instance.GetTerm).Returns(GetUri);
+                    yield return result.Object;
                 }
             }
 
@@ -102,11 +101,10 @@ namespace RomanticWeb.Tests.Mapping
             {
                 get
                 {
-                    yield return new
-                    {
-                        PropertyInfo = EntityType.GetProperty("InParent1"),
-                        GetTerm = new Func<IOntologyProvider, Uri>(GetUri)
-                    }.ActLike<IPropertyMappingProvider>();
+                    var result = new Mock<IPropertyMappingProvider>();
+                    result.SetupGet(instance => instance.PropertyInfo).Returns(EntityType.GetProperty("InParent1"));
+                    result.SetupGet(instance => instance.GetTerm).Returns(GetUri);
+                    yield return result.Object;
                 }
             }
 
@@ -142,11 +140,10 @@ namespace RomanticWeb.Tests.Mapping
             {
                 get
                 {
-                    yield return new
-                    {
-                        PropertyInfo = EntityType.GetProperty("InParent2"),
-                        GetTerm = new Func<IOntologyProvider, Uri>(GetUri)
-                    }.ActLike<IPropertyMappingProvider>();
+                    var result = new Mock<IPropertyMappingProvider>();
+                    result.SetupGet(instance => instance.PropertyInfo).Returns(EntityType.GetProperty("InParent2"));
+                    result.Setup(instance => instance.GetTerm).Returns(GetUri);
+                    yield return result.Object;
                 }
             }
 
@@ -182,11 +179,10 @@ namespace RomanticWeb.Tests.Mapping
             {
                 get
                 {
-                    yield return new
-                                     {
-                                         PropertyInfo = EntityType.GetProperty("InParent3"),
-                                         GetTerm = new Func<IOntologyProvider, Uri>(GetUri)
-                                     }.ActLike<IPropertyMappingProvider>();
+                    var result = new Mock<IPropertyMappingProvider>();
+                    result.SetupGet(instance => instance.PropertyInfo).Returns(EntityType.GetProperty("InParent3"));
+                    result.Setup(instance => instance.GetTerm).Returns(GetUri);
+                    yield return result.Object;
                 }
             }
 

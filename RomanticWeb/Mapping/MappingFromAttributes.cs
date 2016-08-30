@@ -1,18 +1,30 @@
 ﻿using System.Reflection;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Mapping.Sources;
 
 namespace RomanticWeb.Mapping
 {
-    internal class MappingFromAttributes : MappingFrom
+    internal class MappingFromAttributes : IMappingFrom
     {
-        public MappingFromAttributes(MappingBuilder mappingBuilder)
-            : base(mappingBuilder)
+        private readonly ILogger _log;
+
+        /// <summary>Initializes a new instance of the <see cref="MappingFromAttributes" /> class.</summary>
+        /// <param name="log">Logging facility.</param>
+        public MappingFromAttributes(ILogger log)
         {
+            _log = log;
         }
 
-        public override void FromAssembly(Assembly mappingAssembly)
+        /// <inheritdoc />
+        public void FromAssemblyOf<T>(IMappingBuilder builder)
         {
-            MappingBuilder.AddMapping(mappingAssembly, new AttributeMappingsSource(mappingAssembly));
+            FromAssembly(builder, typeof(T).Assembly);
+        }
+
+        /// <inheritdoc />
+        public void FromAssembly(IMappingBuilder builder, Assembly mappingAssembly)
+        {
+            builder.AddMapping(mappingAssembly, new AttributeMappingsSource(mappingAssembly, _log));
         }
     }
 }

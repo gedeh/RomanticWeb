@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Resources;
-using System.Threading;
-using Anotar.NLog;
-using NullGuard;
 using RomanticWeb.Converters;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Entities;
 using RomanticWeb.LinkedData;
 using RomanticWeb.Linq;
@@ -20,7 +17,6 @@ namespace RomanticWeb
     /// <summary>
     /// Creates a new instance of <see cref="EntityContext"/>
     /// </summary>
-    [NullGuard(ValidationFlags.All)]
     internal class EntityContext : IEntityContext
     {
         #region Fields
@@ -37,6 +33,7 @@ namespace RomanticWeb
         private readonly IEntityMapping _typedEntityMapping;
         private readonly IPropertyMapping _typesPropertyMapping;
         private readonly IResourceResolutionStrategy _resourceResolutionStrategy;
+        private readonly ILogger _log;
 
         private CultureInfo _currentCulture;
         private bool _disposed;
@@ -49,13 +46,14 @@ namespace RomanticWeb
             IMappingsRepository mappings,
             IEntityStore entityStore,
             IEntitySource entitySource,
-            [AllowNull] IBaseUriSelectionPolicy baseUriSelector,
+            IBaseUriSelectionPolicy baseUriSelector,
             IRdfTypeCache typeCache,
             IBlankNodeIdGenerator blankIdGenerator,
             IResultTransformerCatalog transformerCatalog, 
             IEntityCaster caster, 
             IDatasetChangesTracker changeTracker,
-            [AllowNull] IResourceResolutionStrategy resourceResolutionStrategy)
+            IResourceResolutionStrategy resourceResolutionStrategy,
+            ILogger log)
             : this(changeTracker)
         {
             _factory = factory;
@@ -70,10 +68,11 @@ namespace RomanticWeb
             _typedEntityMapping = _mappings.MappingFor<ITypedEntity>();
             _typesPropertyMapping = _typedEntityMapping.PropertyFor("Types");
             _resourceResolutionStrategy = resourceResolutionStrategy;
+            _log = log;
 
             if (_baseUriSelector == null)
             {
-                LogTo.Warn("No Base URI Selection Policy. It will not be possible to use relative URIs");
+                _log.Warning("No Base URI Selection Policy. It will not be possible to use relative URIs");
             }
         }
 
@@ -87,7 +86,8 @@ namespace RomanticWeb
             IBlankNodeIdGenerator blankIdGenerator,
             IResultTransformerCatalog transformerCatalog,
             IEntityCaster caster,
-            IDatasetChangesTracker changeTracker)
+            IDatasetChangesTracker changeTracker,
+            ILogger log)
             : this(
                 factory,
                 mappings,
@@ -99,7 +99,8 @@ namespace RomanticWeb
                 transformerCatalog,
                 caster,
                 changeTracker,
-                null)
+                null,
+                log)
         {
         }
 
@@ -113,7 +114,8 @@ namespace RomanticWeb
             IResultTransformerCatalog transformerCatalog,
             IEntityCaster caster,
             IDatasetChangesTracker changeTracker,
-            IResourceResolutionStrategy resourceResolutionStrategy)
+            IResourceResolutionStrategy resourceResolutionStrategy,
+            ILogger log)
             : this(
                 factory,
                 mappings,
@@ -125,7 +127,8 @@ namespace RomanticWeb
                 transformerCatalog,
                 caster,
                 changeTracker,
-                resourceResolutionStrategy)
+                resourceResolutionStrategy,
+                log)
         {
         }
 
@@ -138,7 +141,8 @@ namespace RomanticWeb
             IBlankNodeIdGenerator blankIdGenerator,
             IResultTransformerCatalog transformerCatalog,
             IEntityCaster caster,
-            IDatasetChangesTracker changeTracker)
+            IDatasetChangesTracker changeTracker,
+            ILogger log)
             : this(
                 factory,
                 mappings,
@@ -150,7 +154,8 @@ namespace RomanticWeb
                 transformerCatalog, 
                 caster, 
                 changeTracker,
-                null)
+                null,
+                log)
         {
         }
 
@@ -158,7 +163,6 @@ namespace RomanticWeb
         {
             _changeTracker = changeTracker;
             _currentCulture = null;
-            LogTo.Info("Creating entity context");
             EntityCache = new InMemoryEntityCache();
         }
         #endregion
@@ -183,7 +187,6 @@ namespace RomanticWeb
         public IMappingsRepository Mappings { get { return _mappings; } }
 
         /// <inheritdoc />
-        [AllowNull]
         public IBaseUriSelectionPolicy BaseUriSelector { get { return _baseUriSelector; } }
 
         /// <inheritdoc />
@@ -220,7 +223,6 @@ namespace RomanticWeb
             }
         }
 
-        [AllowNull]
         public CultureInfo CurrentCulture
         {
             get { return (_currentCulture ?? CultureInfo.InvariantCulture); }
@@ -257,8 +259,12 @@ namespace RomanticWeb
         /// <returns>Loaded entity.</returns>
         public T Load<T>(EntityId entityId) where T : class, IEntity
         {
+            if (entityId == null)
+            {
+                throw new ArgumentNullException("entityId");
+            }
+
             entityId = EnsureAbsoluteEntityId(entityId);
-            LogTo.Info("Loading entity {0}", entityId);
             var result = LoadInternal(entityId);
             return result.Context != this ? result.AsEntity<T>() : EntityAs<T>(result);
         }
@@ -266,6 +272,11 @@ namespace RomanticWeb
         /// <inheritdoc />
         public T Create<T>(EntityId entityId) where T : class, IEntity
         {
+            if (entityId == null)
+            {
+                throw new ArgumentNullException("entityId");
+            }
+
             if (typeof(T) == typeof(Entity))
             {
                 return (T)(IEntity)CreateInternal(entityId, true);
@@ -278,7 +289,6 @@ namespace RomanticWeb
         /// <inheritdoc />
         public void Commit()
         {
-            LogTo.Info("Committing changes to triple store");
             _entitySource.Commit(Changes);
             _entityStore.ResetState();
         }
@@ -286,14 +296,23 @@ namespace RomanticWeb
         /// <inheritdoc />
         public void Delete(EntityId entityId)
         {
+            if (entityId == null)
+            {
+                throw new ArgumentNullException("entityId");
+            }
+
             Delete(entityId, DeleteBehaviour.Default);
         }
 
         /// <inheritdoc />
         public void Delete(EntityId entityId, DeleteBehaviour deleteBehaviour)
         {
+            if (entityId == null)
+            {
+                throw new ArgumentNullException("entityId");
+            }
+
             entityId = EnsureAbsoluteEntityId(entityId);
-            LogTo.Info("Deleting entity {0}", entityId);
             _entityStore.Delete(entityId, deleteBehaviour);
         }
 
@@ -304,10 +323,8 @@ namespace RomanticWeb
                 return;
             }
 
-            _entityStore.Dispose();
-
             _disposed = true;
-
+            _entityStore.Dispose();
             if (Disposed != null)
             {
                 Disposed();
@@ -318,7 +335,6 @@ namespace RomanticWeb
         /// <param name="entity">Entity to be initialized</param>
         public void InitializeEnitity(IEntity entity)
         {
-            LogTo.Debug("Initializing entity {0}", entity.Id);
             _entityStore.AssertEntity(entity.Id, _entitySource.LoadEntity(entity.Id));
         }
 
@@ -371,7 +387,6 @@ namespace RomanticWeb
                 return EntityCache.Get(entityId);
             }
 
-            LogTo.Info("Creating entity {0}", entityId);
             var entity = new Entity(entityId, this, _factory.FallbackNodeConverter, _transformerCatalog);
             if (markAsInitialized)
             {

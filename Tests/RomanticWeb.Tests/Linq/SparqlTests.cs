@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.DotNetRDF;
 using RomanticWeb.Entities;
 using RomanticWeb.LightInject;
@@ -52,7 +53,7 @@ namespace RomanticWeb.Tests.Linq
             _store = new TripleStore();
             _store.LoadTestFile("TriplesWithLiteralSubjects.trig");
 
-            IServiceContainer container = new ServiceContainer();
+            var container = new ServiceContainer();
             container.RegisterInstance<ITripleStore>(_store);
 
             IEntityContextFactory factory = new EntityContextFactory(container)
@@ -460,6 +461,11 @@ namespace RomanticWeb.Tests.Linq
                 serviceRegistry.RegisterInstance<IRdfTypeCache>(_typeCache);
                 serviceRegistry.RegisterInstance(_baseUriSelectionPolicy.Object);
                 serviceRegistry.Register<INamedGraphSelector, TestGraphSelector>();
+                var logger = new Mock<ILogger>();
+                logger.Setup(instance => instance.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<object[]>()));
+                logger.Setup(instance => instance.Log(It.IsAny<LogLevel>(), It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()));
+                serviceRegistry.RegisterInstance(logger.Object);
+                serviceRegistry.Register<MappingFromFluent>();
 
                 var repository = new TestMappingsRepository(new TestPersonMap(), new TestTypedEntityMap(), new TestAdressMap());
                 serviceRegistry.RegisterInstance<IMappingsRepository>(repository);

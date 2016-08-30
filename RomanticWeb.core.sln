@@ -3,12 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BF790CC3-5595-4D91-AFA3-CB3401ADA838}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Contracts", "RomanticWeb.Contracts\RomanticWeb.Contracts.core.xproj", "{17315F2E-393A-422F-80BA-575794350285}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb", "RomanticWeb\RomanticWeb.xproj", "{612982C1-4A8A-4B2C-9FE2-058944F83534}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Mapping.Fluent", "RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.core.xproj", "{612982C1-4A8A-4B2C-9FE2-058944F83534}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb", "RomanticWeb\RomanticWeb.core.xproj", "{374DFD26-832E-45BE-AF31-C03630417825}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Temp", "RomanticWeb.Temp\RomanticWeb.Temp.xproj", "{7B3CC88A-EFFB-4925-8D39-E97F4B6335E5}"
 EndProject
@@ -18,10 +17,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17315F2E-393A-422F-80BA-575794350285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17315F2E-393A-422F-80BA-575794350285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17315F2E-393A-422F-80BA-575794350285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17315F2E-393A-422F-80BA-575794350285}.Release|Any CPU.Build.0 = Release|Any CPU
 		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374DFD26-832E-45BE-AF31-C03630417825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374DFD26-832E-45BE-AF31-C03630417825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374DFD26-832E-45BE-AF31-C03630417825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374DFD26-832E-45BE-AF31-C03630417825}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B3CC88A-EFFB-4925-8D39-E97F4B6335E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B3CC88A-EFFB-4925-8D39-E97F4B6335E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B3CC88A-EFFB-4925-8D39-E97F4B6335E5}.Release|Any CPU.ActiveCfg = Release|Any CPU

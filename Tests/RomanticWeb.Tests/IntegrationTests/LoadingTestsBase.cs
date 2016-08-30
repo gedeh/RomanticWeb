@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using FluentAssertions;
-using ImpromptuInterface;
 using NUnit.Framework;
 using RomanticWeb.Entities;
 using RomanticWeb.LightInject;
@@ -596,7 +595,7 @@ namespace RomanticWeb.Tests.IntegrationTests
             first.Dispose();
 
             // then
-            Factory.ActLike<ITrackedScopes>().TrackedScopes.Should().BeEmpty();
+            Factory.TrackedScopes.Should().BeEmpty();
         }
 
         [Test]

@@ -31,7 +31,7 @@ namespace RomanticWeb.Fody
             var constructor = ModuleDefinition.Import(typeof(TypeConverterAttribute).GetConstructor(new[] { typeof(Type) }));
 
             // get EntityIdTypeConverter<> base type
-            var convererType = ModuleDefinition.Import(References.Orm.MainModule.GetType("RomanticWeb.ComponentModel.EntityIdTypeConverter`1"));
+            var convererType = ModuleDefinition.Import(References.Contracts.MainModule.GetType("RomanticWeb.ComponentModel.EntityIdTypeConverter`1"));
 
             // make generic type EntityIdTypeConverter<entityIdType>
             var genericConverter = convererType.MakeGenericInstanceType(entityIdType);

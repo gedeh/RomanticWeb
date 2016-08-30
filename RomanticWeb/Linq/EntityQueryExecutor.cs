@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NullGuard;
 using Remotion.Linq;
 using Remotion.Linq.Clauses.ResultOperators;
 using RomanticWeb.Entities;
@@ -15,8 +14,8 @@ namespace RomanticWeb.Linq
     public class EntityQueryExecutor : IQueryExecutor
     {
         #region Fields
-        private static readonly MethodInfo EnumerableCastMethod = Info.OfMethod("System.Core", "System.Linq.Enumerable", "Cast", "IEnumerable");
-        private static readonly MethodInfo EntityLoadMethod = Info.OfMethod("RomanticWeb", "RomanticWeb.IEntityContext", "Create", "EntityId");
+        private static readonly MethodInfo EnumerableCastMethod = typeof(Enumerable).GetMethod("Cast");
+        private static readonly MethodInfo EntityLoadMethod = typeof(IEntityContext).GetMethod("Create");
         private readonly IEntityContext _entityContext;
         private readonly IEntitySource _entitySource;
         private readonly IQueryOptimizer _queryOptimizer;
@@ -62,7 +61,6 @@ namespace RomanticWeb.Linq
         /// <param name="queryModel">Query model to be parsed.</param>
         /// <param name="returnDefaultWhenEmpty">Tells the executor to return a default value in case of an empty result.</param>
         /// <returns>Single entity beeing result of a query.</returns>
-        [return: AllowNull]
         public T ExecuteSingle<T>(QueryModel queryModel, bool returnDefaultWhenEmpty)
         {
             if (queryModel.ResultOperators.OfType<FirstResultOperator>().Any())

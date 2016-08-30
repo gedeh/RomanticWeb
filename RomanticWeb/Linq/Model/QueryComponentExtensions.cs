@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -71,7 +70,6 @@ namespace RomanticWeb.Linq.Model
         /// <summary>Converts a query component into its navigator.</summary>
         /// <param name="queryComponent">Query component to be converted.</param>
         /// <returns>Query component navigator or null.</returns>
-        [return: AllowNull]
         internal static IQueryComponentNavigator GetQueryComponentNavigator(this IQueryComponent queryComponent)
         {
             IQueryComponentNavigator result = null;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ImpromptuInterface.Dynamic;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Model;
 
@@ -38,7 +36,7 @@ namespace RomanticWeb.NamedGraphs
         }
 
         /// <inheritdoc />
-        protected override Uri GetGraphForEntityId(EntityId entityId, [AllowNull] IEntityMapping entityMapping, [AllowNull] IPropertyMapping predicate)
+        protected override Uri GetGraphForEntityId(EntityId entityId, IEntityMapping entityMapping, IPropertyMapping predicate)
         {
             return (_baseUris.FirstOrDefault(uri => entityId.Uri.AbsoluteUri.StartsWith(uri.AbsoluteUri)) ?? entityId.Uri);
         }

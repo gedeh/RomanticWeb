@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ImpromptuInterface;
-using NullGuard;
+using Castle.DynamicProxy;
+using RomanticWeb.Entities.Proxies;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Model;
 
@@ -26,9 +26,9 @@ namespace RomanticWeb.Entities
             {
                 result = ((EntityProxy)entity).AsDynamic();
             }
-            else if (entity is IActLikeProxy)
+            else if (entity is IProxy)
             {
-                result = ((IActLikeProxy)entity).Original;
+                result = ((IProxy)entity).WrappedObject;
             }
             else
             {
@@ -58,7 +58,7 @@ namespace RomanticWeb.Entities
             }
             else
             {
-                result = Impromptu.ActLike<TInterface>(entity.AsDynamic());
+                result = entity.ActLike<TInterface>();
             }
 
             return result;
@@ -127,7 +127,6 @@ namespace RomanticWeb.Entities
         /// <param name="predicate">Uri of the predicate the value should be get.</param>
         /// <remarks>This method returns strongly typed values as defined in the mappings.</remarks>
         /// <returns>Value of the given predicate or <b>null</b>.</returns>
-        [return: AllowNull]
         public static object Predicate(this IEntity entity, Uri predicate)
         {
             object result = null;
@@ -135,7 +134,7 @@ namespace RomanticWeb.Entities
             if (propertyMapping != null)
             {
                 var mappedEntity = typeof(EntityExtensions).GetMethod("AsEntity").MakeGenericMethod(propertyMapping.EntityMapping.EntityType).Invoke(null, new object[] { entity });
-                result = Impromptu.InvokeGet(mappedEntity, propertyMapping.Name);
+                result = mappedEntity.GetType().GetProperty(propertyMapping.Name).GetValue(mappedEntity);
             }
             else
             {
@@ -181,9 +180,7 @@ namespace RomanticWeb.Entities
             }
         }
 
-        /// <summary>
-        /// Creates a blank identifier, which will be associated with this entity.
-        /// </summary>
+        /// <summary>Creates a blank identifier, which will be associated with this entity.</summary>
         /// <param name="entity">The root entity.</param>
         public static BlankId CreateBlankId(this IEntity entity)
         {
@@ -193,9 +190,10 @@ namespace RomanticWeb.Entities
 
         internal static IEntity UnwrapProxy(this IEntity entity)
         {
-            if ((entity is IActLikeProxy) && (((IActLikeProxy)entity).Original is IEntity))
+            var result = entity as IProxy;
+            if (result != null)
             {
-                return ((IActLikeProxy)entity).Original;
+                return (IEntity)result.WrappedObject;
             }
 
             return entity;

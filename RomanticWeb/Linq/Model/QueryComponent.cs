@@ -1,6 +1,4 @@
-﻿using NullGuard;
-
-namespace RomanticWeb.Linq.Model
+﻿namespace RomanticWeb.Linq.Model
 {
     /// <summary>Provides an abstract for query element.</summary>
     public abstract class QueryComponent : IQueryComponent
@@ -10,7 +8,6 @@ namespace RomanticWeb.Linq.Model
         /// <summary>Gets an owning query.</summary>
         public virtual IQuery OwnerQuery
         {
-            [return: AllowNull]
             get
             {
                 return _ownerQuery;

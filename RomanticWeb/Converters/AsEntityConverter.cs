@@ -7,7 +7,7 @@ namespace RomanticWeb.Converters
     /// <summary>Changes <see cref="IEntity"/> type by calling <see cref="EntityExtensions.AsEntity{TInterface}"/> method.</summary>
     public class AsEntityConverter<TEntity> : INodeConverter where TEntity : IEntity
     {
-        private static readonly MethodInfo AsEntityMethod = Info.OfMethod("RomanticWeb", "RomanticWeb.Entities.EntityExtensions", "AsEntity", "IEntity").MakeGenericMethod(typeof(TEntity));
+        private static readonly MethodInfo AsEntityMethod = typeof(EntityExtensions).GetMethod("AsEntity").MakeGenericMethod(typeof(TEntity));
         private readonly INodeConverter _entityIdConverter;
 
         /// <summary>Creates instance of the <see cref="IBaseUriSelectionPolicy"/>.</summary>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using ImpromptuInterface.Dynamic;
+using Moq;
 using NUnit.Framework;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping;
@@ -14,7 +14,6 @@ namespace RomanticWeb.Tests
     [TestFixture]
     public class RdfTypeCacheTests
     {
-        private static readonly dynamic New = Builder.New();
         private RdfTypeCache _rdfTypeCache;
         private ITypedEntity _entity;
 
@@ -134,10 +133,10 @@ namespace RomanticWeb.Tests
 
         private static IClassMapping CreateClassMapping(Uri uri)
         {
-            return New.ExpandoObject(
-                        IsInherited: false,
-                        IsMatch: new Func<IEnumerable<Uri>, bool>(uris => uris.Contains(uri)))
-                      .ActLike<IClassMapping>();
+            var mapping = new Mock<IClassMapping>();
+            mapping.SetupGet(instance => instance.IsInherited).Returns(false);
+            mapping.Setup(instance => instance.IsMatch(It.IsAny<IEnumerable<Uri>>())).Returns<IEnumerable<Uri>>(uris => uris.Contains(uri));
+            return mapping.Object;
         }
 
         private static IList<IClassMapping> CreateClassMappings(params Uri[] uris)

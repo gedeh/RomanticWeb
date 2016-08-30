@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using ImpromptuInterface;
 using VDS.RDF.Storage;
 
 namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
@@ -34,7 +33,12 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         public IStorageProvider CreateStorageProvider()
         {
             var ctorArguments = GetConstructorArguments();
-            return Impromptu.InvokeConstructor(ProviderType, ctorArguments);
+            var ctor = (from constructor in ProviderType.GetConstructors()
+                        let parameters = constructor.GetParameters()
+                        where (parameters.Length == ctorArguments.Length) &&
+                            (parameters.All(parameter => parameter.ParameterType.IsInstanceOfType(ctorArguments[parameter.Position])))
+                        select constructor).First();
+            return (IStorageProvider)ctor.Invoke(ctorArguments);
         }
 
         internal void DeserializeElementForConfig(XmlReader reader, bool serializeCollectionKey)

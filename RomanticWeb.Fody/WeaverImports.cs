@@ -41,13 +41,13 @@ namespace RomanticWeb.Fody
 
         public TypeReference DictionaryOwnerTypeRef { get { return ModuleDefinition.Import(_references.Orm.FindType("IDictionaryOwner`3")); } }
 
-        public TypeReference CollectionMapTypeRef { get { return ModuleDefinition.Import(_references.Orm.FindType("CollectionMap")); } }
+        public TypeReference CollectionMapTypeRef { get { return ModuleDefinition.Import(_references.Fluent.FindType("CollectionMap")); } }
 
         public TypeReference TermPartTypeRef { get { return ModuleDefinition.Import(TermPartType); } }
 
-        public TypeReference DictionaryOwnerMapTypeRef { get { return ModuleDefinition.Import(_references.Orm.FindType("DictionaryOwnerMap`4")); } }
+        public TypeReference DictionaryOwnerMapTypeRef { get { return ModuleDefinition.Import(_references.Fluent.FindType("DictionaryOwnerMap`4")); } }
 
-        public TypeReference DictionaryEntryMapTypeRef { get { return ModuleDefinition.Import(_references.Orm.FindType("DictionaryEntryMap`3")); } }
+        public TypeReference DictionaryEntryMapTypeRef { get { return ModuleDefinition.Import(_references.Fluent.FindType("DictionaryEntryMap`3")); } }
 
         public TypeReference PropertyMapTermPartTypeRef { get { return ModuleDefinition.Import(TermPartType.MakeGenericInstanceType(PropertyMapType)); } }
 
@@ -75,7 +75,7 @@ namespace RomanticWeb.Fody
         {
             get
             {
-                return _references.Orm.FindType("ITermPart`1");
+                return _references.Fluent.FindType("ITermPart`1");
             }
         }
 
@@ -83,7 +83,7 @@ namespace RomanticWeb.Fody
         {
             get
             {
-                return ModuleDefinition.Import(_references.Orm.FindType("EntityMap"));
+                return ModuleDefinition.Import(_references.Fluent.FindType("EntityMap"));
             }
         }
 
@@ -93,7 +93,7 @@ namespace RomanticWeb.Fody
 
         private ModuleDefinition ModuleDefinition { get { return _moduleWeaver.ModuleDefinition; } }
 
-        private TypeDefinition PropertyMapType { get { return _references.Orm.FindType("PropertyMap"); } }
+        private TypeDefinition PropertyMapType { get { return _references.Fluent.FindType("PropertyMap"); } }
 
         private TypeDefinition RdfVocabularyType { get { return _references.Orm.FindType("RomanticWeb.Vocabularies.Rdf"); } }
 

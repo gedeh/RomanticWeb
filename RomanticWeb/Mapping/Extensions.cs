@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Model;
 
@@ -52,7 +51,6 @@ namespace RomanticWeb.Mapping
         /// <param name="mappingsRepository">Repository to be queried.</param>
         /// <param name="propertyName">Property name to be searched for.</param>
         /// <returns>Property mapping or null.</returns>
-        [return: AllowNull]
         public static IPropertyMapping FindPropertyMapping<T>(this IMappingsRepository mappingsRepository, string propertyName) where T : IEntity
         {
             return mappingsRepository.FindPropertyMapping(typeof(T), propertyName);
@@ -62,7 +60,6 @@ namespace RomanticWeb.Mapping
         /// <param name="mappingsRepository">Repository to be queried.</param>
         /// <param name="property">Property to be searched for.</param>
         /// <returns>Property mapping or null.</returns>
-        [return: AllowNull]
         public static IPropertyMapping FindPropertyMapping(this IMappingsRepository mappingsRepository, PropertyInfo property)
         {
             return mappingsRepository.FindPropertyMapping(property.DeclaringType, property.Name);
@@ -73,7 +70,6 @@ namespace RomanticWeb.Mapping
         /// <param name="declaringType">Type of entity.</param>
         /// <param name="propertyName">Property name to be searched for.</param>
         /// <returns>Property mapping or null.</returns>
-        [return: AllowNull]
         public static IPropertyMapping FindPropertyMapping(this IMappingsRepository mappingsRepository, Type declaringType, string propertyName)
         {
             return (from entityMapping in mappingsRepository
@@ -87,7 +83,6 @@ namespace RomanticWeb.Mapping
         /// <param name="mappingsRepository">Repository to be queried.</param>
         /// <param name="type">Type of entity.</param>
         /// <returns>Entity mapping or null.</returns>
-        [return: AllowNull]
         public static IEntityMapping FindEntityMapping(this IMappingsRepository mappingsRepository, Type type)
         {
             return mappingsRepository.MappingFor(type);
@@ -97,7 +92,6 @@ namespace RomanticWeb.Mapping
         /// <typeparam name="T">Type of entity.</typeparam>
         /// <param name="mappingsRepository">Repository to be queried.</param>
         /// <returns>Entity mapping or null.</returns>
-        [return: AllowNull]
         public static IEntityMapping FindEntityMapping<T>(this IMappingsRepository mappingsRepository) where T : IEntity
         {
             return mappingsRepository.FindEntityMapping(typeof(T));
@@ -106,7 +100,6 @@ namespace RomanticWeb.Mapping
         /// <summary>Searches for IEntity based type.</summary>
         /// <param name="type">Type to be searched through.</param>
         /// <returns><see cref="RomanticWeb.Entities.IEntity" /> based type or <b>null</b>.</returns>
-        [return: AllowNull]
         public static Type FindEntityType(this Type type)
         {
             Type result = EntityTypeSanityCheck(type);
@@ -144,13 +137,11 @@ namespace RomanticWeb.Mapping
             return result;
         }
 
-        [return: AllowNull]
         private static Type FindEntityType(IEnumerable<Type> types)
         {
             return types.FirstOrDefault(type => EntityType.IsAssignableFrom(type));
         }
 
-        [return: AllowNull]
         private static Type EntityTypeSanityCheck(Type type)
         {
             switch (type.FullName)

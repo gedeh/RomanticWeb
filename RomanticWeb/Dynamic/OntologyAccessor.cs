@@ -2,11 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
-using Anotar.NLog;
-using ImpromptuInterface.Dynamic;
-using NullGuard;
 using RomanticWeb.Collections;
-using RomanticWeb.Collections.Mapping;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities;
 using RomanticWeb.Model;
@@ -18,9 +14,8 @@ namespace RomanticWeb.Dynamic
     /// <summary>Allows dynamic resolution of prediacte URIs based dynamic member name and Ontology prefix.</summary>
     /// todo: make a DynamicObject
     [DebuggerDisplay("Ontology Accessor")]
-    [NullGuard(ValidationFlags.OutValues)]
     [DebuggerTypeProxy(typeof(DebuggerViewProxy))]
-    public sealed class OntologyAccessor : ImpromptuDictionary
+    public sealed class OntologyAccessor : DynamicObject
     {
         private readonly IEntityStore _tripleStore;
         private readonly IEntityContext _context;
@@ -88,11 +83,9 @@ namespace RomanticWeb.Dynamic
 
         internal object GetObjects(EntityId entityId, IProperty property, DynamicPropertyAggregate aggregate)
         {
-            LogTo.Trace("Reading property {0}", property.Uri);
             var objectValues = _tripleStore.GetObjectsForPredicate(entityId, property.Uri, null);
             var objects = objectValues.Select(ConvertObject);
             var aggregator = _resultTransformers.GetAggregator(aggregate.Aggregation);
-            LogTo.Trace("Performing operation {0} on result nodes", aggregate.Aggregation);
             return aggregator.Aggregate(objects);
         }
 
@@ -108,7 +101,7 @@ namespace RomanticWeb.Dynamic
             return convertObject;
         }
 
-        internal class DynamicListNode : ListEntryMap<IRdfListNode<object>, object, FallbackNodeConverter> { }
+        ////internal class DynamicListNode : ListEntryMap<IRdfListNode<object>, object, FallbackNodeConverter> { }
 
         private class DebuggerViewProxy
         {
@@ -120,21 +113,9 @@ namespace RomanticWeb.Dynamic
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public IOntology Ontology
-            {
-                get
-                {
-                    return _accessor.Ontology;
-                }
-            }
+            public IOntology Ontology { get { return _accessor.Ontology; } }
 
-            public IEntityStore EntityStore
-            {
-                get
-                {
-                    return _accessor._tripleStore;
-                }
-            }
+            public IEntityStore EntityStore { get { return _accessor._tripleStore; } }
         }
     }
 }

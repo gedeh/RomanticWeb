@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Visitors;
 
 namespace RomanticWeb.Mapping.Model
 {
-    [NullGuard(ValidationFlags.All)]
     [DebuggerDisplay("Class {Uri}")]
     internal class ClassMapping : IQueryableClassMapping
     {
@@ -39,12 +37,12 @@ namespace RomanticWeb.Mapping.Model
             }
         }
 
-        public static bool operator ==([AllowNull]ClassMapping left, [AllowNull]ClassMapping right)
+        public static bool operator ==(ClassMapping left, ClassMapping right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=([AllowNull]ClassMapping left, [AllowNull]ClassMapping right)
+        public static bool operator !=(ClassMapping left, ClassMapping right)
         {
             return !Equals(left, right);
         }
@@ -59,7 +57,7 @@ namespace RomanticWeb.Mapping.Model
             mappingModelVisitor.Visit(this);
         }
 
-        public override bool Equals([AllowNull]object obj)
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) { return false; }
             if (ReferenceEquals(this, obj)) { return true; }
@@ -73,7 +71,7 @@ namespace RomanticWeb.Mapping.Model
             return _uri.GetHashCode();
         }
 
-        protected bool Equals([AllowNull]ClassMapping other)
+        protected bool Equals(ClassMapping other)
         {
             return UriComparer.Equals(_uri, other._uri);
         }

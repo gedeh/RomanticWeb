@@ -4,6 +4,7 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.DotNetRDF;
 using RomanticWeb.Entities;
 using RomanticWeb.LightInject;
@@ -32,7 +33,13 @@ namespace RomanticWeb.Tests.Linq
         [SetUp]
         public void Setup()
         {
-            IServiceContainer container = new ServiceContainer();
+            var container = new ServiceContainer();
+            var logger = new Mock<ILogger>();
+            logger.Setup(instance => instance.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<object[]>()));
+            logger.Setup(instance => instance.Log(It.IsAny<LogLevel>(), It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()));
+            container.RegisterInstance(logger.Object);
+            container.Register<MappingFromAttributes>();
+            container.Register<MappingFromFluent>();
             IEntityContextFactory factory = new EntityContextFactory(container)
                .WithDefaultOntologies()
                .WithMetaGraphUri(new Uri("http://app.magi/graphs"))

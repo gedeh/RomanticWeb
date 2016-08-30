@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using RomanticWeb.Collections;
 using RomanticWeb.Converters;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Dynamic;
 using RomanticWeb.Entities;
 using RomanticWeb.Entities.ResultAggregations;
@@ -38,7 +40,7 @@ namespace RomanticWeb.ComponentModel
             registry.Register(factory => CreateMappingContext(factory), new PerContainerLifetime());
             registry.Register(factory => CreateMappingsRepository(factory), new PerContainerLifetime());
 
-            registry.Register<IEntityCaster, ImpromptuInterfaceCaster>(new PerScopeLifetime());
+            registry.Register<IEntityCaster, CastleCoreCaster>(new PerScopeLifetime());
 
             registry.Register(factory => CreateEntityProxy(factory));
 
@@ -64,7 +66,8 @@ namespace RomanticWeb.ComponentModel
                 {
                     var transformerCatalog = factory.GetInstance<IResultTransformerCatalog>();
                     var namedGraphSeletor = factory.GetInstance<INamedGraphSelector>();
-                    return new EntityProxy(entity, mapping, transformerCatalog, namedGraphSeletor);
+                    var log = factory.GetInstance<ILogger>();
+                    return new EntityProxy(entity, mapping, transformerCatalog, namedGraphSeletor, log);
                 };
         }
 
@@ -83,14 +86,10 @@ namespace RomanticWeb.ComponentModel
 
         private static IMappingsRepository CreateMappingsRepository(IServiceFactory factory)
         {
-            var visitors = from chain in factory.GetAllInstances<MappingProviderVisitorChain>()
-                           from type in chain.Visitors
-                           select (IMappingProviderVisitor)factory.GetInstance(type);
-
             return new MappingsRepository(
                 factory.GetInstance<MappingModelBuilder>(),
                 factory.GetAllInstances<IMappingProviderSource>(),
-                visitors,
+                new DependencyTree<IMappingProviderVisitor>(factory.GetAllInstances<IMappingProviderVisitor>()),
                 factory.GetAllInstances<IMappingModelVisitor>());
         }
     }

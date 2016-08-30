@@ -22,6 +22,10 @@
   <Target Name="PepitaPackage" AfterTargets="GitHubLink">
     <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
              Targets="CopyNugetBinaries;PepitaPackage"
+             Properties="AssemblyName=RomanticWeb.Contracts" />
+
+    <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
+             Targets="CopyNugetBinaries;PepitaPackage"
              Properties="AssemblyName=RomanticWeb" />
 
     <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"

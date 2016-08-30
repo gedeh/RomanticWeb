@@ -162,8 +162,8 @@ namespace RomanticWeb.Tests.Mapping
 
         protected override IEnumerable<IMappingProviderSource> CreateMappingSources()
         {
-            yield return new FluentMappingsSource(typeof(IHidesMember).Assembly);
-            yield return new AttributeMappingsSource(typeof(IHidesMember).Assembly);
+            yield return new FluentMappingsSource(typeof(IHidesMember).Assembly, null);
+            yield return new AttributeMappingsSource(typeof(IHidesMember).Assembly, null);
         }
     }
 }

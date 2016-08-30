@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Collections;
 using RomanticWeb.Dynamic;
 using RomanticWeb.Entities.ResultAggregations;
@@ -24,7 +23,7 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         }
 
         /// <summary>Transforms the resulting <paramref name="nodes"/> to a <see cref="IRdfListAdapter{T}"/>.</summary>
-        public override object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, [AllowNull] IEnumerable<INode> nodes)
+        public override object FromNodes(IEntityProxy parent, IPropertyMapping property, IEntityContext context, IEnumerable<INode> nodes)
         {
             var listHead = (IEntity)base.FromNodes(parent, property, context, nodes);
             var ownerType = GetOwnerType(property);

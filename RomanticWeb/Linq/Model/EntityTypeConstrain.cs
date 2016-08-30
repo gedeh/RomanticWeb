@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -43,7 +42,6 @@ namespace RomanticWeb.Linq.Model
         }
 
         /// <summary>Gets or sets an object for this constrain.</summary>
-        [AllowNull]
         public override IExpression Value
         {
             get
@@ -84,7 +82,7 @@ namespace RomanticWeb.Linq.Model
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             return (!Object.Equals(operand, null)) && (operand.GetType() == typeof(EntityTypeConstrain)) &&
                 (Value != null ? Value.Equals(((EntityTypeConstrain)operand).Value) : ((EntityTypeConstrain)operand).Value == null);

@@ -44,7 +44,7 @@ namespace RomanticWeb.JsonLd
                 var lists = GetListsFromGraph(graph, useNativeTypes);
                 IGrouping<INode, IEntityQuad> graph1 = graph;
                 var distinctSubjects = (from q in graph
-                                        where q.Graph.Equals(graph1.Key) && (!_nodesInList.Contains(q.Subject))
+                                        where ((Equals(q.Graph, graph1.Key)) || (q.Graph.Equals(graph1.Key))) && (!_nodesInList.Contains(q.Subject))
                                         orderby q.Subject.IsBlank ? "_:" + q.Subject.BlankNode : q.Subject.ToString() // todo: remove ordering (will need to change tests)
                                         select q.Subject).Distinct();
 
@@ -88,7 +88,7 @@ namespace RomanticWeb.JsonLd
         private JObject SerializeEntity(INode subject, IEnumerable<IEntityQuad> quads, INode graphName, bool nativeTypes, bool useRdfType, JObject listsInGraph)
         {
             var groups = from quad in quads
-                         where quad.Subject.Equals(subject) && quad.Graph.Equals(graphName)
+                         where quad.Subject.Equals(subject) && (Equals(quad.Graph, graphName) || (quad.Graph.Equals(graphName)))
                          group quad.Object by quad.Predicate into g
                          select new { Predicate = (g.Key.Equals(RdfType) ? useRdfType ? RdfType : Node.ForLiteral(Type) : g.Key), Objects = g }
                              into selection

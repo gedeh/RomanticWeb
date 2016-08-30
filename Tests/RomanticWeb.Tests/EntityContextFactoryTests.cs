@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -37,13 +38,13 @@ namespace RomanticWeb.Tests
             _entityContextFactory.WithMappings(
                 m =>
                 {
-                    m.Attributes.FromAssembly(withMappings);
-                    m.Attributes.FromAssemblyOf<IPerson>();
+                    m.FromAssembly(withMappings);
+                    m.FromAssemblyOf<IPerson>();
                 });
 
             // then
-            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>();
-            _entityContextFactory.Mappings.As<MappingsRepository>().Sources.Should().HaveCount(3);
+            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>()
+                .Which.Sources.Count(source => source.Description.Contains(withMappings.FullName)).Should().Be(2);
         }
 
         [Test]
@@ -56,12 +57,13 @@ namespace RomanticWeb.Tests
             _entityContextFactory.WithMappings(
                 m =>
                 {
-                    m.Fluent.FromAssembly(withMappings);
-                    m.Fluent.FromAssemblyOf<IPerson>();
+                    m.FromAssembly(withMappings);
+                    m.FromAssemblyOf<IPerson>();
                 });
 
             // then
-            _entityContextFactory.Mappings.As<MappingsRepository>().Sources.Should().HaveCount(3);
+            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>()
+                .Which.Sources.Count(source => source.Description.Contains(withMappings.FullName)).Should().Be(2);
         }
 
         [Test, Description("Calling WithMappings twice")]
@@ -71,12 +73,12 @@ namespace RomanticWeb.Tests
             var withMappings = typeof(IPerson).Assembly;
 
             // when
-            _entityContextFactory.WithMappings(m => m.Attributes.FromAssembly(withMappings));
-            _entityContextFactory.WithMappings(m => m.Attributes.FromAssemblyOf<IPerson>());
+            _entityContextFactory.WithMappings(m => m.FromAssembly(withMappings));
+            _entityContextFactory.WithMappings(m => m.FromAssemblyOf<IPerson>());
 
             // then
-            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>();
-            _entityContextFactory.Mappings.As<MappingsRepository>().Sources.Should().HaveCount(3);
+            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>()
+                .Which.Sources.Count(source => source.Description.Contains(withMappings.FullName)).Should().Be(2);
         }
 
         [Test, Description("Calling WithMappings twice")]
@@ -86,12 +88,12 @@ namespace RomanticWeb.Tests
             var withMappings = typeof(IPerson).Assembly;
 
             // when
-            _entityContextFactory.WithMappings(m => m.Fluent.FromAssembly(withMappings));
-            _entityContextFactory.WithMappings(m => m.Fluent.FromAssemblyOf<IPerson>());
+            _entityContextFactory.WithMappings(m => m.FromAssembly(withMappings));
+            _entityContextFactory.WithMappings(m => m.FromAssemblyOf<IPerson>());
 
             // then
-            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>();
-            _entityContextFactory.Mappings.As<MappingsRepository>().Sources.Should().HaveCount(3);
+            _entityContextFactory.Mappings.Should().BeOfType<MappingsRepository>()
+                .Which.Sources.Count(source => source.Description.Contains(withMappings.FullName)).Should().Be(2);
         }
     }
 }

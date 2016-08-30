@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Mapping.Providers;
 
 namespace RomanticWeb.Mapping.Attributes
@@ -9,26 +10,32 @@ namespace RomanticWeb.Mapping.Attributes
     // todo: refactor similarity with FluentMappingProviderBuilder
     internal class AttributeMappingProviderBuilder : Visitors.IMappingAttributesVisitor
     {
+        private readonly ILogger _log;
         private Type _entityType;
+
+        public AttributeMappingProviderBuilder(ILogger log)
+        {
+            _log = log;
+        }
 
         public IClassMappingProvider Visit(ClassAttribute attribute)
         {
             if (attribute.Uri != null)
             {
-                return new ClassMappingProvider(_entityType, attribute.Uri);
+                return new ClassMappingProvider(_entityType, attribute.Uri, _log);
             }
 
-            return new ClassMappingProvider(_entityType, attribute.Prefix, attribute.Term);
+            return new ClassMappingProvider(_entityType, attribute.Prefix, attribute.Term, _log);
         }
 
         public IPropertyMappingProvider Visit(PropertyAttribute propertyAttribute, PropertyInfo property)
         {
-            return CreatePropertyMapping(propertyAttribute, property);
+            return CreatePropertyMapping(propertyAttribute, property, _log);
         }
 
         public ICollectionMappingProvider Visit(CollectionAttribute collectionAttribute, PropertyInfo property)
         {
-            var propertyMapping = CreatePropertyMapping(collectionAttribute, property);
+            var propertyMapping = CreatePropertyMapping(collectionAttribute, property, _log);
             var result = new CollectionMappingProvider(propertyMapping, collectionAttribute.StoreAs);
             if (collectionAttribute.ElementConverterType != null)
             {
@@ -40,7 +47,7 @@ namespace RomanticWeb.Mapping.Attributes
 
         public IDictionaryMappingProvider Visit(DictionaryAttribute dictionaryAttribute, PropertyInfo property, IPredicateMappingProvider key, IPredicateMappingProvider value)
         {
-            var prop = CreatePropertyMapping(dictionaryAttribute, property);
+            var prop = CreatePropertyMapping(dictionaryAttribute, property, _log);
             return new DictionaryMappingProvider(prop, key, value);
         }
 
@@ -48,12 +55,12 @@ namespace RomanticWeb.Mapping.Attributes
         {
             if (keyAttribute == null)
             {
-                return new KeyMappingProvider();
+                return new KeyMappingProvider(_log);
             }
 
             var keyMappingProvider = keyAttribute.Uri != null 
-                ? new KeyMappingProvider(keyAttribute.Uri) 
-                : new KeyMappingProvider(keyAttribute.Prefix, keyAttribute.Term);
+                ? new KeyMappingProvider(keyAttribute.Uri, _log) 
+                : new KeyMappingProvider(keyAttribute.Prefix, keyAttribute.Term, _log);
 
             if (keyAttribute.ConverterType != null)
             {
@@ -67,12 +74,12 @@ namespace RomanticWeb.Mapping.Attributes
         {
             if (valueAttribute == null)
             {
-                return new ValueMappingProvider();
+                return new ValueMappingProvider(_log);
             }
 
             var valueMappingProvider = valueAttribute.Uri != null
-                ? new ValueMappingProvider(valueAttribute.Uri)
-                : new ValueMappingProvider(valueAttribute.Prefix, valueAttribute.Term);
+                ? new ValueMappingProvider(valueAttribute.Uri, _log)
+                : new ValueMappingProvider(valueAttribute.Prefix, valueAttribute.Term, _log);
 
             if (valueAttribute.ConverterType != null)
             {
@@ -88,16 +95,16 @@ namespace RomanticWeb.Mapping.Attributes
             return new EntityMappingProvider(entityType, GetClasses(entityType), GetProperties(entityType));
         }
 
-        private static PropertyMappingProvider CreatePropertyMapping(PropertyAttribute propertyAttribute, PropertyInfo property)
+        private static PropertyMappingProvider CreatePropertyMapping(PropertyAttribute propertyAttribute, PropertyInfo property, ILogger log)
         {
             PropertyMappingProvider propertyMappingProvider;
             if (propertyAttribute.Uri != null)
             {
-                propertyMappingProvider = new PropertyMappingProvider(propertyAttribute.Uri, property);
+                propertyMappingProvider = new PropertyMappingProvider(propertyAttribute.Uri, property, log);
             }
             else
             {
-                propertyMappingProvider = new PropertyMappingProvider(propertyAttribute.Prefix, propertyAttribute.Term, property);
+                propertyMappingProvider = new PropertyMappingProvider(propertyAttribute.Prefix, propertyAttribute.Term, property, log);
             }
 
             if (propertyAttribute.ConverterType != null)

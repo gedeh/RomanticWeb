@@ -1,11 +1,8 @@
-﻿using NullGuard;
-
-namespace RomanticWeb.Linq.Sparql
+﻿namespace RomanticWeb.Linq.Sparql
 {
     /// <summary>
     /// Represents variables used in Romantic Web's wueries
     /// </summary>
-    [NullGuard(ValidationFlags.None)]
     public class SparqlQueryVariables
     {
         private readonly string _entity;

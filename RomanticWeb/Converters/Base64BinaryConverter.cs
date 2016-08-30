@@ -1,5 +1,4 @@
-﻿using NullGuard;
-using RomanticWeb.Model;
+﻿using RomanticWeb.Model;
 using RomanticWeb.Vocabularies;
 
 namespace RomanticWeb.Converters
@@ -28,7 +27,6 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        [return: AllowNull]
         public override System.Uri CanConvertBack(System.Type type)
         {
             return type == typeof(byte[]) ? Xsd.Base64Binary : null;

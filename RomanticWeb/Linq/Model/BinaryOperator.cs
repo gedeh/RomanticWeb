@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Specialized;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -30,11 +29,9 @@ namespace RomanticWeb.Linq.Model
 
         #region Properties
         /// <summary>Gets or sets left operand of this operator.</summary>
-        [AllowNull]
         public IExpression LeftOperand { get { return Operand; } set { Operand = value; } }
 
         /// <summary>Gets or sets right operand of this operator.</summary>
-        [AllowNull]
         public IExpression RightOperand
         {
             get
@@ -186,7 +183,7 @@ namespace RomanticWeb.Linq.Model
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             return (!Object.Equals(operand, null)) && (operand.GetType() == typeof(BinaryOperator)) &&
                 (LeftOperand != null ? LeftOperand.Equals(((BinaryOperator)operand).LeftOperand) : Object.Equals(((BinaryOperator)operand).LeftOperand, null)) &&

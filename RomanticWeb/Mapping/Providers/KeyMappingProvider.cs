@@ -1,5 +1,5 @@
 using System;
-using NullGuard;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Mapping.Visitors;
 
 namespace RomanticWeb.Mapping.Providers
@@ -9,38 +9,31 @@ namespace RomanticWeb.Mapping.Providers
     /// </summary>
     public class KeyMappingProvider : TermMappingProviderBase, IPredicateMappingProvider
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyMappingProvider"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="KeyMappingProvider"/> class.</summary>
         /// <param name="termUri">The term URI.</param>
-        public KeyMappingProvider(Uri termUri)
-            : base(termUri)
+        /// <param name="log">Logging facility.</param>
+        public KeyMappingProvider(Uri termUri, ILogger log) : base(termUri, log)
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyMappingProvider"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="KeyMappingProvider"/> class.</summary>
         /// <param name="namespacePrefix">The namespace prefix.</param>
         /// <param name="term">The term.</param>
-        public KeyMappingProvider(string namespacePrefix, string term)
-            : base(namespacePrefix, term)
+        /// <param name="log">Logging facility.</param>
+        public KeyMappingProvider(string namespacePrefix, string term, ILogger log) : base(namespacePrefix, term, log)
         {
         }
 
-        /// <summary>
-        /// Initializes an empty <see cref="KeyMappingProvider"/>.
-        /// </summary>
-        public KeyMappingProvider()
+        /// <summary>Initializes an empty <see cref="KeyMappingProvider"/>.</summary>
+        /// <param name="log">Logging facility.</param>
+        public KeyMappingProvider(ILogger log) : base(log)
         {
         }
 
         /// <inheritdoc/>
-        public Type ConverterType { [return: AllowNull] get; set; }
+        public Type ConverterType { get; set; }
 
-        /// <summary>
-        /// Does nothing
-        /// </summary>
+        /// <summary>Does nothing.</summary>
         public override void Accept(IMappingProviderVisitor mappingProviderVisitor)
         {
         }

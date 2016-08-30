@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ImpromptuInterface;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Entities;
@@ -35,7 +34,7 @@ namespace RomanticWeb.Tests.Linq
             _baseUriSelectionPolicy.Setup(policy => policy.SelectBaseUri(It.IsAny<EntityId>())).Returns(new Uri("http://test/"));
             _entitySource = new Mock<IEntitySource>(MockBehavior.Strict);
             _store = new Mock<IEntityStore>(MockBehavior.Strict);
-            _store.Setup(store => store.AssertEntity(It.IsAny<EntityId>(), It.IsAny<IEnumerable<EntityQuad>>()));
+            _store.Setup(store => store.AssertEntity(It.IsAny<EntityId>(), It.IsAny<IEnumerable<IEntityQuad>>()));
 
             _entityContext = new Mock<IEntityContext>(MockBehavior.Strict);
             _entityContext.Setup(context => context.Create<IPerson>(It.IsAny<EntityId>())).Returns((EntityId id) => CreatePersonEntity(id));
@@ -253,7 +252,9 @@ namespace RomanticWeb.Tests.Linq
 
         private static IPerson CreatePersonEntity(EntityId id)
         {
-            return new { Id = id }.ActLike<IPerson>();
+            var result = new Mock<IPerson>();
+            result.SetupGet(instance => instance.Id).Returns(id);
+            return result.Object;
         }
     }
 }

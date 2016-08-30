@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using NullGuard;
 using RomanticWeb.IO;
 using RomanticWeb.LightInject;
 using RomanticWeb.Net;
@@ -71,7 +70,7 @@ namespace RomanticWeb.Ontologies
             return result;
         }
 
-        private IOntology Create(Uri uriPath, [AllowNull] string contentType)
+        private IOntology Create(Uri uriPath, string contentType)
         {
             WebRequest request = WebRequest.Create(uriPath);
             WebResponse response = request.GetResponse();

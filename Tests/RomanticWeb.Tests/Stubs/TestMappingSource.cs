@@ -8,7 +8,7 @@ namespace RomanticWeb.Tests.Stubs
 {
     public class TestMappingSource : IMappingProviderSource
     {
-        private readonly RomanticWeb.Mapping.Visitors.IFluentMapsVisitor _builder = new FluentMappingProviderBuilder();
+        private readonly RomanticWeb.Mapping.Visitors.IFluentMapsVisitor _builder = new FluentMappingProviderBuilder(null);
         private readonly List<IEntityMappingProvider> _entityMaps;
 
         public TestMappingSource(params EntityMap[] entityMaps)

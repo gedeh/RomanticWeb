@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using NullGuard;
 
 namespace RomanticWeb.Ontologies
 {
@@ -57,17 +56,17 @@ namespace RomanticWeb.Ontologies
         public string Name { get; private set; }
 
 #pragma warning disable 1591
-        public static bool operator ==([AllowNull] Term left, [AllowNull] Term right)
+        public static bool operator ==(Term left, Term right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=([AllowNull] Term left, [AllowNull] Term right)
+        public static bool operator !=(Term left, Term right)
         {
             return !Equals(left, right);
         }
 
-        public override bool Equals([AllowNull] object obj)
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) { return false; }
             if (ReferenceEquals(this, obj)) { return true; }
@@ -86,7 +85,7 @@ namespace RomanticWeb.Ontologies
             }
         }
 
-        protected bool Equals([AllowNull] Term other)
+        protected bool Equals(Term other)
         {
             return Equals(Uri, other.Uri) && Equals(Ontology, other.Ontology) && string.Equals(Name, other.Name);
         }

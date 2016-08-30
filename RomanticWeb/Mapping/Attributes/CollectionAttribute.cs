@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using NullGuard;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Mapping.Providers;
 using RomanticWeb.Mapping.Visitors;
@@ -33,7 +32,6 @@ namespace RomanticWeb.Mapping.Attributes
         /// <inheritdoc />
         public override Type ConverterType
         {
-            [return: AllowNull]
             get { return (StoreAs == Model.StoreAs.SimpleCollection ? _elementConverterType ?? base.ConverterType : base.ConverterType); }
             set { base.ConverterType = value; }
         }
@@ -41,7 +39,6 @@ namespace RomanticWeb.Mapping.Attributes
         /// <summary>Gets or sets an element converter type.</summary>
         public Type ElementConverterType
         {
-            [return: AllowNull]
             get { return (StoreAs == Model.StoreAs.SimpleCollection ? _elementConverterType ?? base.ConverterType : _elementConverterType); }
             set { _elementConverterType = value; }
         }

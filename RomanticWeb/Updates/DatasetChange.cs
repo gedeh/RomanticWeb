@@ -1,4 +1,3 @@
-using NullGuard;
 using RomanticWeb.Entities;
 
 namespace RomanticWeb.Updates
@@ -36,11 +35,7 @@ namespace RomanticWeb.Updates
 
         /// <summary>Gets the graph, which was changed.</summary>
         /// <returns>null if change affects multiple graphs</returns>
-        public EntityId Graph
-        {
-            [return: AllowNull]
-            get { return _graph; }
-        }
+        public EntityId Graph { get { return _graph; } }
 
         /// <summary>Gets a value indicating whether this instance actually represents a change to the store.</summary>
         public virtual bool IsEmpty { get { return false; } }

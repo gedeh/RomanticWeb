@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{AEA90D
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
+		NuGetBuild\RomanticWeb.Contracts\RomanticWeb.Contracts.nuspec = NuGetBuild\RomanticWeb.Contracts\RomanticWeb.Contracts.nuspec
 		NuGetBuild\RomanticWeb.dotNetRDF\RomanticWeb.dotNetRDF.nuspec = NuGetBuild\RomanticWeb.dotNetRDF\RomanticWeb.dotNetRDF.nuspec
 		NuGetBuild\RomanticWeb.Fody\RomanticWeb.Fody.nuspec = NuGetBuild\RomanticWeb.Fody\RomanticWeb.Fody.nuspec
 		NuGetBuild\RomanticWeb.JsonLd\RomanticWeb.JsonLd.nuspec = NuGetBuild\RomanticWeb.JsonLd\RomanticWeb.JsonLd.nuspec
@@ -53,6 +54,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{E45367F8-A2D5-4B06-8400-99E89DB133A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.Contracts", "RomanticWeb.Contracts\RomanticWeb.Contracts.csproj", "{17315F2E-393A-422F-80BA-575794350285}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.Mapping.Fluent", "RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.csproj", "{D9A45427-9698-44B8-83AB-E07351F3531D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,6 +103,10 @@ Global
 		{17315F2E-393A-422F-80BA-575794350285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17315F2E-393A-422F-80BA-575794350285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17315F2E-393A-422F-80BA-575794350285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A45427-9698-44B8-83AB-E07351F3531D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A45427-9698-44B8-83AB-E07351F3531D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A45427-9698-44B8-83AB-E07351F3531D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A45427-9698-44B8-83AB-E07351F3531D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

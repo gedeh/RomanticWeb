@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -87,7 +86,6 @@ namespace RomanticWeb.Linq.Model
         /// <summary>Gets an owning query.</summary>
         public override IQuery OwnerQuery
         {
-            [return: AllowNull]
             get
             {
                 return base.OwnerQuery;
@@ -103,7 +101,6 @@ namespace RomanticWeb.Linq.Model
         }
 
         /// <summary>Subject of this query.</summary>
-        [AllowNull]
         internal Identifier Subject
         {
             get
@@ -176,7 +173,7 @@ namespace RomanticWeb.Linq.Model
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             return (!Object.Equals(operand, null)) && (operand.GetType() == typeof(Query)) && (_queryForm == ((Query)operand)._queryForm) &&
                 (_subject != null ? _subject.Equals(((Query)operand)._subject) : Object.Equals(((Query)operand)._subject, null)) &&

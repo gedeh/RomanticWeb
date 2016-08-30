@@ -10,7 +10,7 @@ namespace RomanticWeb.Tests.Mapping
     {
         protected override IEnumerable<IMappingProviderSource> CreateMappingSources()
         {
-            yield return new FluentMappingsSource(typeof(AnimalMap).Assembly);
+            yield return new FluentMappingsSource(typeof(AnimalMap).Assembly, null);
         }
     }
 }

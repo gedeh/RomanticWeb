@@ -65,9 +65,6 @@ namespace RomanticWeb.Tests.Configuration
 
             // when
             _element.Invoking(instance => instance.CreateTripleStore()).ShouldThrow<ConfigurationErrorsException>();
-
-            // then
-            _loader.Verify(l => l.LoadObject<ITripleStore>(new Uri("urn:store:uri")));
         }
 
         [Test]

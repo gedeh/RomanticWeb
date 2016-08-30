@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Anotar.NLog;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Model;
 using RomanticWeb.Updates;
@@ -84,7 +82,7 @@ namespace RomanticWeb
 
         public IDatasetChanges Changes { get { return _changesTracker; } }
 
-        public IEnumerable<INode> GetObjectsForPredicate(EntityId entityId, Uri predicate, [AllowNull] Uri graph)
+        public IEnumerable<INode> GetObjectsForPredicate(EntityId entityId, Uri predicate, Uri graph)
         {
             var quads = _entityQuads[Node.FromEntityId(entityId), Node.ForUri(predicate)];
 
@@ -105,7 +103,6 @@ namespace RomanticWeb
         {
             if (_assertedEntities.Contains(entityId))
             {
-                LogTo.Info("Skipping entity {0}. Entity already added to store", entityId);
                 return;
             }
 
@@ -164,7 +161,7 @@ namespace RomanticWeb
                     if (removed.Any(quad => quad.Object.IsBlank || quad.Subject.IsBlank))
                     {
                         var removedQuads = removed;
-                        _changesTracker.Add(new GraphReconstruct(entityId, removed.Key.ToEntityId(), _entityQuads.Where(q => q.Graph == removedQuads.Key)));
+                        _changesTracker.Add(new GraphReconstruct(entityId, removed.Key.ToEntityId(), _entityQuads.Where(q => (Equals(q.Graph, removedQuads.Key)) || (q.Graph.Equals(removedQuads.Key)))));
                     }
                 }
             }

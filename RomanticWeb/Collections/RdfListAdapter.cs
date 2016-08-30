@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.NamedGraphs;
 
 namespace RomanticWeb.Collections
 {
     [DebuggerDisplay("Count = {Count}")]
-    [NullGuard(ValidationFlags.All)]
     internal class RdfListAdapter<TOwner, TNode, T> : IList<T>, IRdfListAdapter<T>
         where TOwner : class, IRdfListOwner
         where TNode : class, IRdfListNode<T>
@@ -171,7 +169,7 @@ namespace RomanticWeb.Collections
             }
         }
 
-        private void DeleteNode(IRdfListNode<T> nodeToDelete, [AllowNull] IRdfListNode<T> previousNode)
+        private void DeleteNode(IRdfListNode<T> nodeToDelete, IRdfListNode<T> previousNode)
         {
             if (previousNode != null)
             {

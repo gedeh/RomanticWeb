@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using NullGuard;
 using RomanticWeb.Entities.ResultAggregations;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Mapping.Visitors;
@@ -36,7 +35,6 @@ namespace RomanticWeb.Mapping.Providers
         /// <inheritdoc />
         public Type ConverterType
         {
-            [return: AllowNull]
             get { return _propertyMapping.ConverterType; }
             set { _propertyMapping.ConverterType = value; }
         }
@@ -48,7 +46,6 @@ namespace RomanticWeb.Mapping.Providers
         /// <inheritdoc/>
         public Type ElementConverterType
         {
-            [return: AllowNull]
             get { return _elementConverterType; }
             set { _elementConverterType = value; }
         }

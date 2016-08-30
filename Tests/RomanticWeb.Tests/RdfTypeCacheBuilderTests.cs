@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ImpromptuInterface.Dynamic;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Mapping;
@@ -14,7 +14,6 @@ namespace RomanticWeb.Tests
     [TestFixture]
     public class RdfTypeCacheBuilderTests
     {
-        private static readonly dynamic New = Builder.New();
         private RdfTypeCacheBuilder _builder;
         private Mock<IRdfTypeCache> _cache;
 
@@ -41,20 +40,19 @@ namespace RomanticWeb.Tests
         private static IEntityMapping CreateMapping<T>(params Uri[] classUris)
         {
             var classMappings = classUris.Select(CreateClassMapping);
-            dynamic mapping = New.ExpandoObject(
-                EntityType: typeof(T),
-                Classes: classMappings);
-            mapping.Accept = new Action<IMappingModelVisitor>(visitor => Accept(mapping.ActLike<IEntityMapping>(), visitor));
-
-            return mapping.ActLike<IEntityMapping>();
+            var mapping = new Mock<IEntityMapping>();
+            mapping.SetupGet(instance => instance.EntityType).Returns(typeof(T));
+            mapping.SetupGet(instance => instance.Classes).Returns(classMappings);
+            mapping.Setup(instance => instance.Accept(It.IsAny<IMappingModelVisitor>())).Callback<IMappingModelVisitor>(visitor => Accept(mapping.Object, visitor));
+            return mapping.Object;
         }
 
         private static IClassMapping CreateClassMapping(Uri uri)
         {
-            return New.ExpandoObject(
-                IsInherited: false,
-                IsMatch: new Func<IEnumerable<Uri>, bool>(uris => uris.Contains(uri)))
-                      .ActLike<IClassMapping>();
+            var mapping = new Mock<IClassMapping>();
+            mapping.SetupGet(instance => instance.IsInherited).Returns(false);
+            mapping.Setup(instance => instance.IsMatch(It.IsAny<IEnumerable<Uri>>())).Callback<IEnumerable<Uri>>(uris => uris.Contains(uri));
+            return mapping.Object;
         }
 
         private static void Accept(IEntityMapping mapping, IMappingModelVisitor visitor)

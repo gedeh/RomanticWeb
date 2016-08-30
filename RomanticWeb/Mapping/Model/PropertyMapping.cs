@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using NullGuard;
 using RomanticWeb.Converters;
 using RomanticWeb.Mapping.Visitors;
 
 namespace RomanticWeb.Mapping.Model
 {
-    [NullGuard(ValidationFlags.All)]
     [DebuggerDisplay("Property {Name}")]
     [DebuggerTypeProxy(typeof(DebuggerViewProxy))]
     internal class PropertyMapping : IPropertyMapping

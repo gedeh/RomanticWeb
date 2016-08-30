@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using FluentAssertions;
-using ImpromptuInterface;
-using ImpromptuInterface.Dynamic;
+using Moq;
 using NUnit.Framework;
 using RomanticWeb.Mapping.Conventions;
 using RomanticWeb.Mapping.Model;
@@ -15,7 +14,6 @@ namespace RomanticWeb.Tests.Mapping.Conventions
     [TestFixture]
     public class CollectionConventionTests
     {
-        private static readonly dynamic New = Builder.New();
         private CollectionStorageConvention _rdfListConvention;
 
         [SetUp]
@@ -28,14 +26,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_be_applied_for_ICollection()
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(typeof(ICollection<int>)),
-                StoreAs = default(StoreAs)
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(ICollection<int>)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(default(StoreAs));
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeTrue();
@@ -45,14 +41,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_be_applied_for_IEnumerable()
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(typeof(IEnumerable<int>)),
-                StoreAs = default(StoreAs)
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(IEnumerable<int>)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(default(StoreAs));
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeTrue();
@@ -64,14 +58,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_be_applied_for_collections(Type collectionType)
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(collectionType),
-                StoreAs = default(StoreAs)
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(collectionType));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(default(StoreAs));
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeFalse();
@@ -81,14 +73,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_not_be_applied_for_non_collections()
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(typeof(int)),
-                StoreAs = default(StoreAs)
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(int)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(default(StoreAs));
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeFalse();
@@ -98,15 +88,16 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Applying_should_set_StorageStrategy()
         {
             // given
-            ICollectionMappingProvider mapping = New.ExpandoObject(
-                ReturnType: (PropertyInfo)new TestPropertyInfo(typeof(int)),
-                StoreAs: StoreAs.Undefined).ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(int)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
+            mapping.SetupSet(instance => instance.StoreAs = StoreAs.SimpleCollection);
 
             // when
-            _rdfListConvention.Apply(mapping);
+            _rdfListConvention.Apply(mapping.Object);
 
             // then
-            mapping.StoreAs.Should().Be(StoreAs.SimpleCollection);
+            mapping.VerifySet(instance => instance.StoreAs = StoreAs.SimpleCollection, Times.Once);
         }
     }
 }

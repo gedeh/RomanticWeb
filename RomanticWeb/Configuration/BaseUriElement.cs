@@ -1,26 +1,35 @@
 ﻿using System;
+#if !NETSTANDARD16
 using System.Configuration;
-using NullGuard;
-
+#endif
 namespace RomanticWeb.Configuration
 {
-    /// <summary>
-    /// Configuration element to set base Uri for
-    /// </summary>
+    /// <summary>Configuration element to set base Uri for.</summary>
+#if NETSTANDARD16
+    public class BaseUriElement
+    {
+        private Uri _default;
+
+        /// <summary>Gets or sets the default base Uri.</summary>
+        public Uri Default
+        {
+            get { return _default; }
+            set { UriValidator.Default.Validate(_default = value); }
+        }
+    }
+#else
     public class BaseUriElement : ConfigurationElement
     {
         private const string DefaultUriAttributeName = "default";
 
-        /// <summary>
-        /// Gets or sets the default base Uri.
-        /// </summary>
+        /// <summary>Gets or sets the default base Uri.</summary>
         [ConfigurationProperty(DefaultUriAttributeName)]
         [UriValidator]
         public Uri Default
         {
-            [return: AllowNull]
             get { return (Uri)this[DefaultUriAttributeName]; }
             set { this[DefaultUriAttributeName] = value; }
         }
     }
+#endif
 }

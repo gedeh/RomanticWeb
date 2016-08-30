@@ -1,17 +1,22 @@
-﻿using System.Configuration;
+﻿#if !NETSTANDARD16
+using System.Configuration;
+#endif
 
 namespace RomanticWeb.Configuration
 {
-    /// <summary>
-    /// Mapping assembly configuration element
-    /// </summary>
+    /// <summary>Mapping assembly configuration element.</summary>
+#if NETSTANDARD16
+    public class MappingAssemblyElement
+    {
+        /// <summary>Gets or sets the assembly name.</summary>
+        public string Assembly { get; set; }
+    }
+#else
     public class MappingAssemblyElement : ConfigurationElement
     {
         private const string AssemlyAttributeName = "assembly";
 
-        /// <summary>
-        /// Gets or sets the assembly name.
-        /// </summary>
+        /// <summary>Gets or sets the assembly name.</summary>
         [ConfigurationProperty(AssemlyAttributeName)]
         public string Assembly
         {
@@ -19,4 +24,5 @@ namespace RomanticWeb.Configuration
             set { this[AssemlyAttributeName] = value; }
         }
     }
+#endif
 }

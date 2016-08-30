@@ -270,7 +270,7 @@ namespace RomanticWeb.Tests.IntegrationTests
             Assert.That(Entity.FirstName, Is.EqualTo("Dominik"));
             Assert.That(Entity.LastName, Is.EqualTo("Kuziński"));
             Assert.That(EntityStore.Quads, Has.Count.EqualTo(5), "Actual triples were: {0}", EntityStore.Serialize());
-            var quads = EntityStore.Quads.Where(q => q.Graph == Node.ForUri(new Uri("personal://magi/people/Tomasz")));
+            var quads = EntityStore.Quads.Where(q => q.Graph.Equals(Node.ForUri(new Uri("personal://magi/people/Tomasz"))));
             Assert.That(quads.ToList(), Has.Count.EqualTo(2), "Actual triples were: {0}", EntityStore.Serialize());
         }
 
@@ -287,7 +287,7 @@ namespace RomanticWeb.Tests.IntegrationTests
 
             // then
             Entity.Interests.Should().ContainInOrder("semantic web", "linked data");
-            var quads = EntityStore.Quads.Where(q => q.Graph == Node.ForUri(new Uri("interestsOf://magi/people/Tomasz")));
+            var quads = EntityStore.Quads.Where(q => q.Graph.Equals(Node.ForUri(new Uri("interestsOf://magi/people/Tomasz"))));
             Assert.That(quads.ToList(), Has.Count.EqualTo(5), "Actual triples were: {0}", EntityStore.Serialize());
         }
 
@@ -460,7 +460,7 @@ namespace RomanticWeb.Tests.IntegrationTests
             // then
             Assert.That(Entity.Age, Is.EqualTo(30));
             (from quad in EntityContext.Store.Quads
-             where quad.Predicate == Node.ForUri(new Uri("http://xmlns.com/foaf/0.1/age"))
+             where quad.Predicate.Equals(Node.ForUri(new Uri("http://xmlns.com/foaf/0.1/age")))
              select quad).ToList().Should().OnlyContain(q => q.Object.DataType == Xsd.Int);
         }
 
@@ -488,15 +488,15 @@ namespace RomanticWeb.Tests.IntegrationTests
             entity.DefaultListMapping.Should().Contain("test string");
             EntityStore.Quads.Should().HaveCount(3, "Actual triples were: {0}", EntityStore.Serialize());
             EntityStore.Quads.Should().Contain(quad => quad.Subject.IsBlank
-                                                    && quad.Predicate == Node.ForUri(Rdf.first)
+                                                    && quad.Predicate.Equals(Node.ForUri(Rdf.first))
                                                     && quad.Object.IsLiteral
                                                     && quad.Object.Literal == "test string");
-            EntityStore.Quads.Should().Contain(quad => quad.Subject == Node.FromEntityId(entityId)
+            EntityStore.Quads.Should().Contain(quad => quad.Subject.Equals(Node.FromEntityId(entityId))
                                                     && AbsoluteUriComparer.Default.Compare(quad.Predicate.Uri, new Uri("http://magi/ontology#collection")) == 0
                                                     && quad.Object.IsBlank);
             EntityStore.Quads.Should().Contain(quad => quad.Subject.IsBlank
-                                                    && quad.Predicate == Node.ForUri(Rdf.rest)
-                                                    && quad.Object == Node.ForUri(Rdf.nil));
+                                                    && quad.Predicate.Equals(Node.ForUri(Rdf.rest))
+                                                    && quad.Object.Equals(Node.ForUri(Rdf.nil)));
         }
 
         [Test]

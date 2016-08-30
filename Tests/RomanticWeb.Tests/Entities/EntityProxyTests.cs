@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using ImpromptuInterface;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities;
+using RomanticWeb.Entities.Proxies;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.NamedGraphs;
 using RomanticWeb.Tests.Stubs;
@@ -38,7 +38,7 @@ namespace RomanticWeb.Tests.Entities
                           .Returns(new Uri("urn:default:graph"));
 
             var entity = new Entity(_entityId, _context.Object);
-            _entityProxy = new EntityProxy(entity, _mapping.Object, new TestTransformerCatalog(), _graphSelector.Object);
+            _entityProxy = new EntityProxy(entity, _mapping.Object, new TestTransformerCatalog(), _graphSelector.Object, null);
         }
 
         [TearDown]
@@ -51,19 +51,21 @@ namespace RomanticWeb.Tests.Entities
         {
             // given
             var idToUse = new EntityId("urn:actual:id");
-            var entityMappingToUse = ImpromptuInterface.Dynamic.Builder.New().ActLike<IEntityMapping>();
+            var entityMappingToUse = new Mock<IEntityMapping>();
             Mock<IPropertyMapping> mappingToUse = new Mock<IPropertyMapping>();
             mappingToUse.SetupGet(instance => instance.Uri).Returns(Rdf.subject);
+            mappingToUse.SetupGet(instance => instance.ReturnType).Returns(typeof(string));
             var propertyMapping = new Mock<IPropertyMapping>();
             propertyMapping.SetupGet(instance => instance.Uri).Returns(Rdf.predicate);
+            propertyMapping.SetupGet(instance => instance.ReturnType).Returns(typeof(string));
             _mapping.Setup(m => m.PropertyFor("property")).Returns(propertyMapping.Object);
 
             // when
-            _entityProxy.OverrideGraphSelection(new OverridingGraphSelector(idToUse, entityMappingToUse, mappingToUse.Object));
-            Impromptu.InvokeGet(_entityProxy, "property");
+            _entityProxy.OverrideGraphSelection(new OverridingGraphSelector(idToUse, entityMappingToUse.Object, mappingToUse.Object));
+            DynamicExtensions.InvokeGet(_entityProxy, "property");
 
             // then
-            _graphSelector.Verify(c => c.SelectGraph(idToUse, entityMappingToUse, mappingToUse.Object), Times.Once);
+            _graphSelector.Verify(c => c.SelectGraph(idToUse, entityMappingToUse.Object, mappingToUse.Object), Times.Once);
             _graphSelector.Verify(c => c.SelectGraph(_entityId, _mapping.Object, propertyMapping.Object), Times.Never);
         }
 
@@ -73,10 +75,11 @@ namespace RomanticWeb.Tests.Entities
             // given
             var propertyMapping = new Mock<IPropertyMapping>();
             propertyMapping.SetupGet(instance => instance.Uri).Returns(Rdf.predicate);
+            propertyMapping.SetupGet(instance => instance.ReturnType).Returns(typeof(string));
             _mapping.Setup(m => m.PropertyFor("property")).Returns(propertyMapping.Object);
 
             // when
-            Impromptu.InvokeGet(_entityProxy, "property");
+            DynamicExtensions.InvokeGet(_entityProxy, "property");
 
             // then
             _graphSelector.Verify(c => c.SelectGraph(_entityId, _mapping.Object, propertyMapping.Object), Times.Once);
@@ -92,13 +95,14 @@ namespace RomanticWeb.Tests.Entities
 
             var propertyMapping = new Mock<IPropertyMapping>();
             propertyMapping.SetupGet(instance => instance.Uri).Returns(Rdf.predicate);
+            propertyMapping.SetupGet(instance => instance.ReturnType).Returns(typeof(string));
             propertyMapping.SetupGet(instance => instance.Converter).Returns(new EntityIdConverter(baseUriSelectonPolicy.Object));
             _mapping.Setup(m => m.PropertyFor("property")).Returns(propertyMapping.Object);
 
             var value = new Uri("/test", UriKind.Relative);
 
             // when
-            Impromptu.InvokeSet(_entityProxy, "property", new EntityId(value));
+            DynamicExtensions.InvokeGet(_entityProxy, "property");
 
             // then
             _entityStore.Quads.Any(item => (item.Object.IsUri) && (item.Object.Uri.AbsoluteUri == new Uri(baseUri, value).AbsoluteUri));

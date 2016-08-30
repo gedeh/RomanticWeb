@@ -1,5 +1,4 @@
 ﻿using System;
-using NullGuard;
 using RomanticWeb.Entities;
 
 namespace RomanticWeb.Model
@@ -17,7 +16,7 @@ namespace RomanticWeb.Model
         }
 
         /// <summary>Creates a new instance of <see cref="EntityQuad"/> in named graph.</summary>
-        public EntityQuad(EntityId entityId, INode s, INode p, INode o, [AllowNull] INode graph) : this(entityId, s, p, o)
+        public EntityQuad(EntityId entityId, INode s, INode p, INode o, INode graph) : this(entityId, s, p, o)
         {
             if ((graph != null) && (!graph.IsUri) && (!graph.IsBlank))
             {
@@ -38,7 +37,6 @@ namespace RomanticWeb.Model
         }
 
         /// <summary>Gets the named graph node or null, if triple is in named graph.</summary>
-        [AllowNull]
         public INode Graph { get { return _graph; } }
 
         /// <summary>Gets entity id, which defines this triple.</summary>
@@ -135,12 +133,12 @@ namespace RomanticWeb.Model
         }
 
 #pragma warning disable 1591
-        public static bool operator ==([AllowNull] EntityQuad left, [AllowNull] EntityQuad right)
+        public static bool operator ==(EntityQuad left, EntityQuad right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=([AllowNull] EntityQuad left, [AllowNull] EntityQuad right)
+        public static bool operator !=(EntityQuad left, EntityQuad right)
         {
             return !Equals(left, right);
         }
@@ -200,7 +198,7 @@ namespace RomanticWeb.Model
         }
 #pragma warning restore
 
-        internal EntityQuad InGraph([AllowNull] Uri graphUri)
+        internal EntityQuad InGraph(Uri graphUri)
         {
             if (graphUri != null)
             {

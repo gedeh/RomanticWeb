@@ -1,5 +1,4 @@
 ﻿using System;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Model;
 
@@ -9,7 +8,7 @@ namespace RomanticWeb.NamedGraphs
     public abstract class GraphSelectionStrategyBase : INamedGraphSelector
     {
         /// <inheritdoc />
-        Uri INamedGraphSelector.SelectGraph(EntityId entityId, [AllowNull] IEntityMapping entityMapping, [AllowNull] IPropertyMapping predicate)
+        Uri INamedGraphSelector.SelectGraph(EntityId entityId, IEntityMapping entityMapping, IPropertyMapping predicate)
         {
             var nonBlankId = entityId;
             while (nonBlankId is BlankId)

@@ -32,7 +32,7 @@ namespace RomanticWeb.Tests.Stubs
                 }
             }
 
-            return new SimpleTransformer(new OriginalResult());
+            return new SimpleTransformer(new SingleOrDefault());
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using FluentAssertions;
-using ImpromptuInterface;
-using ImpromptuInterface.Dynamic;
+using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities;
@@ -16,7 +16,6 @@ namespace RomanticWeb.Tests.Mapping.Conventions
     [TestFixture]
     public class DefaultConverterConventionTests
     {
-        private static readonly dynamic New = Builder.New();
         private DefaultConvertersConvention _convention;
 
         [SetUp]
@@ -37,14 +36,10 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = new
-                               {
-                                   ConverterType = default(Type),
-                                   PropertyInfo = new TestPropertyInfo(type)
-                               }.ActLike<IPropertyMappingProvider>();
+            var mapping = MakePropertyMappingProvider(new TestPropertyInfo(type), default(Type));
 
             // when
-            var shouldApply = ((IPropertyConvention)_convention).ShouldApply(mapping);
+            var shouldApply = ((IPropertyConvention)_convention).ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeTrue();
@@ -54,14 +49,10 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_not_be_applied_to_property_with_unknown_property_type()
         {
             // given
-            var mapping = new
-                               {
-                                   ConverterType = default(Type),
-                                   PropertyInfo = new TestPropertyInfo(typeof(float))
-                               }.ActLike<IPropertyMappingProvider>();
+            var mapping = MakePropertyMappingProvider(new TestPropertyInfo(typeof(float)), default(Type));
 
             // when
-            var shouldApply = ((IPropertyConvention)_convention).ShouldApply(mapping);
+            var shouldApply = ((IPropertyConvention)_convention).ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeFalse();
@@ -72,15 +63,13 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            IPropertyMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(int)),
-                ConverterType: default(Type)).ActLike<ICollectionMappingProvider>();
+            var mapping = MakePropertyMappingProvider(new TestPropertyInfo(typeof(int)), default(Type));
 
             // when
-            ((IPropertyConvention)_convention).Apply(mapping);
+            ((IPropertyConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.ConverterType.Should().Be(typeof(IntegerConverter));
+            mapping.VerifySet(instance => instance.ConverterType = typeof(IntegerConverter), Times.Once);
         }
 
         [Test]
@@ -88,15 +77,13 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            IPropertyMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(IList<int>)),
-                ConverterType: default(Type)).ActLike<ICollectionMappingProvider>();
+            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(IList<int>)), default(Type));
 
             // when
-            ((IPropertyConvention)_convention).Apply(mapping);
+            ((IPropertyConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.ConverterType.Should().Be(typeof(IntegerConverter));
+            mapping.VerifySet(instance => instance.ConverterType = typeof(IntegerConverter), Times.Once);
         }
 
         [Test]
@@ -104,16 +91,13 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            IPropertyMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(IList<int>)),
-                ConverterType: default(Type),
-                StoreAs: StoreAs.RdfList).ActLike<ICollectionMappingProvider>();
+            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(IList<int>)), default(Type), StoreAs.RdfList);
 
             // when
-            ((IPropertyConvention)_convention).Apply(mapping);
+            ((IPropertyConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.ConverterType.Should().Be(typeof(AsEntityConverter<IEntity>));
+            mapping.VerifySet(instance => instance.ConverterType = typeof(AsEntityConverter<IEntity>), Times.Once);
         }
 
         [Test]
@@ -121,16 +105,13 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            ICollectionMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(IList<int>)),
-                ConverterType: default(Type),
-                ElementConverterType: typeof(Type)).ActLike<ICollectionMappingProvider>();
+            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(IList<int>)), default(Type), default(StoreAs), typeof(Type));
 
             // when
-            ((ICollectionConvention)_convention).Apply(mapping);
+            ((ICollectionConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.ElementConverterType.Should().Be(typeof(IntegerConverter));
+            mapping.VerifySet(instance => instance.ElementConverterType = typeof(IntegerConverter), Times.Once);
         }
 
         [Test]
@@ -139,15 +120,13 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             // given
             _convention.SetDefault<int[], Base64BinaryConverter>();
             _convention.SetDefault<int, IntegerConverter>();
-            ICollectionMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(int[])),
-                ConverterType: default(Type)).ActLike<ICollectionMappingProvider>();
+            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(int[])), default(Type));
 
             // when
-            ((IPropertyConvention)_convention).Apply(mapping);
+            ((IPropertyConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.ConverterType.Should().Be(typeof(Base64BinaryConverter));
+            mapping.VerifySet(instance => instance.ConverterType = typeof(Base64BinaryConverter), Times.Once);
         }
 
         [Test]
@@ -155,18 +134,14 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var keyMapping = New.ExpandoObject(ConverterType: default(Type)).ActLike<IPredicateMappingProvider>();
-            var valueMapping = New.ExpandoObject(ConverterType: default(Type)).ActLike<IPredicateMappingProvider>();
-            IDictionaryMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(IDictionary<int, int>)),
-                Key: keyMapping,
-                Value: valueMapping).ActLike<IDictionaryMappingProvider>();
+            var keyMapping = MakePropertyMappingProvider(null, default(Type));
+            var mapping = MakeDictionaryMappingProvider(new TestPropertyInfo(typeof(IDictionary<int, int>)), keyMapping.Object, MakePropertyMappingProvider(null, default(Type)).Object);
 
             // when
-            ((IDictionaryConvention)_convention).Apply(mapping);
+            ((IDictionaryConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.Key.ConverterType.Should().Be(typeof(IntegerConverter));
+            keyMapping.VerifySet(instance => instance.ConverterType = typeof(IntegerConverter), Times.Once);
         }
 
         [Test]
@@ -174,18 +149,45 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var keyMapping = New.ExpandoObject(ConverterType: default(Type)).ActLike<IPredicateMappingProvider>();
-            var valueMapping = New.ExpandoObject(ConverterType: default(Type)).ActLike<IPredicateMappingProvider>();
-            IDictionaryMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: new TestPropertyInfo(typeof(IDictionary<int, int>)),
-                Key: keyMapping,
-                Value: valueMapping).ActLike<IDictionaryMappingProvider>();
+            var valueMapping = MakePropertyMappingProvider(null, default(Type));
+            var mapping = MakeDictionaryMappingProvider(new TestPropertyInfo(typeof(IDictionary<int, int>)), MakePropertyMappingProvider(null, default(Type)).Object, valueMapping.Object);
 
             // when
-            ((IDictionaryConvention)_convention).Apply(mapping);
+            ((IDictionaryConvention)_convention).Apply(mapping.Object);
 
             // then
-            mapping.Key.ConverterType.Should().Be(typeof(IntegerConverter));
+            valueMapping.VerifySet(instance => instance.ConverterType = typeof(IntegerConverter), Times.Once);
+        }
+
+        private Mock<IPropertyMappingProvider> MakePropertyMappingProvider(PropertyInfo property, Type converterType)
+        {
+            var result = new Mock<IPropertyMappingProvider>();
+            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.SetupGet(instance => instance.ConverterType).Returns(() => converterType);
+            result.SetupSet(instance => instance.ConverterType = It.IsAny<Type>()).Callback<Type>(type => converterType = type);
+            return result;
+        }
+
+        private Mock<ICollectionMappingProvider> MakeCollectionMappingProvider(PropertyInfo property, Type converterType, StoreAs storeAs = default(StoreAs), Type elementConverterType = null)
+        {
+            var result = new Mock<ICollectionMappingProvider>();
+            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.SetupGet(instance => instance.ConverterType).Returns(converterType);
+            result.SetupSet(instance => instance.ConverterType = It.IsAny<Type>());
+            result.SetupGet(instance => instance.StoreAs).Returns(storeAs);
+            result.SetupSet(instance => instance.StoreAs = It.IsAny<StoreAs>());
+            result.SetupGet(instance => instance.ElementConverterType).Returns(elementConverterType);
+            result.SetupSet(instance => instance.ElementConverterType = It.IsAny<Type>());
+            return result;
+        }
+
+        private Mock<IDictionaryMappingProvider> MakeDictionaryMappingProvider(PropertyInfo property, IPredicateMappingProvider key, IPredicateMappingProvider value)
+        {
+            var result = new Mock<IDictionaryMappingProvider>();
+            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.SetupGet(instance => instance.Key).Returns(key);
+            result.SetupGet(instance => instance.Value).Returns(value);
+            return result;
         }
     }
 }

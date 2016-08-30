@@ -4,9 +4,7 @@ using RomanticWeb.Mapping.Providers;
 
 namespace RomanticWeb.Mapping.Sources
 {
-    /// <summary>
-    /// Base class for implementations of <see cref="IMappingProviderSource" />, which scan an <see cref="Assembly" />
-    /// </summary>
+    /// <summary>Base class for implementations of <see cref="IMappingProviderSource" />, which scan an <see cref="Assembly" />.</summary>
     public abstract class AssemblyMappingsSource : IMappingProviderSource
     {
         private readonly Assembly _assembly;
@@ -22,17 +20,9 @@ namespace RomanticWeb.Mapping.Sources
         public abstract string Description { get; }
 
         /// <summary>Gets the source <see cref="System.Reflection.Assembly"/>.</summary>
-        protected Assembly Assembly
-        {
-            get
-            {
-                return _assembly;
-            }
-        }
+        protected Assembly Assembly { get { return _assembly; } }
 
-        /// <summary>
-        /// Gets the mapping providers from the <see cref="AssemblyMappingsSource.Assembly"/>.
-        /// </summary>
+        /// <summary>Gets the mapping providers from the <see cref="AssemblyMappingsSource.Assembly"/>.</summary>
         public abstract IEnumerable<IEntityMappingProvider> GetMappingProviders();
     }
 }

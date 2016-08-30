@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Entities;
 
 namespace RomanticWeb.Collections
 {
-    [NullGuard(ValidationFlags.All ^ ValidationFlags.OutValues)]
     internal class RdfDictionary<TKey, TValue, TEntry, TOwner> : IDictionary<TKey, TValue>, IRdfDictionary
         where TEntry : class, IDictionaryEntry<TKey, TValue>
         where TOwner : class, IDictionaryOwner<TEntry, TKey, TValue>
@@ -200,7 +198,6 @@ namespace RomanticWeb.Collections
             _dictionaryOwner.DictionaryEntries.Remove(pair);
         }
 
-        [return: AllowNull]
         private TEntry GetPair(TKey key)
         {
             return _dictionaryOwner.DictionaryEntries.SingleOrDefault(entry => Equals(entry.Key, key));

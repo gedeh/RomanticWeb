@@ -89,6 +89,10 @@
       <Project>{17315f2e-393a-422f-80ba-575794350285}</Project>
       <Name>RomanticWeb.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.csproj">
+      <Project>{d9a45427-9698-44b8-83ab-e07351f3531d}</Project>
+      <Name>RomanticWeb.Mapping.Fluent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\RomanticWeb\RomanticWeb.csproj">
       <Project>{0EE621E3-4A27-44B5-AEA9-04B43E730D46}</Project>
       <Name>RomanticWeb</Name>
@@ -107,12 +111,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
     <Error Condition="!Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets'))" />
     <Error Condition="!Exists('..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets'))" />
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
-  <Import Project="..\..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets" Condition="Exists('..\..\packages\Zoltu.Versioning.1.2.34.0\build\Zoltu.Versioning.targets')" />
   <Import Project="..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

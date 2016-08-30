@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using NullGuard;
 using RomanticWeb.Configuration;
 using VDS.RDF;
 using VDS.RDF.Configuration;
@@ -44,7 +43,6 @@ namespace RomanticWeb.DotNetRDF.Configuration
         [UriValidator]
         public Uri ObjectUri
         {
-            [return: AllowNull]
             get { return (Uri)this[UriAttributeName]; }
             set { this[UriAttributeName] = value; }
         }

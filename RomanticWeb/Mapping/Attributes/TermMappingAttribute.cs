@@ -1,5 +1,4 @@
 ﻿using System;
-using NullGuard;
 
 namespace RomanticWeb.Mapping.Attributes
 {
@@ -48,7 +47,6 @@ namespace RomanticWeb.Mapping.Attributes
         /// </summary>
         public Uri Uri
         {
-            [return: AllowNull]
             get
             {
                 return _uri;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using NullGuard;
 using RomanticWeb.Entities;
 
 namespace RomanticWeb.Model
@@ -41,7 +40,7 @@ namespace RomanticWeb.Model
             _hashCode = CalculateHashCode();
         }
 
-        private Node(string identifier, Uri graphUri, [AllowNull] EntityId entityId)
+        private Node(string identifier, Uri graphUri,  EntityId entityId)
         {
             _identifier = identifier;
             _blankNodeId = new BlankId(identifier, entityId, graphUri);
@@ -104,7 +103,6 @@ namespace RomanticWeb.Model
 
         /// <summary>Gets the data type of a literal node.</summary>
         /// <exception cref="InvalidOperationException">thrown when node is URI.</exception>
-        [AllowNull]
         public Uri DataType
         {
             get
@@ -120,7 +118,6 @@ namespace RomanticWeb.Model
 
         /// <summary>Gets the language tag of a literal node.</summary>
         /// <exception cref="InvalidOperationException">thrown when node is URI.</exception>
-        [AllowNull]
         public string Language
         {
             get
@@ -193,7 +190,7 @@ namespace RomanticWeb.Model
         }
 
         /// <summary>Factory method for creating blank nodes.</summary>
-        public static Node ForBlank(string blankNodeId, [AllowNull]EntityId entityId, [AllowNull] Uri graphUri)
+        public static Node ForBlank(string blankNodeId, EntityId entityId,  Uri graphUri)
         {
             return new Node(blankNodeId, graphUri, entityId);
         }
@@ -211,19 +208,19 @@ namespace RomanticWeb.Model
         }
 
 #pragma warning disable 1591
-        public static bool operator ==([AllowNull]Node left, [AllowNull]Node right)
+        public static bool operator ==(Node left, Node right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=([AllowNull]Node left, [AllowNull]Node right)
+        public static bool operator !=(Node left, Node right)
         {
             return !Equals(left, right);
         }
 #pragma warning restore 1591
 
         /// <summary>Determines whether the specified System.Object is equal to the current node.</summary>
-        public override bool Equals([AllowNull]object obj)
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj))
             {

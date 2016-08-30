@@ -1,5 +1,4 @@
 ﻿using System;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Model;
 using VDS.RDF;
@@ -10,7 +9,7 @@ namespace RomanticWeb.DotNetRDF
     public static class NodeExtensions
     {
         /// <summary>Converts a dotNetRDF's <see cref="VDS.RDF.INode"/> into RomanticWeb's <see cref="Node"/>.</summary>
-        public static Node WrapNode(this VDS.RDF.INode node, [AllowNull] EntityId entityId)
+        public static Node WrapNode(this VDS.RDF.INode node, EntityId entityId)
         {
             var literal = node as ILiteralNode;
             if (literal != null)

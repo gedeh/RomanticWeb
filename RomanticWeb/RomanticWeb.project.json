@@ -6,17 +6,10 @@
     "win": {}
   },
   "dependencies": {
-    "Anotar.NLog.Fody": "3.1.0",
-    "Costura.Fody": "1.3.3",
-    "Fody": "1.29.4",
-    "ImpromptuInterface": "6.2.2",
-    "InfoOf.Fody": "1.0.4",
-    "MethodCache.Fody": "1.4.1",
-    "NLog": "4.3.7",
-    "NullGuard.Fody": "1.4.6",
+    "Castle.Core": "4.0.0-beta001",
+    "LightInject.Source": "4.0.11",
     "PepitaPackage": "1.21.4",
     "Remotion.Linq": "2.1.1",
-    "StyleCop.MSBuild": "4.7.54",
-    "Zoltu.Versioning": "1.2.34"
+    "StyleCop.MSBuild": "4.7.54"
   }
 }

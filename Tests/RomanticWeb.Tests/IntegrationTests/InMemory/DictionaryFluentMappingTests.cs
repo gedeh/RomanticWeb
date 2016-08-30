@@ -17,7 +17,7 @@ namespace RomanticWeb.Tests.IntegrationTests.InMemory
 
         protected override void BuildMappings(MappingBuilder m)
         {
-            m.Fluent.FromAssemblyOf<AnimalMap>();
+            m.FromAssemblyOf<AnimalMap>();
             m.AddMapping(GetType().Assembly, Mappings);
         }
     }

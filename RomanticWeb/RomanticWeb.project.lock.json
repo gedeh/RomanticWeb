@@ -3,76 +3,15 @@
   "version": 1,
   "targets": {
     ".NETFramework,Version=v4.5": {
-      "Anotar.NLog.Fody/3.1.0": {
-        "dependencies": {
-          "Fody": "1.29.0",
-          "NLog": "4.3.0"
-        },
+      "Castle.Core/4.0.0-beta001": {
         "compile": {
-          "Lib/Anotar.NLog.dll": {}
+          "lib/net45/Castle.Core.dll": {}
         },
         "runtime": {
-          "Lib/Anotar.NLog.dll": {}
+          "lib/net45/Castle.Core.dll": {}
         }
       },
-      "Costura.Fody/1.3.3": {
-        "dependencies": {
-          "Fody": "1.26.1"
-        }
-      },
-      "Fody/1.29.4": {},
-      "ImpromptuInterface/6.2.2": {
-        "frameworkAssemblies": [
-          "Microsoft.CSharp"
-        ],
-        "compile": {
-          "lib/net40/ImpromptuInterface.dll": {}
-        },
-        "runtime": {
-          "lib/net40/ImpromptuInterface.dll": {}
-        }
-      },
-      "InfoOf.Fody/1.0.4": {
-        "dependencies": {
-          "Fody": "1.29.2"
-        },
-        "compile": {
-          "Lib/dotnet/InfoOf.dll": {}
-        },
-        "runtime": {
-          "Lib/dotnet/InfoOf.dll": {}
-        }
-      },
-      "MethodCache.Fody/1.4.1": {
-        "dependencies": {
-          "Fody": "(, )"
-        },
-        "compile": {
-          "lib/net40/MethodCache.Attributes.dll": {}
-        },
-        "runtime": {
-          "lib/net40/MethodCache.Attributes.dll": {}
-        }
-      },
-      "NLog/4.3.7": {
-        "compile": {
-          "lib/net45/NLog.dll": {}
-        },
-        "runtime": {
-          "lib/net45/NLog.dll": {}
-        }
-      },
-      "NullGuard.Fody/1.4.6": {
-        "dependencies": {
-          "Fody": "1.29.2"
-        },
-        "compile": {
-          "Lib/dotnet/NullGuard.dll": {}
-        },
-        "runtime": {
-          "Lib/dotnet/NullGuard.dll": {}
-        }
-      },
+      "LightInject.Source/4.0.11": {},
       "PepitaPackage/1.21.4": {},
       "Remotion.Linq/2.1.1": {
         "dependencies": {
@@ -214,80 +153,18 @@
         "runtime": {
           "lib/net45/_._": {}
         }
-      },
-      "Zoltu.Versioning/1.2.34": {}
+      }
     },
     ".NETFramework,Version=v4.5/win": {
-      "Anotar.NLog.Fody/3.1.0": {
-        "dependencies": {
-          "Fody": "1.29.0",
-          "NLog": "4.3.0"
-        },
+      "Castle.Core/4.0.0-beta001": {
         "compile": {
-          "Lib/Anotar.NLog.dll": {}
+          "lib/net45/Castle.Core.dll": {}
         },
         "runtime": {
-          "Lib/Anotar.NLog.dll": {}
+          "lib/net45/Castle.Core.dll": {}
         }
       },
-      "Costura.Fody/1.3.3": {
-        "dependencies": {
-          "Fody": "1.26.1"
-        }
-      },
-      "Fody/1.29.4": {},
-      "ImpromptuInterface/6.2.2": {
-        "frameworkAssemblies": [
-          "Microsoft.CSharp"
-        ],
-        "compile": {
-          "lib/net40/ImpromptuInterface.dll": {}
-        },
-        "runtime": {
-          "lib/net40/ImpromptuInterface.dll": {}
-        }
-      },
-      "InfoOf.Fody/1.0.4": {
-        "dependencies": {
-          "Fody": "1.29.2"
-        },
-        "compile": {
-          "Lib/dotnet/InfoOf.dll": {}
-        },
-        "runtime": {
-          "Lib/dotnet/InfoOf.dll": {}
-        }
-      },
-      "MethodCache.Fody/1.4.1": {
-        "dependencies": {
-          "Fody": "(, )"
-        },
-        "compile": {
-          "lib/net40/MethodCache.Attributes.dll": {}
-        },
-        "runtime": {
-          "lib/net40/MethodCache.Attributes.dll": {}
-        }
-      },
-      "NLog/4.3.7": {
-        "compile": {
-          "lib/net45/NLog.dll": {}
-        },
-        "runtime": {
-          "lib/net45/NLog.dll": {}
-        }
-      },
-      "NullGuard.Fody/1.4.6": {
-        "dependencies": {
-          "Fody": "1.29.2"
-        },
-        "compile": {
-          "Lib/dotnet/NullGuard.dll": {}
-        },
-        "runtime": {
-          "Lib/dotnet/NullGuard.dll": {}
-        }
-      },
+      "LightInject.Source/4.0.11": {},
       "PepitaPackage/1.21.4": {},
       "Remotion.Linq/2.1.1": {
         "dependencies": {
@@ -429,155 +306,47 @@
         "runtime": {
           "lib/net45/_._": {}
         }
-      },
-      "Zoltu.Versioning/1.2.34": {}
+      }
     }
   },
   "libraries": {
-    "Anotar.NLog.Fody/3.1.0": {
-      "sha512": "IUBtFKnJ5fNDdDNP3digCU2k76PsUi6Qb7HlA9Z/Bpjl1I/OJFW4oMT0LRXtoxCWyPDnVvpTf7rRv4cCsb8fDg==",
+    "Castle.Core/4.0.0-beta001": {
+      "sha512": "AhlzkJEGZddWgUj2Vub2h2p171eETkQzymd4ZSgcxQBZaxgsFSJjQ7I6fLs86nS39+xxsZR3eXaH86DWVrfurA==",
       "type": "package",
-      "path": "Anotar.NLog.Fody/3.1.0",
+      "path": "Castle.Core/4.0.0-beta001",
       "files": [
-        "Anotar.NLog.Fody.3.1.0.nupkg.sha512",
-        "Anotar.NLog.Fody.dll",
-        "Anotar.NLog.Fody.nuspec",
-        "Anotar.NLog.Fody.pdb",
-        "Lib/Anotar.NLog.dll",
-        "Lib/Anotar.NLog.xml",
-        "Tools/install.ps1",
-        "Tools/uninstall.ps1"
-      ]
-    },
-    "Costura.Fody/1.3.3": {
-      "sha512": "kBpTBpbkZTRMb2/IbS5Z+iUX9LVb4p54+TW1cxHH9lMgjDiJ7olV55nDPlVhBMtkEzW4DNjkBDiaVTff3Gu4UQ==",
-      "type": "package",
-      "path": "Costura.Fody/1.3.3",
-      "files": [
-        "Content/FodyWeavers.xml.install.xdt",
-        "Content/FodyWeavers.xml.uninstall.xdt",
-        "Costura.Fody.1.3.3.nupkg.sha512",
-        "Costura.Fody.dll",
-        "Costura.Fody.nuspec",
-        "Costura.Fody.pdb",
-        "Tools/commands.psm1",
-        "Tools/init.ps1"
-      ]
-    },
-    "Fody/1.29.4": {
-      "sha512": "GVlhR6Ngy5/plww+7WFMyWCjS/rFl3Nzev/DuAW7CXhfmMDmNEX+TQMmUQ7yflohNHT6u2RVCQhv2mMoJm81kg==",
-      "type": "package",
-      "path": "Fody/1.29.4",
-      "files": [
-        "Content/FodyWeavers.xml",
-        "Fody.1.29.4.nupkg.sha512",
-        "Fody.dll",
-        "Fody.nuspec",
-        "Fody.pdb",
-        "FodyCommon.dll",
-        "FodyCommon.pdb",
-        "FodyIsolated.dll",
-        "FodyIsolated.pdb",
-        "Mono.Cecil.Mdb.dll",
-        "Mono.Cecil.Pdb.dll",
-        "Mono.Cecil.Rocks.dll",
-        "Mono.Cecil.dll",
-        "build/dotnet/Fody.targets",
-        "build/portable-net+sl+win+wpa+wp/Fody.targets"
-      ]
-    },
-    "ImpromptuInterface/6.2.2": {
-      "sha512": "JLMNVUUVq82u+priYIWK8U/0i2OFkOC8PKWAX8i+MLv6R+eak+L6sxQqxprqGoJgQdU3V5icZqnj5r1Qq9JbbQ==",
-      "type": "package",
-      "path": "ImpromptuInterface/6.2.2",
-      "files": [
-        "ImpromptuInterface.6.2.2.nupkg.sha512",
-        "ImpromptuInterface.nuspec",
+        "ASL - Apache Software Foundation License.txt",
+        "BreakingChanges.txt",
+        "Castle.Core.4.0.0-beta001.nupkg.sha512",
+        "Castle.Core.nuspec",
+        "Changes.txt",
         "License.txt",
-        "Readme.md",
-        "lib/SL40/ImpromptuInterface.XML",
-        "lib/SL40/ImpromptuInterface.dll",
-        "lib/SL50/ImpromptuInterface.XML",
-        "lib/SL50/ImpromptuInterface.dll",
-        "lib/net40/ImpromptuInterface.dll",
-        "lib/net40/ImpromptuInterface.xml"
+        "lib/net35/Castle.Core.dll",
+        "lib/net35/Castle.Core.xml",
+        "lib/net40-client/Castle.Core.dll",
+        "lib/net40-client/Castle.Core.xml",
+        "lib/net45/Castle.Core.dll",
+        "lib/net45/Castle.Core.xml",
+        "lib/netstandard1.3/Castle.Core.dll",
+        "lib/netstandard1.3/Castle.Core.xml",
+        "readme.txt"
       ]
     },
-    "InfoOf.Fody/1.0.4": {
-      "sha512": "9KdaGkmJx2IumofLkwW/JY96KWZzG18+Znc0erdhKfU/2ch6re18Q8z6ZxL1ldCM02yUA0ZU3PV18lSsJWolHQ==",
+    "LightInject.Source/4.0.11": {
+      "sha512": "HJlU77lrpURLnkXEtc2T6I4B8KFXBBzjNfRBlYxegvsv4Y8VYXU2BU3rOR79WCu9vcM2LTKL/QPUYWgR5udYDw==",
       "type": "package",
-      "path": "InfoOf.Fody/1.0.4",
+      "path": "LightInject.Source/4.0.11",
       "files": [
-        "InfoOf.Fody.1.0.4.nupkg.sha512",
-        "InfoOf.Fody.dll",
-        "InfoOf.Fody.nuspec",
-        "InfoOf.Fody.pdb",
-        "Lib/dotnet/InfoOf.dll",
-        "Lib/dotnet/InfoOf.xml",
-        "Lib/portable-net4+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40/InfoOf.dll",
-        "Lib/portable-net4+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40/InfoOf.xml",
-        "Tools/install.ps1",
-        "Tools/uninstall.ps1"
-      ]
-    },
-    "MethodCache.Fody/1.4.1": {
-      "sha512": "LKNYDt5PYtPcoV/gVcWQ6S2p554w/yEsfOPICeOdPD2Gy+ET8swVhnl0LwfO+GAfTm1N5Ej/z2pBs2C85mX1lA==",
-      "type": "package",
-      "path": "MethodCache.Fody/1.4.1",
-      "files": [
-        "MethodCache.Fody.1.4.1.nupkg.sha512",
-        "MethodCache.Fody.dll",
-        "MethodCache.Fody.nuspec",
-        "lib/dotnet/MethodCache.Attributes.dll",
-        "lib/net20/MethodCache.Attributes.dll",
-        "lib/net35/MethodCache.Attributes.dll",
-        "lib/net40/MethodCache.Attributes.dll",
-        "lib/portable-net4+sl4+wp8+win8+wpa81+MonoAndroid16+MonoTouch40/MethodCache.Attributes.dll",
-        "readme.txt",
-        "tools/install.ps1",
-        "tools/uninstall.ps1"
-      ]
-    },
-    "NLog/4.3.7": {
-      "sha512": "pQqy1sBykZscOmAImKKJYcEaYfZat1kj3AOWFszmi0mJLncynBal2bCAR5pfG2SbQ8uOyIDfCdcQY2zFSELrsQ==",
-      "type": "package",
-      "path": "NLog/4.3.7",
-      "files": [
-        "NLog.4.3.7.nupkg.sha512",
-        "NLog.nuspec",
-        "lib/MonoAndroid10/NLog.dll",
-        "lib/MonoAndroid10/NLog.xml",
-        "lib/Xamarin.iOS10/NLog.dll",
-        "lib/Xamarin.iOS10/NLog.xml",
-        "lib/net35/NLog.dll",
-        "lib/net35/NLog.xml",
-        "lib/net40/NLog.dll",
-        "lib/net40/NLog.xml",
-        "lib/net45/NLog.dll",
-        "lib/net45/NLog.xml",
-        "lib/sl4/NLog.dll",
-        "lib/sl4/NLog.xml",
-        "lib/sl5/NLog.dll",
-        "lib/sl5/NLog.xml",
-        "lib/wp8/NLog.dll",
-        "lib/wp8/NLog.xml"
-      ]
-    },
-    "NullGuard.Fody/1.4.6": {
-      "sha512": "5Knk1lGYbAdU1/lalvg5/ZRo40SwrbdklLhpCGke3/gczKnOmIQIBhTHrxOicWU/4DY/N1iav5Zj8/CPKY6f+g==",
-      "type": "package",
-      "path": "NullGuard.Fody/1.4.6",
-      "files": [
-        "Lib/dotnet/NullGuard.dll",
-        "Lib/dotnet/NullGuard.xml",
-        "Lib/portable-net4+sl5+wpa81+wp8+win8+MonoAndroid16+MonoTouch40/NullGuard.dll",
-        "Lib/portable-net4+sl5+wpa81+wp8+win8+MonoAndroid16+MonoTouch40/NullGuard.xml",
-        "NullGuard.Fody.1.4.6.nupkg.sha512",
-        "NullGuard.Fody.dll",
-        "NullGuard.Fody.nuspec",
-        "NullGuard.Fody.pdb",
-        "Tools/install.ps1",
-        "Tools/uninstall.ps1"
+        "LightInject.Source.4.0.11.nupkg.sha512",
+        "LightInject.Source.nuspec",
+        "content/Xamarin.iOS/LightInject/LightInject.cs.pp",
+        "content/monoandroid/LightInject/LightInject.cs.pp",
+        "content/monotouch/LightInject/LightInject.cs.pp",
+        "content/net45/LightInject/LightInject.cs.pp",
+        "content/net46/LightInject/LightInject.cs.pp",
+        "content/netstandard1.1/LightInject/LightInject.cs.pp",
+        "content/netstandard1.3/LightInject/LightInject.cs.pp",
+        "content/portable-net45+netcore45+wpa81/LightInject/LightInject.cs.pp"
       ]
     },
     "PepitaPackage/1.21.4": {
@@ -1419,42 +1188,15 @@
         "ref/xamarinwatchos10/_._",
         "runtimes/aot/lib/netcore50/System.Threading.dll"
       ]
-    },
-    "Zoltu.Versioning/1.2.34": {
-      "sha512": "BjkS1IuXXuo/Y4gOsUGKhTQrt6S4mXI7seMzx9FxDkQWIfC455IWONGhUoUsIai5NXshXqFXf8QmCqRQ64Yckw==",
-      "type": "package",
-      "path": "Zoltu.Versioning/1.2.34",
-      "files": [
-        "Zoltu.Versioning.1.2.34.nupkg.sha512",
-        "Zoltu.Versioning.nuspec",
-        "build/LibGit2Sharp.dll",
-        "build/LibGit2Sharp.xml",
-        "build/NativeBinaries/amd64/git2-e0902fb.dll",
-        "build/NativeBinaries/x86/git2-e0902fb.dll",
-        "build/Zoltu.Collections.Generic.NotNull.dll",
-        "build/Zoltu.Collections.Generic.NotNull.xml",
-        "build/Zoltu.Linq.NotNull.dll",
-        "build/Zoltu.Linq.NotNull.xml",
-        "build/Zoltu.Versioning.dll",
-        "build/Zoltu.Versioning.targets",
-        "tools/Zoltu.Versioning.dll"
-      ]
     }
   },
   "projectFileDependencyGroups": {
     "": [
-      "Anotar.NLog.Fody >= 3.1.0",
-      "Costura.Fody >= 1.3.3",
-      "Fody >= 1.29.4",
-      "ImpromptuInterface >= 6.2.2",
-      "InfoOf.Fody >= 1.0.4",
-      "MethodCache.Fody >= 1.4.1",
-      "NLog >= 4.3.7",
-      "NullGuard.Fody >= 1.4.6",
+      "Castle.Core >= 4.0.0-beta001",
+      "LightInject.Source >= 4.0.11",
       "PepitaPackage >= 1.21.4",
       "Remotion.Linq >= 2.1.1",
-      "StyleCop.MSBuild >= 4.7.54",
-      "Zoltu.Versioning >= 1.2.34"
+      "StyleCop.MSBuild >= 4.7.54"
     ],
     ".NETFramework,Version=v4.5": []
   }

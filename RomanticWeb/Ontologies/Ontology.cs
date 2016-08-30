@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using NullGuard;
 
 namespace RomanticWeb.Ontologies
 {
@@ -27,7 +26,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="prefix">Prefix of the ontology's base Uri.</param>
         /// <param name="baseUri">Ontology base Uri.</param>
         /// <param name="terms">A collection of RDF classes and properties</param>
-        public Ontology([AllowNull] string displayName, string prefix, Uri baseUri, params Term[] terms) : this(displayName, new NamespaceSpecification(prefix, baseUri), terms)
+        public Ontology(string displayName, string prefix, Uri baseUri, params Term[] terms) : this(displayName, new NamespaceSpecification(prefix, baseUri), terms)
         {
         }
 
@@ -42,7 +41,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="displayName">Display name of the ontology.</param>
         /// <param name="namespace">Namespace prefix and base URI</param>
         /// <param name="terms">A collection of RDF classes and properties</param>
-        public Ontology([AllowNull] string displayName, NamespaceSpecification @namespace, params Term[] terms)
+        public Ontology(string displayName, NamespaceSpecification @namespace, params Term[] terms)
         {
             _displayName = (displayName ?? String.Empty);
             Properties = terms.OfType<Property>().Select(property => property.InOntology(this)).ToList();
@@ -73,7 +72,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <returns><b>true</b> if both ontologies has equal namespaces; otherwise, <b>false</b>.</returns>
-        public static bool operator ==([AllowNull] Ontology left, [AllowNull] Ontology right)
+        public static bool operator ==(Ontology left, Ontology right)
         {
             return Equals(left, right);
         }
@@ -82,7 +81,7 @@ namespace RomanticWeb.Ontologies
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <returns><b>true</b> if both ontologies has different namespaces; otherwise, <b>false</b>.</returns>
-        public static bool operator !=([AllowNull] Ontology left, [AllowNull] Ontology right)
+        public static bool operator !=(Ontology left, Ontology right)
         {
             return !Equals(left, right);
         }
@@ -92,7 +91,7 @@ namespace RomanticWeb.Ontologies
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             if (ReferenceEquals(null, operand)) { return false; }
             if (ReferenceEquals(this, operand)) { return true; }
@@ -112,7 +111,7 @@ namespace RomanticWeb.Ontologies
         /// The ontology to compare with the current ontology.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified ontology hase equal namespace with current ontology; otherwise, <b>false</b>.</returns>
-        private bool Equals([AllowNull] Ontology operand)
+        private bool Equals(Ontology operand)
         {
             return Equals(_namespace, operand._namespace);
         }

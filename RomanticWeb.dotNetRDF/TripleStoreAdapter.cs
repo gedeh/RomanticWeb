@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Anotar.NLog;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Entities;
 using RomanticWeb.Linq.Model;
 using RomanticWeb.Linq.Sparql;
@@ -122,8 +122,6 @@ namespace RomanticWeb.DotNetRDF
         {
             var updateCommands = changes.SelectMany(CreateCommands);
             var commands = new SparqlUpdateCommandSet(updateCommands);
-
-            LogTo.Debug("Executing SPARQL Update:{0}{1}", Environment.NewLine, commands);
             ExecuteCommandSet(commands);
         }
 
@@ -151,7 +149,6 @@ namespace RomanticWeb.DotNetRDF
             queryVisitor.MetaGraphUri = MetaGraphUri;
             queryVisitor.VisitQuery(sparqlQuery);
             variables = queryVisitor.Variables;
-            LogTo.Debug("Parsed query: {0}", queryVisitor.CommandText);
             SparqlQueryParser parser = new SparqlQueryParser();
             return parser.ParseFromString(queryVisitor.CommandText);
         }
@@ -195,7 +192,6 @@ namespace RomanticWeb.DotNetRDF
 
         private IEnumerable<SparqlUpdateCommand> CreateCommands(IDatasetChange change)
         {
-            LogTo.Info("Creating update command for change '{0}'", change);
             return _sparqlCommandFactory.CreateCommands(change);
         }
     }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using NullGuard;
 using RomanticWeb.Mapping.Visitors;
 
 namespace RomanticWeb.Mapping.Model
 {
-    [NullGuard(ValidationFlags.All)]
     [DebuggerDisplay("Dictionary {Name}")]
     internal class DictionaryMapping : PropertyMapping, IDictionaryMapping
     {

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using NullGuard;
 using RomanticWeb.Converters;
 using RomanticWeb.Mapping.Visitors;
 
 namespace RomanticWeb.Mapping.Model
 {
-    [NullGuard(ValidationFlags.All)]
     [DebuggerDisplay("Collection {Name}")]
     internal class CollectionMapping : PropertyMapping, ICollectionMapping
     {

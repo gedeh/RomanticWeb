@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
-using NullGuard;
 using RomanticWeb.DotNetRDF;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping;
@@ -57,7 +56,7 @@ namespace RomanticWeb.LinkedData
         /// <param name="mappingAssemblies">Optional mapping assemblies.</param>
         /// <param name="baseUris">Base uris.</param>
         /// <param name="webRequestFactory">Web request factory method.</param>
-        public UrlMatchingResourceResolutionStrategy([AllowNull] IOntologyProvider ontology, [AllowNull] IEnumerable<Assembly> mappingAssemblies, IEnumerable<Uri> baseUris, [AllowNull] Func<Uri, WebRequest> webRequestFactory = null)
+        public UrlMatchingResourceResolutionStrategy(IOntologyProvider ontology, IEnumerable<Assembly> mappingAssemblies, IEnumerable<Uri> baseUris, Func<Uri, WebRequest> webRequestFactory = null)
         {
             _namedGraphSelector = new BaseUriNamedGraphSelector(_baseUris = baseUris);
             _metaGraph.BaseUri = new Uri("urn:meta:graph");
@@ -68,7 +67,6 @@ namespace RomanticWeb.LinkedData
         }
 
         /// <inheritdoc />
-        [return: AllowNull]
         public IEntity Resolve(EntityId id)
         {
             if ((id is BlankId) || (!id.Uri.Scheme.ToLower().StartsWith("http")))
@@ -100,7 +98,6 @@ namespace RomanticWeb.LinkedData
         }
 
         /// <inheritdoc />
-        [return: AllowNull]
         public T Resolve<T>(EntityId id) where T : class, IEntity
         {
             var result = Resolve(id);
@@ -178,7 +175,7 @@ namespace RomanticWeb.LinkedData
             }
         }
 
-        private IEntityContext CreateEntityContext([AllowNull] IOntologyProvider ontologyProvider, [AllowNull] IEnumerable<Assembly> mappingAssemblies)
+        private IEntityContext CreateEntityContext(IOntologyProvider ontologyProvider, IEnumerable<Assembly> mappingAssemblies)
         {
             var factory = new EntityContextFactory()
                 .WithMappings(builder => BuildMappingAssemblies(builder, mappingAssemblies))
@@ -194,7 +191,7 @@ namespace RomanticWeb.LinkedData
             return factory.CreateContext();
         }
 
-        private void BuildMappingAssemblies(MappingBuilder builder, [AllowNull] IEnumerable<Assembly> mappingAssemblies)
+        private void BuildMappingAssemblies(MappingBuilder builder, IEnumerable<Assembly> mappingAssemblies)
         {
             if (mappingAssemblies == null)
             {

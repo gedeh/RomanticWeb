@@ -19,6 +19,8 @@ namespace RomanticWeb.Mapping.Sources
             _genricArguments = genricArguments;
         }
 
+        public IEnumerable<Type> Requires { get { return Type.EmptyTypes; } }
+
         internal IList<IClassMappingProvider> ClassMappingProviders { get; private set; }
 
         internal IList<IPropertyMappingProvider> PropertyMappingProviders { get; private set; }
@@ -81,8 +83,7 @@ namespace RomanticWeb.Mapping.Sources
         {
             private readonly IDictionaryMappingProvider _openGeneric;
 
-            public DictionaryMapping(IDictionaryMappingProvider openGeneric, PropertyInfo property)
-                : base(openGeneric, property)
+            public DictionaryMapping(IDictionaryMappingProvider openGeneric, PropertyInfo property) : base(openGeneric, property)
             {
                 _openGeneric = openGeneric;
             }
@@ -96,8 +97,7 @@ namespace RomanticWeb.Mapping.Sources
         {
             private readonly ICollectionMappingProvider _openGeneric;
 
-            public CollectionMapping(ICollectionMappingProvider openGeneric, PropertyInfo property)
-                : base(openGeneric, property)
+            public CollectionMapping(ICollectionMappingProvider openGeneric, PropertyInfo property) : base(openGeneric, property)
             {
                 _openGeneric = openGeneric;
             }

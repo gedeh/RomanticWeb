@@ -284,19 +284,19 @@ namespace RomanticWeb.JsonLd
                 if ((activeContext.ContainsKey(key)) && (activeContext[key].IsReverse))
                 {
                     JObject reverseMap = (JObject)(!result.IsPropertySet(Reverse) ? result[Reverse] = new JObject() : result[Reverse]);
-                    foreach (JToken item in (JArray)(expandedValue = expandedValue.AsArray()))
+                    foreach (JToken item in expandedValue.AsArray())
                     {
                         if ((item is JObject) && ((((JObject)item).IsPropertySet(Value)) || (((JObject)item).IsPropertySet(List))))
                         {
                             throw new InvalidOperationException("Invalid reverse property value.");
                         }
 
-                        ((JArray)(!reverseMap.IsPropertySet(expandedProperty) ? reverseMap[expandedProperty] = new JArray() : reverseMap[expandedProperty])).Merge(item);
+                        ((JArray)(!reverseMap.IsPropertySet(expandedProperty) ? reverseMap[expandedProperty] = new JArray() : reverseMap[expandedProperty])).Combine(item);
                     }
                 }
                 else
                 {
-                    ((JArray)(!result.IsPropertySet(expandedProperty) ? result[expandedProperty] = new JArray() : result[expandedProperty])).Merge(expandedValue);
+                    ((JArray)(!result.IsPropertySet(expandedProperty) ? result[expandedProperty] = new JArray() : result[expandedProperty])).Combine(expandedValue);
                 }
             }
 
@@ -319,7 +319,7 @@ namespace RomanticWeb.JsonLd
                         throw new InvalidOperationException("Invalid language map value.");
                     }
 
-                    ((JArray)expandedValue).Merge(new JObject(new JProperty(Value, item), new JProperty(Language, language.ToLower())));
+                    ((JArray)expandedValue).Combine(new JObject(new JProperty(Value, item), new JProperty(Language, language.ToLower())));
                 }
             }
 
@@ -343,7 +343,7 @@ namespace RomanticWeb.JsonLd
                         item[Index] = index;
                     }
 
-                    ((JArray)expandedValue).Merge(item);
+                    ((JArray)expandedValue).Combine(item);
                 }
             }
 
@@ -533,7 +533,7 @@ namespace RomanticWeb.JsonLd
                             result[property.Name] = new JArray();
                         }
 
-                        ((JArray)result[property.Name]).Merge(item);
+                        ((JArray)result[property.Name]).Combine(item);
                     }
                 }
 

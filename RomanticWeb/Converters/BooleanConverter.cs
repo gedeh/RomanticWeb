@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using NullGuard;
 using RomanticWeb.Model;
 using RomanticWeb.Vocabularies;
 
@@ -20,7 +19,6 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        [return: AllowNull]
         public override Uri CanConvertBack(Type type)
         {
             return (type == typeof(bool) ? Xsd.Boolean : null);

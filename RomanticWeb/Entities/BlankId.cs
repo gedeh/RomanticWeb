@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using NullGuard;
 using RomanticWeb.Model;
 
 namespace RomanticWeb.Entities
@@ -36,14 +35,12 @@ namespace RomanticWeb.Entities
         }
 
         /// <summary>Gets the identifier of a root non-blank entity.</summary>
-        [AllowNull]
         public EntityId RootEntityId { get { return _root; } }
 
         /// <summary>Gets the internal identifier of this blank node.</summary>
         public string Identifier { get { return _identifier; } }
 
         /// <summary>Gets the graph Uri of this blank node.</summary>
-        [AllowNull]
         public Uri Graph { get { return _graph; } }
 
         /// <summary>Returns a <see cref="System.String" /> that represents this instance.</summary>

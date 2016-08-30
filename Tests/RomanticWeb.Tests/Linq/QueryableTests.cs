@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ImpromptuInterface;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
@@ -72,7 +71,7 @@ namespace RomanticWeb.Tests.Linq
 
             // then
             Assert.That(result, Has.Count.EqualTo(totalCount));
-            _entityStore.Verify(store => store.AssertEntity(It.IsAny<EntityId>(), It.Is<IEnumerable<EntityQuad>>(t => t.Count() == 10)), Times.Exactly(totalCount));
+            _entityStore.Verify(store => store.AssertEntity(It.IsAny<EntityId>(), It.Is<IEnumerable<IEntityQuad>>(t => t.Count() == 10)), Times.Exactly(totalCount));
         }
 
         [Test]
@@ -107,7 +106,9 @@ namespace RomanticWeb.Tests.Linq
 
         private static IPerson CreatePersonEntity(EntityId id)
         {
-            return new { Id = id }.ActLike<IPerson>();
+            var result = new Mock<IPerson>();
+            result.SetupGet(instance => instance.Id).Returns(id);
+            return result.Object;
         }
 
         internal class NamedGraphsPersonMapping : TestEntityMapping<IPerson>

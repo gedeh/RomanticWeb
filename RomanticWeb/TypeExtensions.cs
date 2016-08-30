@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping;
 
@@ -55,7 +54,7 @@ namespace System
         /// <param name="type">Type to assign to.</param>
         /// <param name="instanceType">Type to be assigned.</param>
         /// <returns><b>true</b> if specific generic type can be assigned to a generi type definition; otherwse <b>false</b>.</returns>
-        public static bool IsAssignableFromSpecificGeneric(this Type type, [AllowNull] Type instanceType)
+        public static bool IsAssignableFromSpecificGeneric(this Type type, Type instanceType)
         {
             return (type != null) && (instanceType != null) && (instanceType != typeof(object)) &&
                 (((instanceType.IsGenericType) && (instanceType.GetGenericTypeDefinition() == type)) ||
@@ -67,7 +66,7 @@ namespace System
         /// <param name="type">Generic type definition to be checked against.</param>
         /// <param name="instanceType">Specific generic type to be analyzed.</param>
         /// <returns>Array of <see cref="Type" /> with generic type arguments of given specific generic type in context of a generic type definition.</returns>
-        public static Type[] GetGenericArgumentsFor(this Type type, [AllowNull] Type instanceType)
+        public static Type[] GetGenericArgumentsFor(this Type type, Type instanceType)
         {
             var result = new Type[0];
             if ((type != null) && (instanceType != null) && (instanceType != typeof(object)))

@@ -14,7 +14,7 @@ namespace RomanticWeb.Entities
     public class EntityId : IComparable, IComparable<EntityId>, IXmlSerializable
     {
         private const string BlankScheme = "_";
-        private int _hashCode = 0;
+        private int _hashCode;
         private Uri _uri;
 
         /// <summary>Creates a new instance of <see cref="EntityId"/> from string.</summary>
@@ -108,11 +108,6 @@ namespace RomanticWeb.Entities
             }
 
             var other = (EntityId)operand;
-            if ((_uri.Scheme == BlankScheme) && (other._uri.Scheme == BlankScheme))
-            {
-                return _uri.ToString().CompareTo(other._uri.ToString());
-            }
-
             if ((_uri.Scheme == BlankScheme) && (other._uri.Scheme != BlankScheme))
             {
                 return -1;
@@ -123,7 +118,7 @@ namespace RomanticWeb.Entities
                 return 1;
             }
 
-            return _uri.ToString().CompareTo(other.ToString());
+            return StringComparer.OrdinalIgnoreCase.Compare(_uri.ToString(), other._uri.ToString());
         }
 
         /// <summary>Compares the current identifier with another identifier of the same type.</summary>
@@ -170,25 +165,19 @@ namespace RomanticWeb.Entities
             return ToString();
         }
 
-        /// <summary>This method is reserved and should not be used.
-        /// When implementing the IXmlSerializable interface, you should return null (Nothing in Visual Basic) from this method, and instead, if specifying a custom schema is required, apply the XmlSchemaProviderAttribute to the class.</summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public XmlSchema GetSchema()
         {
             return null;
         }
 
-        /// <summary>Generates an object from its XML representation.</summary>
-        /// <param name="reader">Type: <see cref="System.Xml.XmlReader" />
-        /// The <see cref="System.Xml.XmlReader"/> stream from which the object is deserialized.</param>
+        /// <inheritdoc />
         public void ReadXml(XmlReader reader)
         {
             _hashCode = (_uri = new Uri(reader.ReadElementContentAsString())).ToString().GetHashCode();
         }
 
-        /// <summary>Converts an object into its XML representation.</summary>
-        /// <param name="writer">Type: <see cref="System.Xml.XmlWriter" />
-        /// The <see cref="System.Xml.XmlWriter" /> stream to which the object is serialized.</param>
+        /// <inheritdoc />
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteValue(_uri.ToString());

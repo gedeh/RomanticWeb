@@ -1,19 +1,32 @@
 ﻿using System;
+#if !NETSTANDARD16
 using System.Configuration;
+#endif
 
 namespace RomanticWeb.Configuration
 {
-    /// <summary>
-    /// An ontology configuration element
-    /// </summary>
+    /// <summary>An ontology configuration element.</summary>
+#if NETSTANDARD16
+    public class OntologyElement
+    {
+        private Uri _uri;
+        /// <summary>Gets or sets the ontology prefix.</summary>
+        public string Prefix { get; set; }
+
+        /// <summary>Gets or sets the ontology URI.</summary>
+        public Uri Uri
+        {
+            get { return _uri; }
+            set { UriValidator.Default.Validate(_uri = value); }
+        }
+    }
+#else
     public class OntologyElement : ConfigurationElement
     {
         private const string PrefixAttributeName = "prefix";
         private const string UriAttributeName = "uri";
 
-        /// <summary>
-        /// Gets or sets the ontology prefix.
-        /// </summary>
+        /// <summary>Gets or sets the ontology prefix.</summary>
         [ConfigurationProperty(PrefixAttributeName, IsRequired = true, IsKey = true)]
         public string Prefix
         {
@@ -21,9 +34,7 @@ namespace RomanticWeb.Configuration
             set { this[PrefixAttributeName] = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the ontology URI.
-        /// </summary>
+        /// <summary>Gets or sets the ontology URI.</summary>
         [ConfigurationProperty(UriAttributeName, IsRequired = true, IsKey = true)]
         [UriValidator]
         public Uri Uri
@@ -32,4 +43,5 @@ namespace RomanticWeb.Configuration
             set { this[UriAttributeName] = value; }
         }
     }
+#endif
 }

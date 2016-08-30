@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Model;
 
@@ -29,7 +28,6 @@ namespace RomanticWeb.Mapping
         }
 
         /// <inheridoc/>
-        [return: AllowNull]
         public IEnumerable<Type> GetMostDerivedMappedTypes(IEnumerable<Uri> entityTypes, Type requestedType)
         {
             ISet<Type> selectedTypes = new HashSet<Type> { requestedType };

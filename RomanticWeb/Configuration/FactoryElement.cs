@@ -1,10 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
+
+#if !NETSTANDARD16
 using System.Configuration;
 using System.Xml;
+#endif
 
 namespace RomanticWeb.Configuration
 {
     /// <summary>Configuration of a ecntity context factory.</summary>
+#if NETSTANDARD16
+    public class FactoryElement
+    {
+        private Uri _metaGraphUri;
+
+        /// <summary>Gets or sets the name.</summary>
+        public string Name { get; set; }
+
+        /// <summary>Gets or sets a flag indicating whether the internal mechanisms should be thread-safe.</summary>
+        public bool ThreadSafe { get; set; }
+
+        /// <summary>Gets or sets a flag indicating whether the changes should be tracked.</summary>
+        public bool TrackChanges { get; set; }
+
+        /// <summary>Gets or sets the mapping assemblies.</summary>
+        public IEnumerable<MappingAssemblyElement> MappingAssemblies { get; set; }
+
+        /// <summary>Gets or sets the ontologies configuration element collection.</summary>
+        public IEnumerable<OntologyElement> Ontologies { get; set; }
+
+        /// <summary>Gets or sets the base uri configuration element.</summary>
+        public BaseUriElement BaseUris { get; set; }
+
+        /// <summary>Gets or sets the meta graph URI.</summary>
+        public Uri MetaGraphUri
+        {
+            get { return _metaGraphUri; }
+            set { UriValidator.Default.Validate(_metaGraphUri = value); }
+        }
+    }
+#else
     public class FactoryElement : ConfigurationElement
     {
         private const string NameAttributeName = "name";
@@ -74,4 +109,5 @@ namespace RomanticWeb.Configuration
             set { this[MetaGraphUriAttributeName] = value; }
         }
     }
+#endif
 }

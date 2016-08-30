@@ -18,7 +18,7 @@ namespace RomanticWeb.Tests.IntegrationTests
     {
         private IEntityContext _entityContext;
         private IEntityContextFactory _factory;
-        private IServiceContainer _container;
+        private ServiceContainer _container;
         private ITripleStore _store;
 
         public virtual bool IncludeFoaf { get { return false; } }
@@ -65,7 +65,7 @@ namespace RomanticWeb.Tests.IntegrationTests
                                                  .WithMappings(BuildMappings)
                                                  .WithMetaGraphUri(MetaGraphUri)
                                                  .WithDotNetRDF(_store)
-                                                .WithBaseUri(b => b.Default.Is(new Uri("http://example.com/")));
+                                                 .WithBaseUri(b => b.Default.Is(new Uri("http://example.com/")));
             factory.ThreadSafe = ThreadSafe;
             factory.TrackChanges = TrackChanges;
             _factory = factory;

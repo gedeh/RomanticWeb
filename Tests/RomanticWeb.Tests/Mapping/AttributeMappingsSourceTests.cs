@@ -50,7 +50,7 @@ namespace RomanticWeb.Tests.Mapping
 
         protected override IEnumerable<IMappingProviderSource> CreateMappingSources()
         {
-            yield return new AttributeMappingsSource(typeof(IAnimal).Assembly);
+            yield return new AttributeMappingsSource(typeof(IAnimal).Assembly, null);
         }
     }
 }

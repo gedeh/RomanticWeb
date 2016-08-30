@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using RomanticWeb.Mapping.Providers;
 using RomanticWeb.Mapping.Visitors;
 
@@ -22,6 +21,9 @@ namespace RomanticWeb.Mapping.Conventions
                 _conventions = InitializeConventions(mappingContext.Conventions);
             }
         }
+
+        /// <inheritdoc />
+        public IEnumerable<Type> Requires { get { return Type.EmptyTypes; } }
 
         /// <summary>Applies property and collection conventions to <paramref name="collectionMappingProvider"/>.</summary>
         public void Visit(ICollectionMappingProvider collectionMappingProvider)
@@ -77,10 +79,10 @@ namespace RomanticWeb.Mapping.Conventions
                     if (!validRequirements.TryGetValue(convention, out validRequired))
                     {
                         validRequirements[convention] = validRequired =
-                            convention.Requires.Join(conventions, outer => outer, inner => inner.GetType(), (outer, inner) => outer).ToList();
+                            convention.Requires.Join(conventions, outer => outer, inner => inner.GetType(), (outer, inner) => outer).Distinct().ToList();
                     }
 
-                    if (validRequired.Join(result, outer => outer, inner => inner.GetType(), (outer, inner) => inner).Count() == validRequired.Count)
+                    if (validRequired.Join(result, outer => outer, inner => inner.GetType(), (outer, inner) => inner).Distinct().Count() == validRequired.Count)
                     {
                         result.Add(convention);
                         added.Add(convention);

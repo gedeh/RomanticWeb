@@ -8,7 +8,7 @@ namespace RomanticWeb.JsonLd
 {
     internal static class JsonExtensions
     {
-        internal static JObject Merge(this JObject current, JObject toMerge)
+        internal static JObject Combine(this JObject current, JObject toMerge)
         {
             foreach (var property in toMerge.Properties())
             {
@@ -204,7 +204,7 @@ namespace RomanticWeb.JsonLd
             return (!(token is JArray) ? new JArray(token) : (JArray)token);
         }
 
-        internal static JArray Merge(this JArray current, JToken toMerge)
+        internal static JArray Combine(this JArray current, JToken toMerge)
         {
             if (toMerge is JArray)
             {

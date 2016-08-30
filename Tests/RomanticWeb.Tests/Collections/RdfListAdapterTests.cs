@@ -320,7 +320,12 @@ namespace RomanticWeb.Tests.Collections
         private IRdfListNode<T> CreateListNode<T>(EntityId entityId)
         {
             var listNodeMock = new Mock<IRdfListNode<T>>();
-            listNodeMock.SetupAllProperties();
+            T first = default(T);
+            listNodeMock.SetupGet(m => m.First).Returns(() => first);
+            listNodeMock.SetupSet(m => m.First = It.IsAny<T>()).Callback<T>(v => first = v);
+            IRdfListNode<T> rest = default(IRdfListNode<T>);
+            listNodeMock.SetupGet(m => m.Rest).Returns(() => rest);
+            listNodeMock.SetupSet(m => m.Rest = It.IsAny<IRdfListNode<T>>()).Callback<IRdfListNode<T>>(v => rest = v);
             listNodeMock.Setup(m => m.Id).Returns(entityId);
             return listNodeMock.Object;
         }

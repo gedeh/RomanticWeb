@@ -21,7 +21,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ******************************************************************************
-    LightInject version 4.0.11
+    LightInject version 4.0.11 (NET45)
     http://www.lightinject.net/
     http://twitter.com/bernhardrichter
 ******************************************************************************/
@@ -47,7 +47,6 @@ namespace RomanticWeb.LightInject
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Reflection.Emit;
 #if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
     using System.Reflection.Emit;
 #endif
@@ -69,7 +68,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Defines a set of methods used to register services into the service container.
     /// </summary>
-    public interface IServiceRegistry
+    internal interface IServiceRegistry
     {
         /// <summary>
         /// Gets a list of <see cref="ServiceRegistration"/> instances that represents the
@@ -498,7 +497,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Defines a set of methods used to retrieve service instances.
     /// </summary>
-    public interface IServiceFactory
+    internal interface IServiceFactory
     {
         /// <summary>
         /// Starts a new <see cref="Scope"/>.
@@ -722,7 +721,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents an inversion of control container.
     /// </summary>
-    public interface IServiceContainer : IServiceRegistry, IServiceFactory, IDisposable
+    internal interface IServiceContainer : IServiceRegistry, IServiceFactory, IDisposable
     {
         /// <summary>
         /// Gets or sets the <see cref="IScopeManagerProvider"/> that is responsible
@@ -755,7 +754,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that manages the lifetime of a service instance.
     /// </summary>
-    public interface ILifetime
+    internal interface ILifetime
     {
         /// <summary>
         /// Returns a service instance according to the specific lifetime characteristics.
@@ -769,7 +768,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that acts as a composition root for an <see cref="IServiceRegistry"/> instance.
     /// </summary>
-    public interface ICompositionRoot
+    internal interface ICompositionRoot
     {
         /// <summary>
         /// Composes services by adding services to the <paramref name="serviceRegistry"/>.
@@ -781,7 +780,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that extracts a set of types from an <see cref="Assembly"/>.
     /// </summary>
-    public interface ITypeExtractor
+    internal interface ITypeExtractor
     {
         /// <summary>
         /// Extracts types found in the given <paramref name="assembly"/>.
@@ -795,7 +794,7 @@ namespace RomanticWeb.LightInject
     /// Represents a class that is capable of extracting
     /// attributes of type <see cref="CompositionRootTypeAttribute"/> from an <see cref="Assembly"/>.
     /// </summary>
-    public interface ICompositionRootAttributeExtractor
+    internal interface ICompositionRootAttributeExtractor
     {
         /// <summary>
         /// Gets a list of attributes of type <see cref="CompositionRootTypeAttribute"/> from
@@ -810,7 +809,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for selecting injectable properties.
     /// </summary>
-    public interface IPropertySelector
+    internal interface IPropertySelector
     {
         /// <summary>
         /// Selects properties that represents a dependency from the given <paramref name="type"/>.
@@ -823,7 +822,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for selecting the property dependencies for a given <see cref="Type"/>.
     /// </summary>
-    public interface IPropertyDependencySelector
+    internal interface IPropertyDependencySelector
     {
         /// <summary>
         /// Selects the property dependencies for the given <paramref name="type"/>.
@@ -837,7 +836,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for selecting the constructor dependencies for a given <see cref="ConstructorInfo"/>.
     /// </summary>
-    public interface IConstructorDependencySelector
+    internal interface IConstructorDependencySelector
     {
         /// <summary>
         /// Selects the constructor dependencies for the given <paramref name="constructor"/>.
@@ -852,7 +851,7 @@ namespace RomanticWeb.LightInject
     /// Represents a class that is capable of building a <see cref="ConstructorInfo"/> instance
     /// based on a <see cref="Registration"/>.
     /// </summary>
-    public interface IConstructionInfoBuilder
+    internal interface IConstructionInfoBuilder
     {
         /// <summary>
         /// Returns a <see cref="ConstructionInfo"/> instance based on the given <see cref="Registration"/>.
@@ -865,7 +864,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that keeps track of a <see cref="ConstructionInfo"/> instance for each <see cref="Registration"/>.
     /// </summary>
-    public interface IConstructionInfoProvider
+    internal interface IConstructionInfoProvider
     {
         /// <summary>
         /// Gets a <see cref="ConstructionInfo"/> instance for the given <paramref name="registration"/>.
@@ -884,7 +883,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that builds a <see cref="ConstructionInfo"/> instance based on the implementing <see cref="Type"/>.
     /// </summary>
-    public interface ITypeConstructionInfoBuilder
+    internal interface ITypeConstructionInfoBuilder
     {
         /// <summary>
         /// Analyzes the <paramref name="registration"/> and returns a <see cref="ConstructionInfo"/> instance.
@@ -897,7 +896,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that selects the constructor to be used for creating a new service instance.
     /// </summary>
-    public interface IConstructorSelector
+    internal interface IConstructorSelector
     {
         /// <summary>
         /// Selects the constructor to be used when creating a new instance of the <paramref name="implementingType"/>.
@@ -912,7 +911,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible loading a set of assemblies based on the given search pattern.
     /// </summary>
-    public interface IAssemblyLoader
+    internal interface IAssemblyLoader
     {
         /// <summary>
         /// Loads a set of assemblies based on the given <paramref name="searchPattern"/>.
@@ -926,7 +925,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is capable of scanning an assembly and register services into an <see cref="IServiceContainer"/> instance.
     /// </summary>
-    public interface IAssemblyScanner
+    internal interface IAssemblyScanner
     {
         /// <summary>
         /// Scans the target <paramref name="assembly"/> and registers services found within the assembly.
@@ -948,7 +947,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is responsible for instantiating and executing an <see cref="ICompositionRoot"/>.
     /// </summary>
-    public interface ICompositionRootExecutor
+    internal interface ICompositionRootExecutor
     {
         /// <summary>
         /// Creates an instance of the <paramref name="compositionRootType"/> and executes the <see cref="ICompositionRoot.Compose"/> method.
@@ -961,7 +960,7 @@ namespace RomanticWeb.LightInject
     /// Represents an abstraction of the <see cref="ILGenerator"/> class that provides information
     /// about the <see cref="Type"/> currently on the stack.
     /// </summary>
-    public interface IEmitter
+    internal interface IEmitter
     {
         /// <summary>
         /// Gets the <see cref="Type"/> currently on the stack.
@@ -1039,7 +1038,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a dynamic method skeleton for emitting the code needed to resolve a service instance.
     /// </summary>
-    public interface IMethodSkeleton
+    internal interface IMethodSkeleton
     {
         /// <summary>
         /// Gets the <see cref="IEmitter"/> for the this dynamic method.
@@ -1058,7 +1057,7 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class that is capable of providing the current <see cref="ScopeManager"/>.
     /// </summary>
-    public interface IScopeManagerProvider
+    internal interface IScopeManagerProvider
     {
         /// <summary>
         /// Returns the <see cref="ScopeManager"/> that is responsible for managing scopes.
@@ -1071,7 +1070,8 @@ namespace RomanticWeb.LightInject
     /// This class is not for public use and is used internally
     /// to load runtime arguments onto the evaluation stack.
     /// </summary>
-    public static class RuntimeArgumentsLoader
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal static class RuntimeArgumentsLoader
     {
         /// <summary>
         /// Loads the runtime arguments onto the evaluation stack.
@@ -1099,7 +1099,8 @@ namespace RomanticWeb.LightInject
     /// Contains a set of helper method related to validating
     /// user input.
     /// </summary>
-    public static class Ensure
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal static class Ensure
     {
         /// <summary>
         /// Ensures that the given <paramref name="value"/> is not null.
@@ -1119,7 +1120,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Extends the <see cref="ImmutableHashTable{TKey,TValue}"/> class.
     /// </summary>
-    public static class ImmutableHashTableExtensions
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal static class ImmutableHashTableExtensions
     {
         /// <summary>
         /// Searches for a value using the given <paramref name="key"/>.
@@ -1172,7 +1174,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Extends the <see cref="ImmutableHashTree{TKey,TValue}"/> class.
     /// </summary>
-    public static class ImmutableHashTreeExtensions
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal static class ImmutableHashTreeExtensions
     {
         /// <summary>
         /// Searches for a <typeparamref name="TValue"/> using the given <paramref name="key"/>.
@@ -1288,7 +1291,8 @@ namespace RomanticWeb.LightInject
     /// Extends the <see cref="IEmitter"/> interface with a set of methods
     /// that optimizes and simplifies emitting MSIL instructions.
     /// </summary>
-    public static class EmitterExtensions
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal static class EmitterExtensions
     {
         /// <summary>
         /// Performs a cast or unbox operation if the current <see cref="IEmitter.StackType"/> is
@@ -1571,7 +1575,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a set of configurable options when creating a new instance of the container.
     /// </summary>
-    public class ContainerOptions
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ContainerOptions
     {
         private static readonly Lazy<ContainerOptions> DefaultOptions =
             new Lazy<ContainerOptions>(CreateDefaultContainerOptions);
@@ -1604,7 +1609,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// An ultra lightweight service container.
     /// </summary>
-    public class ServiceContainer : IServiceContainer
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ServiceContainer : IServiceContainer
     {
         private const string UnresolvedDependencyError = "Unresolved dependency {0}";
         private readonly Func<Type, Type[], IMethodSkeleton> methodSkeletonFactory;
@@ -2045,10 +2051,10 @@ namespace RomanticWeb.LightInject
         public void Override(Func<ServiceRegistration, bool> serviceSelector, Func<IServiceFactory, ServiceRegistration, ServiceRegistration> serviceRegistrationFactory)
         {
             var serviceOverride = new ServiceOverride
-            {
-                CanOverride = serviceSelector,
-                ServiceRegistrationFactory = serviceRegistrationFactory
-            };
+                                      {
+                                          CanOverride = serviceSelector,
+                                          ServiceRegistrationFactory = serviceRegistrationFactory
+                                      };
             overrides.Add(serviceOverride);
         }
 
@@ -2707,7 +2713,10 @@ namespace RomanticWeb.LightInject
         /// </summary>
         /// <typeparam name="T">The default lifetime type</typeparam>
         public void SetDefaultLifetime<T>()
-            where T : ILifetime, new() => defaultLifetimeType = typeof(T);
+            where T : ILifetime, new()
+        {
+            defaultLifetimeType = typeof(T);
+        }
 
         /// <summary>
         /// Disposes any services registered using the <see cref="PerContainerLifetime"/>.
@@ -3341,7 +3350,7 @@ namespace RomanticWeb.LightInject
 
                 if (parameter.ParameterType == typeof(object[]))
                 {
-                    actions.Add(e => PushRuntimeArguments(e));
+                   actions.Add(e => PushRuntimeArguments(e));
                 }
             }
 
@@ -3540,10 +3549,10 @@ namespace RomanticWeb.LightInject
             var constantIndex = constants.Add(getInstanceDelegate);
 
             return emitter =>
-            {
-                emitter.PushConstant(constantIndex, funcType);
-                emitter.New(lazyConstructor);
-            };
+                {
+                    emitter.PushConstant(constantIndex, funcType);
+                    emitter.New(lazyConstructor);
+                };
         }
 
         private ServiceRegistration GetOpenGenericServiceRegistration(Type openGenericServiceType, string serviceName)
@@ -3884,7 +3893,7 @@ namespace RomanticWeb.LightInject
                 emitter = new Emitter(dynamicMethod.GetILGenerator(), parameterTypes);
             }
 #endif
-#if (!NET40 && !PCL_111) || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
+#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
             private void CreateDynamicMethod(Type returnType, Type[] parameterTypes)
             {
                 dynamicMethod = new DynamicMethod(
@@ -3932,7 +3941,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// A <see cref="IScopeManagerProvider"/> that provides a <see cref="ScopeManager"/> per thread.
     /// </summary>
-    public class PerThreadScopeManagerProvider : IScopeManagerProvider
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PerThreadScopeManagerProvider : IScopeManagerProvider
     {
         private readonly ThreadLocal<ScopeManager> scopeManagers =
             new ThreadLocal<ScopeManager>(() => new ScopeManager());
@@ -3952,7 +3962,8 @@ namespace RomanticWeb.LightInject
     /// A <see cref="IScopeManagerProvider"/> that provides a <see cref="ScopeManager"/> across
     /// async points.
     /// </summary>
-    public class PerLogicalCallContextScopeManagerProvider : IScopeManagerProvider
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PerLogicalCallContextScopeManagerProvider : IScopeManagerProvider
     {
         private readonly LogicalThreadStorage<ScopeManager> scopeManagers =
             new LogicalThreadStorage<ScopeManager>(() => new ScopeManager());
@@ -3974,7 +3985,8 @@ namespace RomanticWeb.LightInject
     /// </summary>
     /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-    public class ThreadSafeDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ThreadSafeDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey,TValue}"/> class.
@@ -4226,7 +4238,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Provides field representations of the Microsoft Intermediate Language (MSIL) instructions.
     /// </summary>
-    public static class OpCodes
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal static class OpCodes
 	{
         /// <summary>
         /// Adds two values and pushes the result onto the evaluation stack.
@@ -4236,7 +4249,8 @@ namespace RomanticWeb.LightInject
         /// <summary>
         /// Attempts to cast an object passed by reference to the specified class.
         /// </summary>
-        public static OpCode Castclass = OpCode.Castclass;
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+        internal static OpCode Castclass = OpCode.Castclass;
 
         /// <summary>
         /// Converts the boxed representation of a type specified in the instruction to its unboxed form.
@@ -4455,7 +4469,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Defines and represents a dynamic method that can be compiled and executed.
     /// </summary>
-    public class DynamicMethod
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class DynamicMethod
     {
         private readonly Type returnType;
 
@@ -4522,7 +4537,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// A generator that transforms <see cref="OpCodes"/> into an expression tree.
     /// </summary>
-    public class ILGenerator
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ILGenerator
     {
         private readonly ParameterExpression[] parameters;
         private readonly Stack<Expression> stack = new Stack<Expression>();
@@ -4924,7 +4940,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a local variable within a method or constructor.
     /// </summary>
-    public class LocalBuilder
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class LocalBuilder
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalBuilder"/> class.
@@ -4958,7 +4975,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Selects the <see cref="ConstructionInfo"/> from a given type that represents the most resolvable constructor.
     /// </summary>
-    public class MostResolvableConstructorSelector : IConstructorSelector
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class MostResolvableConstructorSelector : IConstructorSelector
     {
         private readonly Func<Type, string, bool> canGetInstance;
 
@@ -5026,7 +5044,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Selects the constructor dependencies for a given <see cref="ConstructorInfo"/>.
     /// </summary>
-    public class ConstructorDependencySelector : IConstructorDependencySelector
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ConstructorDependencySelector : IConstructorDependencySelector
     {
         /// <summary>
         /// Selects the constructor dependencies for the given <paramref name="constructor"/>.
@@ -5042,19 +5061,20 @@ namespace RomanticWeb.LightInject
                            .Select(
                                p =>
                                new ConstructorDependency
-                               {
-                                   ServiceName = string.Empty,
-                                   ServiceType = p.ParameterType,
-                                   Parameter = p,
-                                   IsRequired = true
-                               });
+                                   {
+                                       ServiceName = string.Empty,
+                                       ServiceType = p.ParameterType,
+                                       Parameter = p,
+                                       IsRequired = true
+                                   });
         }
     }
 
     /// <summary>
     /// Selects the property dependencies for a given <see cref="Type"/>.
     /// </summary>
-    public class PropertyDependencySelector : IPropertyDependencySelector
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PropertyDependencySelector : IPropertyDependencySelector
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyDependencySelector"/> class.
@@ -5088,7 +5108,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Builds a <see cref="ConstructionInfo"/> instance based on the implementing <see cref="Type"/>.
     /// </summary>
-    public class TypeConstructionInfoBuilder : IConstructionInfoBuilder
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class TypeConstructionInfoBuilder : IConstructionInfoBuilder
     {
         private readonly IConstructorSelector constructorSelector;
         private readonly IConstructorDependencySelector constructorDependencySelector;
@@ -5176,7 +5197,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Keeps track of a <see cref="ConstructionInfo"/> instance for each <see cref="Registration"/>.
     /// </summary>
-    public class ConstructionInfoProvider : IConstructionInfoProvider
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ConstructionInfoProvider : IConstructionInfoProvider
     {
         private readonly IConstructionInfoBuilder constructionInfoBuilder;
         private readonly ThreadSafeDictionary<Registration, ConstructionInfo> cache = new ThreadSafeDictionary<Registration, ConstructionInfo>();
@@ -5214,7 +5236,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Contains information about a service request that originates from a rule based service registration.
     /// </summary>
-    public class ServiceRequest
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ServiceRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceRequest"/> class.
@@ -5248,7 +5271,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Base class for concrete registrations within the service container.
     /// </summary>
-    public abstract class Registration
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal abstract class Registration
     {
         /// <summary>
         /// Gets or sets the service <see cref="Type"/>.
@@ -5269,7 +5293,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Contains information about a registered decorator.
     /// </summary>
-    public class DecoratorRegistration : Registration
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class DecoratorRegistration : Registration
     {
         /// <summary>
         /// Gets or sets a function delegate that determines if the decorator can decorate the service
@@ -5302,7 +5327,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Contains information about a registered service.
     /// </summary>
-    public class ServiceRegistration : Registration
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ServiceRegistration : Registration
     {
         /// <summary>
         /// Gets or sets the name of the service.
@@ -5360,7 +5386,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Contains information about how to create a service instance.
     /// </summary>
-    public class ConstructionInfo
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ConstructionInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConstructionInfo"/> class.
@@ -5402,7 +5429,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a class dependency.
     /// </summary>
-    public abstract class Dependency
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal abstract class Dependency
     {
         /// <summary>
         /// Gets or sets the service <see cref="Type"/> of the <see cref="Dependency"/>.
@@ -5443,7 +5471,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a property dependency.
     /// </summary>
-    public class PropertyDependency : Dependency
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PropertyDependency : Dependency
     {
         /// <summary>
         /// Gets or sets the <see cref="MethodInfo"/> that is used to set the property value.
@@ -5474,7 +5503,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a constructor dependency.
     /// </summary>
-    public class ConstructorDependency : Dependency
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ConstructorDependency : Dependency
     {
         /// <summary>
         /// Gets or sets the <see cref="ParameterInfo"/> for this <see cref="ConstructorDependency"/>.
@@ -5511,7 +5541,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Ensures that only one instance of a given service can exist within the current <see cref="IServiceContainer"/>.
     /// </summary>
-    public class PerContainerLifetime : ILifetime, IDisposable
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PerContainerLifetime : ILifetime, IDisposable
     {
         private readonly object syncRoot = new object();
         private volatile object singleton;
@@ -5556,7 +5587,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Ensures that a new instance is created for each request in addition to tracking disposable instances.
     /// </summary>
-    public class PerRequestLifeTime : ILifetime
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PerRequestLifeTime : ILifetime
     {
         /// <summary>
         /// Returns a service instance according to the specific lifetime characteristics.
@@ -5594,7 +5626,8 @@ namespace RomanticWeb.LightInject
     /// If the service instance implements <see cref="IDisposable"/>,
     /// it will be disposed when the <see cref="Scope"/> ends.
     /// </remarks>
-    public class PerScopeLifetime : ILifetime
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PerScopeLifetime : ILifetime
     {
         private readonly ThreadSafeDictionary<Scope, object> instances = new ThreadSafeDictionary<Scope, object>();
 
@@ -5645,7 +5678,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Manages a set of <see cref="Scope"/> instances.
     /// </summary>
-    public class ScopeManager
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ScopeManager
     {
         private readonly object syncRoot = new object();
 
@@ -5709,7 +5743,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents a scope.
     /// </summary>
-    public class Scope : IDisposable
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class Scope : IDisposable
     {
         private readonly IList<IDisposable> disposableObjects = new List<IDisposable>();
 
@@ -5782,7 +5817,8 @@ namespace RomanticWeb.LightInject
     /// Used at the assembly level to describe the composition root(s) for the target assembly.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    public class CompositionRootTypeAttribute : Attribute
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class CompositionRootTypeAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CompositionRootTypeAttribute"/> class.
@@ -5803,7 +5839,8 @@ namespace RomanticWeb.LightInject
     /// A class that is capable of extracting attributes of type
     /// <see cref="CompositionRootTypeAttribute"/> from an <see cref="Assembly"/>.
     /// </summary>
-    public class CompositionRootAttributeExtractor : ICompositionRootAttributeExtractor
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class CompositionRootAttributeExtractor : ICompositionRootAttributeExtractor
     {
         /// <summary>
         /// Gets a list of attributes of type <see cref="CompositionRootTypeAttribute"/> from
@@ -5822,7 +5859,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Extracts concrete <see cref="ICompositionRoot"/> implementations from an <see cref="Assembly"/>.
     /// </summary>
-    public class CompositionRootTypeExtractor : ITypeExtractor
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class CompositionRootTypeExtractor : ITypeExtractor
     {
         private readonly ICompositionRootAttributeExtractor compositionRootAttributeExtractor;
 
@@ -5863,7 +5901,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// A <see cref="ITypeExtractor"/> cache decorator.
     /// </summary>
-    public class CachedTypeExtractor : ITypeExtractor
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class CachedTypeExtractor : ITypeExtractor
     {
         private readonly ITypeExtractor typeExtractor;
 
@@ -5893,7 +5932,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Extracts concrete types from an <see cref="Assembly"/>.
     /// </summary>
-    public class ConcreteTypeExtractor : ITypeExtractor
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class ConcreteTypeExtractor : ITypeExtractor
     {
         private static readonly List<Type> InternalTypes = new List<Type>();
 
@@ -5984,7 +6024,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// A class that is responsible for instantiating and executing an <see cref="ICompositionRoot"/>.
     /// </summary>
-    public class CompositionRootExecutor : ICompositionRootExecutor
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class CompositionRootExecutor : ICompositionRootExecutor
     {
         private readonly IServiceRegistry serviceRegistry;
         private readonly Func<Type, ICompositionRoot> activator;
@@ -6028,7 +6069,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// An assembly scanner that registers services based on the types contained within an <see cref="Assembly"/>.
     /// </summary>
-    public class AssemblyScanner : IAssemblyScanner
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class AssemblyScanner : IAssemblyScanner
     {
         private readonly ITypeExtractor concreteTypeExtractor;
         private readonly ITypeExtractor compositionRootTypeExtractor;
@@ -6164,7 +6206,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Selects the properties that represents a dependency to the target <see cref="Type"/>.
     /// </summary>
-    public class PropertySelector : IPropertySelector
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class PropertySelector : IPropertySelector
     {
         /// <summary>
         /// Selects properties that represents a dependency from the given <paramref name="type"/>.
@@ -6196,7 +6239,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Loads all assemblies from the application base directory that matches the given search pattern.
     /// </summary>
-    public class AssemblyLoader : IAssemblyLoader
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class AssemblyLoader : IAssemblyLoader
     {
         /// <summary>
         /// Loads a set of assemblies based on the given <paramref name="searchPattern"/>.
@@ -6233,7 +6277,8 @@ namespace RomanticWeb.LightInject
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public sealed class KeyValue<TKey, TValue>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal sealed class KeyValue<TKey, TValue>
     {
         /// <summary>
         /// The key of this <see cref="KeyValue{TKey,TValue}"/> instance.
@@ -6261,7 +6306,8 @@ namespace RomanticWeb.LightInject
     /// Represents a simple "add only" immutable list.
     /// </summary>
     /// <typeparam name="T">The type of items contained in the list.</typeparam>
-    public sealed class ImmutableList<T>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal sealed class ImmutableList<T>
     {
         /// <summary>
         /// Represents an empty <see cref="ImmutableList{T}"/>.
@@ -6312,7 +6358,8 @@ namespace RomanticWeb.LightInject
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public sealed class ImmutableHashTable<TKey, TValue>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal sealed class ImmutableHashTable<TKey, TValue>
     {
         /// <summary>
         /// An empty <see cref="ImmutableHashTree{TKey,TValue}"/>.
@@ -6399,7 +6446,8 @@ namespace RomanticWeb.LightInject
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public sealed class ImmutableHashTree<TKey, TValue>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal sealed class ImmutableHashTree<TKey, TValue>
     {
         /// <summary>
         /// An empty <see cref="ImmutableHashTree{TKey,TValue}"/>.
@@ -6558,7 +6606,8 @@ namespace RomanticWeb.LightInject
     /// <summary>
     /// Represents an MSIL instruction to be emitted into a dynamic method.
     /// </summary>
-    public class Instruction
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class Instruction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Instruction"/> class.
@@ -6597,7 +6646,8 @@ namespace RomanticWeb.LightInject
     /// Represents an MSIL instruction to be emitted into a dynamic method.
     /// </summary>
     /// <typeparam name="T">The type of argument used in this instruction.</typeparam>
-    public class Instruction<T> : Instruction
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class Instruction<T> : Instruction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Instruction{T}"/> class.
@@ -6631,7 +6681,8 @@ namespace RomanticWeb.LightInject
     /// An abstraction of the <see cref="ILGenerator"/> class that provides information
     /// about the <see cref="Type"/> currently on the stack.
     /// </summary>
-    public class Emitter : IEmitter
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class Emitter : IEmitter
     {
         private readonly ILGenerator generator;
 
@@ -7023,7 +7074,8 @@ namespace RomanticWeb.LightInject
     /// Provides storage per logical thread of execution.
     /// </summary>
     /// <typeparam name="T">The type of the value contained in this <see cref="LogicalThreadStorage{T}"/>.</typeparam>
-    public class LogicalThreadStorage<T>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class LogicalThreadStorage<T>
     {
         private readonly Func<T> valueFactory;
 
@@ -7097,7 +7149,8 @@ namespace RomanticWeb.LightInject
     /// Provides storage per logical thread of execution.
     /// </summary>
     /// <typeparam name="T">The type of the value contained in this <see cref="LogicalThreadStorage{T}"/>.</typeparam>
-    public class LogicalThreadStorage<T>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class LogicalThreadStorage<T>
     {
         private readonly Func<T> valueFactory;
 
@@ -7140,6 +7193,7 @@ namespace RomanticWeb.LightInject
     }
 #endif
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class LifetimeHelper
     {
         static LifetimeHelper()
@@ -7156,6 +7210,7 @@ namespace RomanticWeb.LightInject
         public static MethodInfo GetScopeManagerMethod { get; private set; }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class DelegateTypeExtensions
     {
         private static readonly MethodInfo OpenGenericGetInstanceMethodInfo =
@@ -7177,6 +7232,7 @@ namespace RomanticWeb.LightInject
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class NamedDelegateTypeExtensions
     {
         private static readonly MethodInfo CreateInstanceDelegateMethodInfo =
@@ -7208,6 +7264,7 @@ namespace RomanticWeb.LightInject
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class ReflectionHelper
     {
         private static readonly Lazy<ThreadSafeDictionary<Type, MethodInfo>> GetInstanceWithParametersMethods;
@@ -7290,6 +7347,7 @@ namespace RomanticWeb.LightInject
     /// Contains a set of extension method that represents
     /// a compability layer for reflection methods.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class TypeHelper
     {
 #if NET45 || NET46
@@ -7478,6 +7536,7 @@ namespace RomanticWeb.LightInject
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class LazyTypeExtensions
     {
         private static readonly ThreadSafeDictionary<Type, ConstructorInfo> Constructors = new ThreadSafeDictionary<Type, ConstructorInfo>();
@@ -7494,6 +7553,7 @@ namespace RomanticWeb.LightInject
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class EnumerableTypeExtensions
     {
         private static readonly ThreadSafeDictionary<Type, Type> EnumerableTypes = new ThreadSafeDictionary<Type, Type>();
@@ -7509,6 +7569,7 @@ namespace RomanticWeb.LightInject
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class FuncTypeExtensions
     {
         private static readonly ThreadSafeDictionary<Type, Type> FuncTypes = new ThreadSafeDictionary<Type, Type>();

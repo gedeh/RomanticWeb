@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using NullGuard;
 using RomanticWeb.Model;
 using RomanticWeb.Vocabularies;
 
@@ -39,7 +38,6 @@ namespace RomanticWeb.Converters
         }
 
         /// <inheritdoc />
-        [return: AllowNull]
         public override Uri CanConvertBack(Type type)
         {
             IList<Uri> result = null;

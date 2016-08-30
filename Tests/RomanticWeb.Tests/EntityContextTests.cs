@@ -86,7 +86,7 @@ namespace RomanticWeb.Tests
                 new TestCache(),
                 new DefaultBlankNodeIdGenerator(),
                 catalog,
-                new ImpromptuInterfaceCaster((entity, mapping) => new EntityProxy(entity, mapping, catalog, new TestGraphSelector()), _mappings.Object, new TestGraphSelector(), _entityStore.Object),
+                new CastleCoreCaster((entity, mapping) => new EntityProxy(entity, mapping, catalog, new TestGraphSelector(), null), _mappings.Object, new TestGraphSelector(), _entityStore.Object),
                 _changesTracker.Object,
                 null);
         }
@@ -201,9 +201,9 @@ namespace RomanticWeb.Tests
             var entity = _entityContext.Load<IPerson>(new EntityId("http://magi/people/Tomasz"));
 
             // when
-            var name = entity.Interests;
-            var page = entity.Interests;
-            var interests = entity.Interests;
+            var name = entity.Age;
+            var page = entity.Age;
+            var interests = entity.Age;
 
             // then
             _store.Verify(

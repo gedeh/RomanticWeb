@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Resources;
-using Anotar.NLog;
 using RomanticWeb.ComponentModel;
 using RomanticWeb.Configuration;
 using RomanticWeb.Converters;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Entities;
 using RomanticWeb.LightInject;
 using RomanticWeb.LinkedData;
 using RomanticWeb.Mapping;
 using RomanticWeb.Mapping.Conventions;
+using RomanticWeb.Mapping.Sources;
 using RomanticWeb.Mapping.Visitors;
 using RomanticWeb.NamedGraphs;
 using RomanticWeb.Ontologies;
@@ -23,8 +24,10 @@ namespace RomanticWeb
     public class EntityContextFactory : IEntityContextFactory, IComponentRegistryFacade
     {
         private static readonly object Locker = new object();
-        private readonly IServiceContainer _container;
+        private readonly ServiceContainer _container;
         private IDictionary<Scope, Scope> _trackedScopes;
+        private ILogger _log;
+        private ILogger _registeredLogger;
         private bool _disposed;
         private bool _threadSafe;
 
@@ -33,16 +36,21 @@ namespace RomanticWeb
         {
         }
 
-        internal EntityContextFactory(IServiceContainer container)
+        internal EntityContextFactory(ServiceContainer container)
         {
             _trackedScopes = new Dictionary<Scope, Scope>();
+            _registeredLogger = new SimpleLogger();
             _container = container;
-            _container.RegisterAssembly(this.GetType().Assembly);
+            var assemblyNames = from file in Directory.GetFiles(Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath), "RomanticWeb*.dll")
+                                let fileName = Path.GetFileName(file)
+                                where !fileName.ToLower().Contains("test")
+                                select fileName;
+            var defaultAssemblies = String.Join("|", assemblyNames.OrderBy(fileName => fileName.Length));
+            _container.RegisterAssembly(defaultAssemblies);
             _container.Register<IEntityContextFactory>(f => this);
-
-            WithMappings(DefaultMappings);
-
-            LogTo.Info("Created entity context factory");
+            _log = new LazyResolvedLogger(() => _registeredLogger);
+            _container.RegisterInstance(_log);
+            DefaultMappings();
         }
 
         /// <inheritdoc/>
@@ -119,8 +127,7 @@ namespace RomanticWeb
                 {
                     foreach (var mappingAssembly in mappingAssemblies)
                     {
-                        m.Fluent.FromAssembly(mappingAssembly);
-                        m.Attributes.FromAssembly(mappingAssembly);
+                        m.FromAssembly(mappingAssembly);
                     }
                 });
             entityContextFactory.ThreadSafe = configuration.ThreadSafe;
@@ -136,7 +143,7 @@ namespace RomanticWeb
         /// <summary>Creates a new instance of entity context.</summary>
         public IEntityContext CreateContext()
         {
-            LogTo.Debug("Creating entity context");
+            _log.Debug("Creating entity context");
 
             lock (Locker)
             {
@@ -151,8 +158,8 @@ namespace RomanticWeb
 
                 context.Disposed += () =>
                     {
-                        scope.Dispose();
                         _trackedScopes.Remove(scope);
+                        scope.Dispose();
                     };
                 _container.ScopeManagerProvider.GetScopeManager().EndScope(scope);
                 return context;
@@ -183,9 +190,9 @@ namespace RomanticWeb
         /// <returns>This <see cref="EntityContextFactory" /> </returns>
         public EntityContextFactory WithMappings(Action<MappingBuilder> buildMappings)
         {
-            var mappingBuilder = new MappingBuilder();
+            var mappingBuilder = new MappingBuilder(_container.GetAllInstances<IMappingFrom>());
+            _container.Invalidate();
             buildMappings.Invoke(mappingBuilder);
-
             foreach (var source in mappingBuilder.Sources)
             {
                 _container.RegisterInstance(source, source.Description);
@@ -207,6 +214,13 @@ namespace RomanticWeb
         public EntityContextFactory WithNamedGraphSelector(INamedGraphSelector namedGraphSelector)
         {
             _container.RegisterInstance(namedGraphSelector);
+            return this;
+        }
+
+        /// <summary>Exposes a method to define a logging facility.</summary>
+        public EntityContextFactory WithLoggingFacility(ILogger logger)
+        {
+            _registeredLogger = logger;
             return this;
         }
 
@@ -248,6 +262,7 @@ namespace RomanticWeb
                 return;
             }
 
+            _disposed = true;
             while (_trackedScopes.Count > 0)
             {
                 var scope = _trackedScopes.Values.First();
@@ -255,7 +270,6 @@ namespace RomanticWeb
             }
 
             _container.Dispose();
-            _disposed = true;
         }
 
         internal EntityContextFactory WithDependenciesInternal<T>() where T : ICompositionRoot, new()
@@ -264,10 +278,15 @@ namespace RomanticWeb
             return this;
         }
 
-        private static void DefaultMappings(MappingBuilder mappings)
+        private void DefaultMappings()
         {
-            mappings.Fluent.FromAssemblyOf<ITypedEntity>();
-            mappings.Attributes.FromAssemblyOf<ITypedEntity>();
+            var mappingBuilder = new MappingBuilder(new[] { new MappingFromAttributes(_log) });
+            mappingBuilder.FromAssemblyOf<ITypedEntity>();
+            mappingBuilder.AddMapping(typeof(ITypedEntity).Assembly, new InternalsMappingsSource(typeof(ITypedEntity).Assembly));
+            foreach (var source in mappingBuilder.Sources)
+            {
+                _container.RegisterInstance(source, source.Description);
+            }
         }
     }
 }

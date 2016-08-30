@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
-using ImpromptuInterface;
-using ImpromptuInterface.Dynamic;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Mapping.Providers;
@@ -17,8 +15,6 @@ namespace RomanticWeb.Tests.Mapping
     [TestFixture]
     public class ClosedGenericEntityMappingProviderTests
     {
-        private static readonly dynamic New = Builder.New();
-
         [SetUp]
         public void Setup()
         {
@@ -65,12 +61,11 @@ namespace RomanticWeb.Tests.Mapping
 
         private IPropertyMappingProvider CreatePropertyMappingProvider(PropertyInfo property)
         {
-            var expando = New.ExpandoObject();
-            expando.PropertyInfo = property;
-
-            expando.Accept = new Action<IMappingProviderVisitor>(visitor => Accept(Impromptu.ActLike<IPropertyMappingProvider>(expando), visitor));
-
-            return Impromptu.ActLike<IPropertyMappingProvider>(expando);
+            var result = new Mock<IPropertyMappingProvider>();
+            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.Setup(instance => instance.Accept(It.IsAny<IMappingProviderVisitor>()))
+                .Callback<IMappingProviderVisitor>(visitor => Accept(result.Object, visitor));
+            return result.Object;
         }
 
         private void Accept(IPropertyMappingProvider provider, IMappingProviderVisitor mappingProviderVisitor)

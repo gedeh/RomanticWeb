@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities.ResultAggregations;
 using RomanticWeb.Mapping.Model;
@@ -11,7 +10,6 @@ using RomanticWeb.Model;
 namespace RomanticWeb.Entities.ResultPostprocessing
 {
     /// <summary>Basic <see cref="IResultTransformer"/> which only converts nodes using <see cref="INodeConverter"/> and aggregates the result a <see cref="IResultAggregator"/>.</summary>
-    [NullGuard(ValidationFlags.None)]
     public class SimpleTransformer : IResultTransformer
     {
         private readonly IResultAggregator _aggregator;

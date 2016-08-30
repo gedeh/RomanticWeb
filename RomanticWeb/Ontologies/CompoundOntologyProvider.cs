@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using NullGuard;
 
 namespace RomanticWeb.Ontologies
 {
@@ -45,7 +44,6 @@ namespace RomanticWeb.Ontologies
 
         #region Public methods
         /// <summary>Gets a URI from a QName.</summary>
-        [return: AllowNull]
         public override Uri ResolveUri(string prefix, string rdfTermName)
         {
             return OntologyProviders.Select(provider => provider.ResolveUri(prefix, rdfTermName)).Where(uri => uri != null).FirstOrDefault();

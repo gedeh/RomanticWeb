@@ -9,7 +9,7 @@ namespace RomanticWeb.Dynamic
                 property.DeclaringType.Namespace,
                 property.DeclaringType.Name,
                 property.Name,
-                property.DeclaringType.Assembly.FullName)
+                property.DeclaringType.GetTypeInfo().Assembly.FullName)
         {
         }
     }

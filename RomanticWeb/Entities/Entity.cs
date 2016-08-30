@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Converters;
 using RomanticWeb.Dynamic;
 
 namespace RomanticWeb.Entities
 {
     /// <summary>An RDF entity, which can be used to dynamically access RDF triples.</summary>
-    [NullGuard(ValidationFlags.OutValues)]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     [DebuggerTypeProxy(typeof(DebuggerDisplayProxy))]
     public class Entity : DynamicObject, IEntity

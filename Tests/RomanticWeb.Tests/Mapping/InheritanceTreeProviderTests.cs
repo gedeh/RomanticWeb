@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
-using ImpromptuInterface;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Mapping.Providers;
@@ -28,18 +27,8 @@ namespace RomanticWeb.Tests.Mapping
         public void Should_ignore_overriden_parent_properties()
         {
             // given
-            PropertyInfo property = new TestPropertyInfo(GetType(), typeof(IDerived));
-            PropertyInfo overridenProperty = new TestPropertyInfo(GetType(), typeof(IDerivedLevel2));
-            var child = new
-                          {
-                              EntityType = typeof(IDerivedLevel2),
-                              Properties = CreateProperty(overridenProperty, new Uri("urn:in:child")).AsEnumerable(),
-                          }.ActLike<IEntityMappingProvider>();
-            var parent = new
-                           {
-                               EntityType = typeof(IDerived),
-                               Properties = CreateProperty(property, new Uri("urn:in:parent")).AsEnumerable()
-                           }.ActLike<IEntityMappingProvider>();
+            var child = CreateEntity(typeof(IDerivedLevel2), typeof(IDerivedLevel2), new Uri("urn:in:child"));
+            var parent = CreateEntity(typeof(IDerived), typeof(IDerived), new Uri("urn:in:parent"));
 
             // when
             var provider = new InheritanceTreeProvider(child, parent.AsEnumerable());
@@ -49,13 +38,24 @@ namespace RomanticWeb.Tests.Mapping
             provider.Properties.Single().GetTerm(_ontology).Should().Be(new Uri("urn:in:child"));
         }
 
+        private IEntityMappingProvider CreateEntity(Type entityType, Type propertyType, Uri uri)
+        {
+            var propertyMapping = new Mock<IPropertyMappingProvider>();
+            propertyMapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(GetType(), propertyType));
+            propertyMapping.Setup(instance => instance.GetTerm).Returns(provider => uri);
+
+            var result = new Mock<IEntityMappingProvider>();
+            result.SetupGet(instance => instance.EntityType).Returns(entityType);
+            result.SetupGet(instance => instance.Properties).Returns(propertyMapping.Object.AsEnumerable());
+            return result.Object;
+        }
+
         private IPropertyMappingProvider CreateProperty(PropertyInfo property, Uri uri)
         {
-            return new
-                       {
-                           PropertyInfo = property,
-                           GetTerm = new Func<IOntologyProvider, Uri>(provider => uri)
-                       }.ActLike<IPropertyMappingProvider>();
+            var result = new Mock<IPropertyMappingProvider>();
+            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.Setup(instance => instance.GetTerm).Returns(provider => uri);
+            return result.Object;
         }
     }
 }

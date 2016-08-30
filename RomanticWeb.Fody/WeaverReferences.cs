@@ -13,11 +13,14 @@ namespace RomanticWeb.Fody
             _weaver = weaver;
             Orm = LoadAssemblyReference("RomanticWeb");
             Contracts = LoadAssemblyReference("RomanticWeb.Contracts");
+            Fluent = LoadAssemblyReference("RomanticWeb.Mapping.Fluent");
         }
 
         public AssemblyDefinition Orm { get; private set; }
 
         public AssemblyDefinition Contracts { get; private set; }
+
+        public AssemblyDefinition Fluent { get; private set; }
 
         private AssemblyDefinition LoadAssemblyReference(string assemblyFullName)
         {

@@ -1,0 +1,12 @@
+﻿{
+  "frameworks": {
+    "net45": {}
+  },
+  "runtimes": {
+    "win": {}
+  },
+  "dependencies": {
+    "PepitaPackage": "1.21.4",
+    "StyleCop.MSBuild": "4.7.54"
+  }
+}

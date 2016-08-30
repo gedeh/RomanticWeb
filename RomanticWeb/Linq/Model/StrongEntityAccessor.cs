@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -86,8 +85,7 @@ namespace RomanticWeb.Linq.Model
         /// <summary>
         /// Gets or sets the name of the unbound graph.
         /// </summary>
-        [AllowNull]
-        public Identifier UnboundGraphName { [return: AllowNull] get; set; }
+        public Identifier UnboundGraphName { get; set; }
 
         /// <summary>Gets an owning query.</summary>
         public override IQuery OwnerQuery
@@ -139,7 +137,7 @@ namespace RomanticWeb.Linq.Model
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             return (!Object.Equals(operand, null)) && (operand.GetType() == typeof(StrongEntityAccessor)) &&
                 (_about != null ? _about.Equals(((StrongEntityAccessor)operand)._about) : Object.Equals(((StrongEntityAccessor)operand)._about, null)) &&

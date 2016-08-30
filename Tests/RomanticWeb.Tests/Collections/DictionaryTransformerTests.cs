@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using FluentAssertions;
-using ImpromptuInterface;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Collections;
@@ -12,6 +10,7 @@ using RomanticWeb.Entities;
 using RomanticWeb.Entities.ResultPostprocessing;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Model;
+using RomanticWeb.NamedGraphs;
 using RomanticWeb.TestEntities;
 
 namespace RomanticWeb.Tests.Collections
@@ -74,26 +73,46 @@ namespace RomanticWeb.Tests.Collections
 
         private IEnumerable<IEntity> CreateDictionaryEntries()
         {
-            return from index in Enumerable.Range(1, 5)
-                   select new
-                              {
-                                  Id = new BlankId(string.Format("test{0}", index))
-                              }.ActLike<IEntity>();
+            for (int index = 1; index <= 5; index++)
+            {
+                var mock = new Mock<IEntity>();
+                mock.SetupGet(instance => instance.Id).Returns(new BlankId(string.Format("test{0}", index)));
+                yield return mock.Object;
+            }
         }
 
         private IPropertyMapping CreateDictionaryProperty()
         {
-            return new
-                       {
-                           ReturnType = typeof(IDictionary<int, IPerson>)
-                       }.ActLike<IPropertyMapping>();
+            var result = new Mock<IPropertyMapping>();
+            result.SetupGet(instance => instance.ReturnType).Returns(typeof(IDictionary<int, IPerson>));
+            return result.Object;
         }
 
         private IEntityProxy CreateProxy()
         {
-            dynamic expando = new ExpandoObject();
-            expando.Id = Id;
-            return Impromptu.ActLike<IEntityProxy>(expando);
+            return new TestEntityProxy(Id);
+        }
+
+        private class TestEntityProxy : DynamicObject, IEntityProxy
+        {
+            private readonly EntityId _id;
+
+            public TestEntityProxy(EntityId id)
+            {
+                _id = id;
+                EntityMapping = null;
+                GraphSelectionOverride = null;
+            }
+
+            public IEntityMapping EntityMapping { get; private set; }
+
+            public ISourceGraphSelectionOverride GraphSelectionOverride { get; private set; }
+
+            public EntityId Id { get { return _id; } }
+
+            public void OverrideGraphSelection(ISourceGraphSelectionOverride graphOverride)
+            {
+            }
         }
 
         private class DictionaryPair : IDictionaryEntry<int, IPerson>

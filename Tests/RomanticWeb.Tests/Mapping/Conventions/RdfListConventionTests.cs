@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using FluentAssertions;
-using ImpromptuInterface;
-using ImpromptuInterface.Dynamic;
+using Moq;
 using NUnit.Framework;
 using RomanticWeb.Mapping.Conventions;
 using RomanticWeb.Mapping.Model;
@@ -15,7 +14,6 @@ namespace RomanticWeb.Tests.Mapping.Conventions
     [TestFixture]
     public class RdfListConventionTests
     {
-        private static readonly dynamic New = Builder.New();
         private RdfListConvention _rdfListConvention;
 
         [SetUp]
@@ -28,14 +26,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_be_applied_for_IList()
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(typeof(IList<int>)),
-                StoreAs = StoreAs.Undefined
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(IList<int>)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeTrue();
@@ -48,14 +44,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_not_be_applied_for_non_list_collections(Type collectionType)
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(collectionType),
-                StoreAs = StoreAs.Undefined
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(collectionType));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeFalse();
@@ -65,14 +59,12 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_not_be_applied_for_non_collections()
         {
             // given
-            var mapping = new
-            {
-                PropertyInfo = (PropertyInfo)new TestPropertyInfo(typeof(int)),
-                StoreAs = StoreAs.Undefined
-            }.ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(int)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
 
             // when
-            var shouldApply = _rdfListConvention.ShouldApply(mapping);
+            var shouldApply = _rdfListConvention.ShouldApply(mapping.Object);
 
             // then
             shouldApply.Should().BeFalse();
@@ -82,15 +74,16 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Applying_should_set_StorageStrategy()
         {
             // given
-            ICollectionMappingProvider mapping = New.ExpandoObject(
-                PropertyInfo: (PropertyInfo)new TestPropertyInfo(typeof(int)),
-                StoreAs: StoreAs.Undefined).ActLike<ICollectionMappingProvider>();
+            var mapping = new Mock<ICollectionMappingProvider>();
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(int)));
+            mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
+            mapping.SetupSet(instance => instance.StoreAs = StoreAs.RdfList);
 
             // when
-            _rdfListConvention.Apply(mapping);
+            _rdfListConvention.Apply(mapping.Object);
 
             // then
-            mapping.StoreAs.Should().Be(StoreAs.RdfList);
+            mapping.VerifySet(instance => instance.StoreAs = StoreAs.RdfList, Times.Once);
         }
     }
 }

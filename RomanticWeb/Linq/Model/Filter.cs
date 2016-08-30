@@ -1,5 +1,4 @@
 ﻿using System;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -30,7 +29,6 @@ namespace RomanticWeb.Linq.Model
 
         #region Properties
         /// <summary>Gets a filter expression.</summary>
-        [AllowNull]
         public IExpression Expression { get { return _expression; } set { _expression = value; } }
 
         /// <summary>Gets an owning query.</summary>
@@ -65,7 +63,7 @@ namespace RomanticWeb.Linq.Model
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             return (!Object.Equals(operand, null)) && (operand.GetType() == typeof(Filter)) &&
                 (_expression != null ? _expression.Equals(((Filter)operand)._expression) : Object.Equals(((Filter)operand)._expression, null));

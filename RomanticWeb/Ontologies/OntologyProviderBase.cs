@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NullGuard;
 
 namespace RomanticWeb.Ontologies
 {
@@ -25,7 +24,6 @@ namespace RomanticWeb.Ontologies
         public virtual IEnumerable<IOntology> Ontologies { get; private set; }
 
         /// <summary>Gets a URI from a QName.</summary>
-        [return: AllowNull]
         public virtual Uri ResolveUri(string prefix, string rdfTermName)
         {
             return Ontologies.Where(ontology => ontology.Prefix == prefix).Select(ontology => new Uri(ontology.BaseUri + rdfTermName)).FirstOrDefault();

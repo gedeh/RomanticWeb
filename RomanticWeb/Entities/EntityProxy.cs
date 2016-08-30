@@ -5,9 +5,8 @@ using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using Anotar.NLog;
-using NullGuard;
 using RomanticWeb.Collections;
+using RomanticWeb.Diagnostics;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Model;
 using RomanticWeb.NamedGraphs;
@@ -15,7 +14,6 @@ using RomanticWeb.NamedGraphs;
 namespace RomanticWeb.Entities
 {
     /// <summary>Proxy for exposing mapped entity members.</summary>
-    [NullGuard(ValidationFlags.All ^ ValidationFlags.OutValues)]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     [DebuggerTypeProxy(typeof(DebuggerDisplayProxy))]
     public class EntityProxy : DynamicObject, IEntity, IEntityProxy
@@ -26,11 +24,11 @@ namespace RomanticWeb.Entities
         private readonly Entity _entity;
         private readonly IEntityMapping _entityMapping;
         private readonly IResultTransformerCatalog _resultTransformers;
-
         private readonly INamedGraphSelector _selector;
+        private readonly ILogger _log;
+        private readonly IDictionary<int, object> _memberCache = new Dictionary<int, object>();
 
         private ISourceGraphSelectionOverride _overrideSourceGraph;
-        private IDictionary<int, object> _memberCache = new Dictionary<int, object>();
         #endregion
 
         #region Constructors
@@ -39,17 +37,20 @@ namespace RomanticWeb.Entities
         /// <param name="entityMapping">The entity mappings.</param>
         /// <param name="resultTransformers">The result transformers.</param>
         /// <param name="selector">The named graph selector.</param>
+        /// <param name="log">Logging facility.</param>
         public EntityProxy(
             Entity entity,
             IEntityMapping entityMapping, 
             IResultTransformerCatalog resultTransformers,
-            INamedGraphSelector selector)
+            INamedGraphSelector selector,
+            ILogger log)
         {
             _store = (_context = entity.Context).Store;
             _entity = entity;
             _entityMapping = entityMapping;
             _resultTransformers = resultTransformers;
             _selector = selector;
+            _log = log;
         }
         #endregion
 
@@ -66,7 +67,7 @@ namespace RomanticWeb.Entities
 
         /// <summary>Gets the graph selection override.</summary>
         /// <value>The graph selection override.</value>
-        public ISourceGraphSelectionOverride GraphSelectionOverride { [return: AllowNull] get { return _overrideSourceGraph; } }
+        public ISourceGraphSelectionOverride GraphSelectionOverride { get { return _overrideSourceGraph; } }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay { get { return _entity.ToString(); } }
@@ -85,8 +86,6 @@ namespace RomanticWeb.Entities
                     _context.CurrentCulture.TwoLetterISOLanguageName.GetHashCode();
                 if (!_memberCache.TryGetValue(key, out result))
                 {
-                    LogTo.Trace("Reading property {0} from graph {1}", property.Uri, graph);
-
                     var objects = _store.GetObjectsForPredicate(_entity.Id, property.Uri, graph).WhereMatchesContextRequirements(_context);
 
                     var resultTransformer = _resultTransformers.GetTransformer(property);
@@ -114,14 +113,13 @@ namespace RomanticWeb.Entities
             }
             catch (Exception e)
             {
-                LogTo.Fatal("An error occured when getting value for property {0}#{1}", _entityMapping.EntityType.FullName, binder.Name);
-                LogTo.Fatal(e.Message);
+                _log.Fatal(e, "An error occured when getting value for property {0}#{1}", _entityMapping.EntityType.FullName, binder.Name);
                 throw;
             }
         }
 
         /// <inheritdoc />
-        public override bool TrySetMember(SetMemberBinder binder, [AllowNull] object value)
+        public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             CheckIsNotReadonly();
 
@@ -133,8 +131,6 @@ namespace RomanticWeb.Entities
                 int key = _entity.Id.GetHashCode() ^ property.Uri.AbsoluteUri.GetHashCode() ^ (graph != null ? graph.AbsoluteUri.GetHashCode() : 0) ^
                     _context.CurrentCulture.TwoLetterISOLanguageName.GetHashCode();
                 _memberCache.Remove(key);
-
-                LogTo.Trace("Setting property {0}", property.Uri);
 
                 var propertyUri = Node.ForUri(property.Uri);
                 var resultTransformer = _resultTransformers.GetTransformer(property);
@@ -150,7 +146,7 @@ namespace RomanticWeb.Entities
             }
             catch
             {
-                LogTo.Fatal("An error occured when setting value for property {0}#{1}", _entityMapping.EntityType.FullName, binder.Name);
+                _log.Fatal("An error occured when setting value for property {0}#{1}", _entityMapping.EntityType.FullName, binder.Name);
                 throw;
             }
         }
@@ -216,7 +212,6 @@ namespace RomanticWeb.Entities
             }
         }
 
-        [return: AllowNull]
         private Uri SelectNamedGraph(IPropertyMapping property)
         {
             if (_overrideSourceGraph != null)

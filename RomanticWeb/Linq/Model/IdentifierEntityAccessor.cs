@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using NullGuard;
 using RomanticWeb.Linq.Model.Navigators;
 using RomanticWeb.Vocabularies;
 
@@ -81,7 +80,7 @@ namespace RomanticWeb.Linq.Model
         /// The object to compare with the current object.</param>
         /// <returns>Type: <see cref="System.Boolean" />
         /// <b>true</b> if the specified object is equal to the current object; otherwise, <b>false</b>.</returns>
-        public override bool Equals([AllowNull] object operand)
+        public override bool Equals(object operand)
         {
             if (Object.Equals(operand, null)) { return false; }
             if (operand.GetType() != typeof(IdentifierEntityAccessor)) { return false; }

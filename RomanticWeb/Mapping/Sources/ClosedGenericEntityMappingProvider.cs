@@ -17,29 +17,11 @@ namespace RomanticWeb.Mapping.Sources
             openGenericProvider.Accept(_collector);
         }
 
-        public Type EntityType
-        {
-            get
-            {
-                return _closedGenericEntityType;
-            }
-        }
+        public Type EntityType { get { return _closedGenericEntityType; } }
 
-        public IEnumerable<IClassMappingProvider> Classes
-        {
-            get
-            {
-                return _collector.ClassMappingProviders;
-            }
-        }
+        public IEnumerable<IClassMappingProvider> Classes { get { return _collector.ClassMappingProviders; } }
 
-        public IEnumerable<IPropertyMappingProvider> Properties
-        {
-            get
-            {
-                return _collector.PropertyMappingProviders;
-            }
-        }
+        public IEnumerable<IPropertyMappingProvider> Properties { get { return _collector.PropertyMappingProviders; } }
 
         public void Accept(IMappingProviderVisitor mappingProviderVisitor)
         {

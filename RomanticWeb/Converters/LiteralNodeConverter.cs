@@ -1,5 +1,4 @@
 ﻿using System;
-using NullGuard;
 using RomanticWeb.Model;
 
 namespace RomanticWeb.Converters
@@ -22,7 +21,6 @@ namespace RomanticWeb.Converters
         }
 
         /// <summary>Converts the given value to a literal node.</summary>
-        [return: AllowNull]
         public abstract INode ConvertBack(object value, IEntityContext context);
 
         /// <inheritdoc />

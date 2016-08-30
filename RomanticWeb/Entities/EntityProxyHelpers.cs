@@ -47,6 +47,6 @@ namespace RomanticWeb.Entities
             }
 
             return objects;
-        } 
+        }
     }
 }

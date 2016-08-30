@@ -58,9 +58,9 @@ namespace RomanticWeb.Tests.Globalization
             catalog.Setup(instance => instance.GetTransformer(propertyMapping.Object)).Returns(transformer.Object);
             var selector = new Mock<INamedGraphSelector>();
             selector.Setup(instance => instance.SelectGraph(entityId, mapping.Object, propertyMapping.Object)).Returns(new Uri("urn:graph"));
-            var proxy = new EntityProxy(entity, mapping.Object, catalog.Object, selector.Object);
-            transformer.Setup(instance => instance.FromNodes(proxy, propertyMapping.Object, context.Object, It.IsAny<IEnumerable<Node>>()))
-                .Returns<IEntityProxy, IPropertyMapping, IEntityContext, IEnumerable<Node>>(
+            var proxy = new EntityProxy(entity, mapping.Object, catalog.Object, selector.Object, null);
+            transformer.Setup(instance => instance.FromNodes(proxy, propertyMapping.Object, context.Object, It.IsAny<IEnumerable<INode>>()))
+                .Returns<IEntityProxy, IPropertyMapping, IEntityContext, IEnumerable<INode>>(
                     (prx, pm, ctx, nodes) => nodes.Select(node => (node.IsLiteral ? (object)node.Literal : (object)node.Uri)).FirstOrDefault());
 
             return proxy;
