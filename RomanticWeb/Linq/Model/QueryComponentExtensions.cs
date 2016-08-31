@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using RomanticWeb.Linq.Model.Navigators;
 
 namespace RomanticWeb.Linq.Model
@@ -43,14 +45,7 @@ namespace RomanticWeb.Linq.Model
         /// <returns><see cref="QueryComponentNavigatorAttribute" /> or null.</returns>
         internal static QueryComponentNavigatorAttribute GetQueryComponentNavigatorAttribute(this IQueryComponent queryComponent)
         {
-            QueryComponentNavigatorAttribute result = null;
-            object[] attributes = queryComponent.GetType().GetCustomAttributes(typeof(QueryComponentNavigatorAttribute), true);
-            if (attributes.Length > 0)
-            {
-                result = (QueryComponentNavigatorAttribute)attributes[0];
-            }
-
-            return result;
+            return (QueryComponentNavigatorAttribute)queryComponent.GetType().GetTypeInfo().GetCustomAttributes(typeof(QueryComponentNavigatorAttribute), true).FirstOrDefault();
         }
 
         /// <summary>Converts a query component navigator into the query component itself.</summary>

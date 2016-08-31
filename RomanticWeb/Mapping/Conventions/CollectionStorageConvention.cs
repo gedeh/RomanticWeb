@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Mapping.Providers;
 
@@ -18,7 +19,7 @@ namespace RomanticWeb.Mapping.Conventions
         {
             var propertyType = target.PropertyInfo.PropertyType;
 
-            return (target.StoreAs == StoreAs.Undefined) && ((propertyType.IsArray) || ((propertyType.IsGenericType) && 
+            return (target.StoreAs == StoreAs.Undefined) && ((propertyType.IsArray) || ((propertyType.GetTypeInfo().IsGenericType) && 
                 (propertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) || (propertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))));
         }
 

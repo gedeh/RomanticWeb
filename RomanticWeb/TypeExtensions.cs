@@ -1,6 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+#if NETSTANDARD16
+using System.Runtime.Loader;
+using Microsoft.Extensions.DependencyModel;
+#endif
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping;
 
@@ -15,7 +20,7 @@ namespace System
         /// <returns><b>true</b> if the type is <see cref="System.Array" /> or is assignable to <see cref="IEnumerable" /> (except <see cref="System.String" />); otherwise <b>false</b>.</returns>
         public static bool IsEnumerable(this Type type)
         {
-            return (type != null && ((type.IsArray) || ((typeof(IEnumerable).IsAssignableFrom(type)) && (type != typeof(string)))));
+            return (type != null && ((type.IsArray) || ((typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type)) && (type != typeof(string)))));
         }
 
         /// <summary>Tries to resolve item type of complex types.</summary>
@@ -30,15 +35,15 @@ namespace System
                 {
                     result = type.GetElementType();
                 }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                else if (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     result = type.GenericTypeArguments.Single();
                 }
-                else if ((typeof(IEnumerable).IsAssignableFrom(type)) && (type != typeof(string)))
+                else if ((typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type)) && (type != typeof(string)))
                 {
-                    if (type.IsGenericType)
+                    if (type.GetTypeInfo().IsGenericType)
                     {
-                        result = type.GetGenericArguments()[0];
+                        result = type.GetTypeInfo().GetGenericArguments()[0];
                     }
                     else
                     {
@@ -57,9 +62,9 @@ namespace System
         public static bool IsAssignableFromSpecificGeneric(this Type type, Type instanceType)
         {
             return (type != null) && (instanceType != null) && (instanceType != typeof(object)) &&
-                (((instanceType.IsGenericType) && (instanceType.GetGenericTypeDefinition() == type)) ||
-                (type.IsAssignableFromSpecificGeneric(instanceType.BaseType)) ||
-                instanceType.GetInterfaces().Any(type.IsAssignableFromSpecificGeneric));
+                (((instanceType.GetTypeInfo().IsGenericType) && (instanceType.GetGenericTypeDefinition() == type)) ||
+                (type.IsAssignableFromSpecificGeneric(instanceType.GetTypeInfo().BaseType)) ||
+                instanceType.GetTypeInfo().GetInterfaces().Any(type.IsAssignableFromSpecificGeneric));
         }
 
         /// <summary>Retrieves generic arguments for given specific generic type used in context of a generic type definition.</summary>
@@ -71,13 +76,13 @@ namespace System
             var result = new Type[0];
             if ((type != null) && (instanceType != null) && (instanceType != typeof(object)))
             {
-                if ((instanceType.IsGenericType) && (instanceType.GetGenericTypeDefinition() == type))
+                if ((instanceType.GetTypeInfo().IsGenericType) && (instanceType.GetGenericTypeDefinition() == type))
                 {
-                    result = instanceType.GetGenericArguments();
+                    result = instanceType.GetTypeInfo().GetGenericArguments();
                 }
-                else if (!instanceType.GetInterfaces().Any(interfaceType => (result = type.GetGenericArgumentsFor(interfaceType)).Length > 0))
+                else if (!instanceType.GetTypeInfo().GetInterfaces().Any(interfaceType => (result = type.GetGenericArgumentsFor(interfaceType)).Length > 0))
                 {
-                    result = type.GetGenericArgumentsFor(instanceType.BaseType);
+                    result = type.GetGenericArgumentsFor(instanceType.GetTypeInfo().BaseType);
                 }
             }
 
@@ -97,9 +102,9 @@ namespace System
                 {
                     result = Array.CreateInstance(newItemType, 0).GetType();
                 }
-                else if (((typeof(IEnumerable).IsAssignableFrom(type)) && (type != typeof(string))) && (type.IsGenericType))
+                else if (((typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type)) && (type != typeof(string))) && (type.GetTypeInfo().IsGenericType))
                 {
-                    result = type.GetGenericTypeDefinition().MakeGenericType(new[] { newItemType }.Union(type.GetGenericArguments().Skip(1)).ToArray());
+                    result = type.GetGenericTypeDefinition().MakeGenericType(new[] { newItemType }.Union(type.GetTypeInfo().GetGenericArguments().Skip(1)).ToArray());
                 }
             }
 
@@ -111,13 +116,13 @@ namespace System
         /// </summary>
         internal static IEnumerable<Type> GetImmediateParents(this Type type, bool excludeIEntity = true)
         {
-            if (type.BaseType != null)
+            if (type.GetTypeInfo().BaseType != null)
             {
-                yield return type.BaseType;
+                yield return type.GetTypeInfo().BaseType;
             }
 
-            var allInterfaces = type.GetInterfaces();
-            foreach (var iface in allInterfaces.Except(allInterfaces.SelectMany(i => i.GetInterfaces())))
+            var allInterfaces = type.GetTypeInfo().GetInterfaces();
+            foreach (var iface in allInterfaces.Except(allInterfaces.SelectMany(i => i.GetTypeInfo().GetInterfaces())))
             {
                 if (iface == typeof(IEntity) && excludeIEntity)
                 {
@@ -127,7 +132,7 @@ namespace System
                 yield return iface;
             }
 
-            if (type.IsGenericType)
+            if (type.GetTypeInfo().IsGenericType)
             {
                 var genericTypeDefinition = type.GetGenericTypeDefinition();
 
@@ -142,9 +147,9 @@ namespace System
         {
             var result = new List<Type>(types.Count);
 
-            foreach (var type in types.Where(type => !result.Any(type.IsAssignableFrom)))
+            foreach (var type in types.Where(type => !result.Any(type.GetTypeInfo().IsAssignableFrom)))
             {
-                result.RemoveAll(t => t.IsAssignableFrom(type));
+                result.RemoveAll(t => t.GetTypeInfo().IsAssignableFrom(type));
                 result.Add(type);
             }
 
@@ -153,14 +158,21 @@ namespace System
 
         internal static IEnumerable<Type> GetImplementingTypes(this Type @interface)
         {
-            if (!@interface.IsInterface)
+            if (!@interface.GetTypeInfo().IsInterface)
             {
                 throw new ArgumentOutOfRangeException("interface");
             }
 
-            return (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+#if NETSTANDARD16
+            var assemblies = from library in DependencyContext.Default.RuntimeLibraries
+                             from assemblyName in library.Assemblies
+                             select AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName.Name);
+#else
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+#endif
+            return (from assembly in assemblies
                     where !assembly.IsDynamic
-                    from type in assembly.GetTypesWhere(type => (type != @interface) && (@interface.IsAssignableFrom(type)) && (type.IsInterface))
+                    from type in assembly.GetTypesWhere(type => (type != @interface) && (@interface.GetTypeInfo().IsAssignableFrom(type)) && (type.GetTypeInfo().IsInterface))
                     select type);
         } 
     }

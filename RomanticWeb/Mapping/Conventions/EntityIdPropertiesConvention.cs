@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Providers;
@@ -18,7 +19,7 @@ namespace RomanticWeb.Mapping.Conventions
         /// <inheritdoc/>
         public bool ShouldApply(IPropertyMappingProvider target)
         {
-            return target.ConverterType == null && typeof(EntityId).IsAssignableFrom(target.PropertyInfo.PropertyType.FindItemType());
+            return target.ConverterType == null && typeof(EntityId).GetTypeInfo().IsAssignableFrom(target.PropertyInfo.PropertyType.FindItemType());
         }
 
         /// <inheritdoc/>

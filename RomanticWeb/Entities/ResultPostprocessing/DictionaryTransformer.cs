@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Collections;
 using RomanticWeb.Dynamic;
 using RomanticWeb.Mapping.Model;
@@ -39,7 +40,7 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         /// <summary>Not used.</summary>
         public IEnumerable<INode> ToNodes(object value, IEntityProxy proxy, IPropertyMapping property, IEntityContext context)
         {
-            var dictionaryIface = typeof(IDictionary<,>).MakeGenericType(property.ReturnType.GenericTypeArguments);
+            var dictionaryIface = typeof(IDictionary<,>).MakeGenericType(property.ReturnType.GenericTypeArguments).GetTypeInfo();
             var dictionaryType = GetDictionaryType(property);
 
             if (!dictionaryIface.IsInstanceOfType(value))
@@ -58,14 +59,14 @@ namespace RomanticWeb.Entities.ResultPostprocessing
             return dictionary.DictionaryEntries.Select(entity => Node.FromEntityId(entity.Id));
         }
 
-        private Type GetDictionaryType(IPropertyMapping property)
+        private TypeInfo GetDictionaryType(IPropertyMapping property)
         {
             Type keyType = property.ReturnType.GenericTypeArguments[0];
             Type valueType = property.ReturnType.GenericTypeArguments[1];
             Type pairEntityType = _typeProvider.GetEntryType(property);
             Type ownerType = _typeProvider.GetOwnerType(property);
 
-            return typeof(RdfDictionary<,,,>).MakeGenericType(keyType, valueType, pairEntityType, ownerType);
+            return typeof(RdfDictionary<,,,>).MakeGenericType(keyType, valueType, pairEntityType, ownerType).GetTypeInfo();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace RomanticWeb.Mapping
         {
             var property = GetProperty(type, name);
 
-            if (property == null && type.IsInterface)
+            if (property == null && type.GetTypeInfo().IsInterface)
             {
                 property = type.GetInterfaces().Select(iface => GetProperty(iface, name)).FirstOrDefault();
             }
@@ -21,7 +21,7 @@ namespace RomanticWeb.Mapping
 
         internal static IEnumerable<Type> GetTypesWhere(this Assembly assembly, Predicate<Type> condition)
         {
-            var isMatch = new Func<Type, bool>(type => type != null && condition(type) && type.Assembly == assembly);
+            var isMatch = new Func<Type, bool>(type => type != null && condition(type) && type.GetTypeInfo().Assembly == assembly);
 
             ICollection<Type> types = new List<Type>();
             try

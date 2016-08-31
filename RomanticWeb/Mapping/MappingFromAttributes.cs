@@ -18,7 +18,7 @@ namespace RomanticWeb.Mapping
         /// <inheritdoc />
         public void FromAssemblyOf<T>(IMappingBuilder builder)
         {
-            FromAssembly(builder, typeof(T).Assembly);
+            FromAssembly(builder, typeof(T).GetTypeInfo().Assembly);
         }
 
         /// <inheritdoc />

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Collections;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Mapping.Providers;
@@ -52,7 +53,7 @@ namespace RomanticWeb.Mapping
         public IEntityMapping MappingFor(Type entityType)
         {
             IEntityMapping result;
-            if ((entityType.IsGenericType) && (!entityType.IsGenericTypeDefinition))
+            if ((entityType.GetTypeInfo().IsGenericType) && (!entityType.GetTypeInfo().IsGenericTypeDefinition))
             {
                 lock (_genericMappings)
                 {
@@ -122,7 +123,7 @@ namespace RomanticWeb.Mapping
                         provider.Accept(visitor);
                     }
 
-                    if (provider.EntityType.IsGenericTypeDefinition)
+                    if (provider.EntityType.GetTypeInfo().IsGenericTypeDefinition)
                     {
                         _openGenericProviders[provider.EntityType] = provider;
                     }

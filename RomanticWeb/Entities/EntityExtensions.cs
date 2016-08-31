@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.DynamicProxy;
+using System.Reflection;
 using RomanticWeb.Entities.Proxies;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Model;
@@ -129,12 +129,14 @@ namespace RomanticWeb.Entities
         /// <returns>Value of the given predicate or <b>null</b>.</returns>
         public static object Predicate(this IEntity entity, Uri predicate)
         {
-            object result = null;
+            object result;
             IPropertyMapping propertyMapping = entity.Context.Mappings.MappingForProperty(predicate);
             if (propertyMapping != null)
             {
-                var mappedEntity = typeof(EntityExtensions).GetMethod("AsEntity").MakeGenericMethod(propertyMapping.EntityMapping.EntityType).Invoke(null, new object[] { entity });
-                result = mappedEntity.GetType().GetProperty(propertyMapping.Name).GetValue(mappedEntity);
+                var mappedEntity = typeof(EntityExtensions).GetTypeInfo()
+                    .GetMethod("AsEntity").MakeGenericMethod(propertyMapping.EntityMapping.EntityType)
+                    .Invoke(null, new object[] { entity });
+                result = mappedEntity.GetType().GetTypeInfo().GetProperty(propertyMapping.Name).GetValue(mappedEntity);
             }
             else
             {

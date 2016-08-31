@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities.ResultAggregations;
 using RomanticWeb.Mapping.Model;
@@ -45,9 +46,9 @@ namespace RomanticWeb.Entities.ResultPostprocessing
             object result = property.Converter.Convert(node, context);
             if (result != null)
             {
-                if ((property.ReturnType.IsGenericType) && (typeof(Nullable<>) == property.ReturnType.GetGenericTypeDefinition()))
+                if ((property.ReturnType.GetTypeInfo().IsGenericType) && (typeof(Nullable<>) == property.ReturnType.GetGenericTypeDefinition()))
                 {
-                    return property.ReturnType.GetConstructor(property.ReturnType.GetGenericArguments()).Invoke(new[] { result });
+                    return property.ReturnType.GetTypeInfo().GetConstructor(property.ReturnType.GetTypeInfo().GetGenericArguments()).Invoke(new[] { result });
                 }
 
                 bool isEnumerable = (property.ReturnType.IsEnumerable()) && (property.ReturnType != typeof(byte[]));
@@ -57,7 +58,7 @@ namespace RomanticWeb.Entities.ResultPostprocessing
                     itemType = property.ReturnType.FindItemType();
                 }
 
-                if (((!isEnumerable) || (property.ReturnType != itemType)) && (!itemType.IsInstanceOfType(result)))
+                if (((!isEnumerable) || (property.ReturnType != itemType)) && (!itemType.GetTypeInfo().IsInstanceOfType(result)))
                 {
                     if (itemType == typeof(string))
                     {

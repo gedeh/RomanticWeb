@@ -15,8 +15,8 @@ namespace RomanticWeb.Entities.ResultPostprocessing
     /// <summary>Transforms RDF object values to an <see cref="ObservableCollection{T}"/>.</summary>
     public class ObservableCollectionTransformer : SimpleTransformer
     {
-        private static readonly MethodInfo EnumerableCast = typeof(Enumerable).GetMethod("Cast");
-        private static readonly MethodInfo AsEntity = typeof(EntityExtensions).GetMethod("AsEntity");
+        private static readonly MethodInfo EnumerableCast = typeof(Enumerable).GetTypeInfo().GetMethod("Cast");
+        private static readonly MethodInfo AsEntity = typeof(EntityExtensions).GetTypeInfo().GetMethod("AsEntity");
 
         /// <summary>Initializes a new instance of the <see cref="ObservableCollectionTransformer"/> class.</summary>
         public ObservableCollectionTransformer() : base(new OriginalResult())
@@ -28,9 +28,9 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         {
             var convertedValues = nodes.Select(node => ((ICollectionMapping)property).ElementConverter.Convert(node, context));
             var collectionElements = ((IEnumerable<object>)Aggregator.Aggregate(convertedValues)).ToArray();
-            var genericArguments = (property.ReturnType.IsArray ? new[] { property.ReturnType.GetElementType() } : property.ReturnType.GetGenericArguments());
-            var observable = (IList)typeof(ObservableCollection<>).MakeGenericType(genericArguments).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
-            var asEntity = (typeof(IEntity).IsAssignableFrom(genericArguments.Single()) ? AsEntity.MakeGenericMethod(genericArguments) : null);
+            var genericArguments = (property.ReturnType.IsArray ? new[] { property.ReturnType.GetElementType() } : property.ReturnType.GetTypeInfo().GetGenericArguments());
+            var observable = (IList)typeof(ObservableCollection<>).MakeGenericType(genericArguments).GetTypeInfo().GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+            var asEntity = (typeof(IEntity).GetTypeInfo().IsAssignableFrom(genericArguments.Single()) ? AsEntity.MakeGenericMethod(genericArguments) : null);
             foreach (var item in collectionElements)
             {
                 observable.Add(asEntity != null ? asEntity.Invoke(null, new[] { item }) : item);

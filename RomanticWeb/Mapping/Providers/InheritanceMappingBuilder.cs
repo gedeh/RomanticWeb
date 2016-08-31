@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace RomanticWeb.Mapping.Providers
 {
@@ -32,8 +33,8 @@ namespace RomanticWeb.Mapping.Providers
 
         private static bool IsDerivedFrom(Type child, Type parent)
         {
-            var interfaceDerivesFromParent = from iface in child.GetInterfaces()
-                                             where iface.IsGenericType
+            var interfaceDerivesFromParent = from iface in child.GetTypeInfo().GetInterfaces()
+                                             where iface.GetTypeInfo().IsGenericType
                                              let genericDefinition = iface.GetGenericTypeDefinition()
                                              where genericDefinition == parent
                                              select iface;

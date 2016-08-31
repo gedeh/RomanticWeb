@@ -3,14 +3,6 @@
   "version": 1,
   "targets": {
     ".NETFramework,Version=v4.5": {
-      "Castle.Core/4.0.0-beta001": {
-        "compile": {
-          "lib/net45/Castle.Core.dll": {}
-        },
-        "runtime": {
-          "lib/net45/Castle.Core.dll": {}
-        }
-      },
       "LightInject.Source/4.0.11": {},
       "PepitaPackage/1.21.4": {},
       "Remotion.Linq/2.1.1": {
@@ -156,14 +148,6 @@
       }
     },
     ".NETFramework,Version=v4.5/win": {
-      "Castle.Core/4.0.0-beta001": {
-        "compile": {
-          "lib/net45/Castle.Core.dll": {}
-        },
-        "runtime": {
-          "lib/net45/Castle.Core.dll": {}
-        }
-      },
       "LightInject.Source/4.0.11": {},
       "PepitaPackage/1.21.4": {},
       "Remotion.Linq/2.1.1": {
@@ -310,28 +294,6 @@
     }
   },
   "libraries": {
-    "Castle.Core/4.0.0-beta001": {
-      "sha512": "AhlzkJEGZddWgUj2Vub2h2p171eETkQzymd4ZSgcxQBZaxgsFSJjQ7I6fLs86nS39+xxsZR3eXaH86DWVrfurA==",
-      "type": "package",
-      "path": "Castle.Core/4.0.0-beta001",
-      "files": [
-        "ASL - Apache Software Foundation License.txt",
-        "BreakingChanges.txt",
-        "Castle.Core.4.0.0-beta001.nupkg.sha512",
-        "Castle.Core.nuspec",
-        "Changes.txt",
-        "License.txt",
-        "lib/net35/Castle.Core.dll",
-        "lib/net35/Castle.Core.xml",
-        "lib/net40-client/Castle.Core.dll",
-        "lib/net40-client/Castle.Core.xml",
-        "lib/net45/Castle.Core.dll",
-        "lib/net45/Castle.Core.xml",
-        "lib/netstandard1.3/Castle.Core.dll",
-        "lib/netstandard1.3/Castle.Core.xml",
-        "readme.txt"
-      ]
-    },
     "LightInject.Source/4.0.11": {
       "sha512": "HJlU77lrpURLnkXEtc2T6I4B8KFXBBzjNfRBlYxegvsv4Y8VYXU2BU3rOR79WCu9vcM2LTKL/QPUYWgR5udYDw==",
       "type": "package",
@@ -1192,7 +1154,6 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "Castle.Core >= 4.0.0-beta001",
       "LightInject.Source >= 4.0.11",
       "PepitaPackage >= 1.21.4",
       "Remotion.Linq >= 2.1.1",

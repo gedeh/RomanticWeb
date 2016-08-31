@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Mapping.Sources;
 
 namespace RomanticWeb.Mapping.Providers
@@ -67,11 +68,11 @@ namespace RomanticWeb.Mapping.Providers
                 foreach (var immediateParent in iface.GetImmediateParents())
                 {
                     parents.Enqueue(immediateParent);
-                    if (immediateParent.IsGenericTypeDefinition && _parentProviders.ContainsKey(immediateParent))
+                    if (immediateParent.GetTypeInfo().IsGenericTypeDefinition && _parentProviders.ContainsKey(immediateParent))
                     {
                         var parentMapping = _parentProviders[immediateParent];
                         _parentProviders[iface] = new ClosedGenericEntityMappingProvider(
-                            parentMapping, iface.GetGenericArguments());
+                            parentMapping, iface.GetTypeInfo().GetGenericArguments());
                     }
                 }
 
@@ -91,12 +92,12 @@ namespace RomanticWeb.Mapping.Providers
             {
                 if (properties.ContainsKey(inheritedProperty.Key))
                 {
-                    _hiddenProperties.AddRange(inheritedProperty.Where(p => p.PropertyInfo.DeclaringType.IsGenericTypeDefinition == false));
+                    _hiddenProperties.AddRange(inheritedProperty.Where(p => p.PropertyInfo.DeclaringType.GetTypeInfo().IsGenericTypeDefinition == false));
                 }
                 else
                 {
                     var propertyMappingProvider = (from property in inheritedProperty
-                                                   group property by property.PropertyInfo.DeclaringType.IsGenericTypeDefinition into g 
+                                                   group property by property.PropertyInfo.DeclaringType.GetTypeInfo().IsGenericTypeDefinition into g 
                                                    select g).ToDictionary(g => g.Key, g => g);
 
                     if (propertyMappingProvider[false].Any())

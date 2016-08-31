@@ -110,9 +110,7 @@
     <Compile Include="Entities\DefaultBlankNodeIdGenerator.cs" />
     <Compile Include="Entities\EntityIdExtensions.cs" />
     <Compile Include="Entities\EntityProxyHelpers.cs" />
-    <Compile Include="Entities\Proxies\CastleDynamicExtensions.cs" />
     <Compile Include="Entities\Proxies\DynamicExtensions.cs" />
-    <Compile Include="Entities\Proxies\Example.cs" />
     <Compile Include="Entities\Proxies\IProxy.cs" />
     <Compile Include="Entities\Proxies\ProxyBase.cs" />
     <Compile Include="Entities\ResultPostprocessing\DictionaryTransformer.cs" />

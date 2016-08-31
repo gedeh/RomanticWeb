@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using RomanticWeb.Entities;
 using RomanticWeb.Linq.Model;
@@ -781,7 +782,7 @@ namespace RomanticWeb.Linq.Sparql
 
         private void ProcessSelectable(bool isSubQuery, ISelectableQueryComponent expression, Func<string, string> createVariableName, StrongEntityAccessor mainEntityAccessor)
         {
-            System.Reflection.MethodInfo processSelectable = typeof(GenericSparqlQueryVisitor).GetMethod("ProcessSelectable" + expression.GetType().Name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            System.Reflection.MethodInfo processSelectable = typeof(GenericSparqlQueryVisitor).GetTypeInfo().GetMethod("ProcessSelectable" + expression.GetType().Name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (processSelectable != null)
             {
                 processSelectable.Invoke(this, new object[] { expression, isSubQuery, createVariableName, mainEntityAccessor });

@@ -65,8 +65,8 @@ namespace RomanticWeb.Mapping.Sources
         {
             // todo: refactoring
             var actualEntityType = map.PropertyInfo.DeclaringType;
-            var owner = actualEntityType.Assembly.GetType(string.Format("{0}_{1}_Owner", actualEntityType.FullName, map.PropertyInfo.Name));
-            var entry = actualEntityType.Assembly.GetType(string.Format("{0}_{1}_Entry", actualEntityType.FullName, map.PropertyInfo.Name));
+            var owner = actualEntityType.GetTypeInfo().Assembly.GetType(string.Format("{0}_{1}_Owner", actualEntityType.FullName, map.PropertyInfo.Name));
+            var entry = actualEntityType.GetTypeInfo().Assembly.GetType(string.Format("{0}_{1}_Entry", actualEntityType.FullName, map.PropertyInfo.Name));
             var type = typeof(DictionaryOwnerMap<,,,>);
             var typeArguments = new[] { owner, entry }.Concat(map.PropertyInfo.PropertyType.GenericTypeArguments).ToArray();
             var ownerMapType = type.MakeGenericType(typeArguments);
@@ -104,7 +104,7 @@ namespace RomanticWeb.Mapping.Sources
         private EntityMap CreateDictionaryEntryMapping(IDictionaryMappingProvider map)
         {
             var actualEntityType = map.PropertyInfo.DeclaringType;
-            var entry = actualEntityType.Assembly.GetType(string.Format("{0}_{1}_Entry", actualEntityType.FullName, map.PropertyInfo.Name));
+            var entry = actualEntityType.GetTypeInfo().Assembly.GetType(string.Format("{0}_{1}_Entry", actualEntityType.FullName, map.PropertyInfo.Name));
             var type = typeof(DictionaryEntryMap<,,>);
             var typeArguments = new[] { entry }.Concat(map.PropertyInfo.PropertyType.GenericTypeArguments).ToArray();
             var ownerMapType = type.MakeGenericType(typeArguments);

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
 using RomanticWeb.IO;
 using RomanticWeb.LightInject;
 using RomanticWeb.Net;
@@ -20,7 +22,7 @@ namespace RomanticWeb.Ontologies
         public OntologyFactory()
         {
             _container = new ServiceContainer();
-            _container.RegisterAssembly(GetType().Assembly);
+            _container.RegisterAssembly(GetType().GetTypeInfo().Assembly);
             _ontologyFactoryMimeTypeMappingCache = new Dictionary<string, IOntologyLoader>();
             _contentTypeResolver = new ContentTypeResolver(_container.GetAllInstances<IContentTypeResolver>());
         }
@@ -66,14 +68,14 @@ namespace RomanticWeb.Ontologies
             }
 
             IOntology result = ontologyFactory.Create(fileStream);
-            fileStream.Close();
+            fileStream.Dispose();
             return result;
         }
 
         private IOntology Create(Uri uriPath, string contentType)
         {
             WebRequest request = WebRequest.Create(uriPath);
-            WebResponse response = request.GetResponse();
+            WebResponse response = Task.Run(async () => await request.GetResponseAsync()).Result;
             Stream responseStream = response.GetResponseStream();
             if (contentType == null)
             {

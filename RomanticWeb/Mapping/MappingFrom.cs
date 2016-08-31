@@ -23,7 +23,7 @@ namespace RomanticWeb.Mapping
         /// <summary>Registers a mapping repository, which will look for mappings in the <see cref="Assembly"/> of the given entity type.</summary>
         public void FromAssemblyOf<TEntity>()
         {
-            FromAssembly(typeof(TEntity).Assembly);
+            FromAssembly(typeof(TEntity).GetTypeInfo().Assembly);
         }
     }
 }

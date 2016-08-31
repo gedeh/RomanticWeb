@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Model;
@@ -56,7 +57,7 @@ namespace RomanticWeb.Converters
         /// <inheritdoc />
         public bool CanConvert(IEntity objectNode, IPropertyMapping predicate)
         {
-            return (predicate != null) && (typeof(TEntityId).IsAssignableFrom(predicate.ReturnType.FindItemType())) && (!(objectNode.Id is BlankId));
+            return (predicate != null) && (typeof(TEntityId).GetTypeInfo().IsAssignableFrom(predicate.ReturnType.FindItemType())) && (!(objectNode.Id is BlankId));
         }
 
         /// <inheritdoc />

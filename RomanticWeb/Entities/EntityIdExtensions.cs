@@ -23,7 +23,7 @@ namespace RomanticWeb.Entities
             {
                 if (!Constructors.ContainsKey(typeof(TEntityId)))
                 {
-                    Constructors[typeof(TEntityId)] = typeof(TEntityId).GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, new[] { typeof(Uri) }, null);
+                    Constructors[typeof(TEntityId)] = typeof(TEntityId).GetTypeInfo().GetConstructor(new[] { typeof(Uri) });
                 }
 
                 if (Constructors[typeof(TEntityId)] != null)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using RomanticWeb.Mapping.Model;
 using RomanticWeb.Mapping.Providers;
 
@@ -17,7 +18,7 @@ namespace RomanticWeb.Mapping.Conventions
         public bool ShouldApply(ICollectionMappingProvider target)
         {
             return target.StoreAs == StoreAs.Undefined
-                && target.PropertyInfo.PropertyType.IsGenericType
+                && target.PropertyInfo.PropertyType.GetTypeInfo().IsGenericType
                 && target.PropertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>);
         }
 

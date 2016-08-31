@@ -200,7 +200,7 @@ namespace RomanticWeb
                 return (from triple in Store.Quads
                         where (triple.Object.IsLiteral) && (!String.IsNullOrEmpty(triple.Object.Language))
                         select triple.Object.Language)
-                        .Distinct().Select(CultureInfo.GetCultureInfo);
+                        .Distinct().Select(language => new CultureInfo(language));
             }
         }
 

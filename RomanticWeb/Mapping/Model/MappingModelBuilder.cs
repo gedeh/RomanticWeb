@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Converters;
 using RomanticWeb.Mapping.Providers;
 
@@ -87,7 +88,7 @@ namespace RomanticWeb.Mapping.Model
                 provider.GetTerm(_mappingContext.OntologyProvider),
                 provider.StoreAs);
             bool converterSet = SetConverter(collectionMapping, provider);
-            if ((provider.ElementConverterType != null) && (!provider.ElementConverterType.ContainsGenericParameters))
+            if ((provider.ElementConverterType != null) && (!provider.ElementConverterType.GetTypeInfo().ContainsGenericParameters))
             {
                 collectionMapping.ElementConverter = _converterCatalog.GetConverter(provider.ElementConverterType);
             }
@@ -102,7 +103,7 @@ namespace RomanticWeb.Mapping.Model
         private bool SetConverter(PropertyMapping propertyMapping, IPropertyMappingProvider provider)
         {
             bool result = false;
-            if ((provider.ConverterType != null) && (!provider.ConverterType.ContainsGenericParameters) && (!provider.ConverterType.IsInterface))
+            if ((provider.ConverterType != null) && (!provider.ConverterType.GetTypeInfo().ContainsGenericParameters) && (!provider.ConverterType.GetTypeInfo().IsInterface))
             {
                 propertyMapping.Converter = _converterCatalog.GetConverter(provider.ConverterType);
                 result = true;

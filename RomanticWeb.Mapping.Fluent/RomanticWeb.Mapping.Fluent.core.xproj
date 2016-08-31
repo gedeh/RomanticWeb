@@ -18,6 +18,7 @@
   <ItemGroup>
     <DnxInvisibleContent Include="packages.config" />
     <DnxInvisibleContent Include="RomanticWeb.Mapping.Fluent.csproj.DotSettings" />
+    <DnxInvisibleContent Include="RomanticWeb.Mapping.Fluent.nuget.targets" />
     <DnxInvisibleContent Include="RomanticWeb.Mapping.Fluent.project.json" />
     <DnxInvisibleContent Include="Settings.StyleCop" />
     <DnxInvisibleContent Include="StyleCop.Cache" />

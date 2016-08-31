@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Remotion.Linq.Clauses;
 using RomanticWeb.Entities;
 using RomanticWeb.Linq.Expressions;
@@ -18,7 +19,7 @@ namespace RomanticWeb.Linq
         internal static StrongEntityAccessor GetEntityAccessor(this IQueryVisitor visitor, Remotion.Linq.Clauses.FromClauseBase sourceExpression)
         {
             StrongEntityAccessor entityAccessor = null;
-            if (typeof(IEntity).IsAssignableFrom(sourceExpression.ItemType))
+            if (typeof(IEntity).GetTypeInfo().IsAssignableFrom(sourceExpression.ItemType))
             {
                 sourceExpression = visitor.TransformFromExpression(sourceExpression);
                 entityAccessor = visitor.Query.FindAllComponents<StrongEntityAccessor>().FirstOrDefault(item => item.SourceExpression.EqualsTo(sourceExpression));

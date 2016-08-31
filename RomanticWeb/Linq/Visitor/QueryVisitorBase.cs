@@ -22,7 +22,7 @@ namespace RomanticWeb.Linq.Visitor
             while ((componentType != typeof(object)) && (componentMethodInfo == null))
             {
                 componentMethodInfo = componentType.GetMethod("Visit" + component.GetType().Name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                componentType = componentType.BaseType;
+                componentType = componentType.GetTypeInfo().BaseType;
             }
 
             if (componentMethodInfo != null)

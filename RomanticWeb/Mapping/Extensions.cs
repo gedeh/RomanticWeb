@@ -107,17 +107,14 @@ namespace RomanticWeb.Mapping
             {
                 result = null;
                 Type resultType = type;
-                if (resultType.IsGenericType)
+                if (resultType.GetTypeInfo().IsGenericType)
                 {
                     result = FindEntityType(resultType.GetGenericArguments());
                 }
 
-                if (result == null)
+                if ((result == null) && (resultType.IsArray) && (!EntityType.IsAssignableFrom(result = resultType.GetElementType())))
                 {
-                    if ((resultType.IsArray) && (!EntityType.IsAssignableFrom(result = resultType.GetElementType())))
-                    {
-                        result = null;
-                    }
+                    result = null;
                 }
 
                 if (result == null)
@@ -125,12 +122,9 @@ namespace RomanticWeb.Mapping
                     result = FindEntityType(resultType.GetInterfaces());
                 }
 
-                if (result == null)
+                if ((result == null) && (resultType.GetTypeInfo().BaseType != ObjectType))
                 {
-                    if (resultType.BaseType != ObjectType)
-                    {
-                        result = resultType.BaseType.FindEntityType();
-                    }
+                    result = resultType.GetTypeInfo().BaseType.FindEntityType();
                 }
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Mapping.Providers;
 
 namespace RomanticWeb.Collections
@@ -75,16 +76,18 @@ namespace RomanticWeb.Collections
 
         private static bool DependsOn(this Type type, Type another)
         {
-            if ((another.IsAssignableFrom(type)) || (another.IsAssignableFromSpecificGeneric(type)))
+            var anotherInfo = another.GetTypeInfo();
+            var typeInfo = type.GetTypeInfo();
+            if ((anotherInfo.IsAssignableFrom(type)) || (another.IsAssignableFromSpecificGeneric(type)))
             {
                 return true;
             }
 
-            int typeAssemblyHashCode = type.Assembly.GetHashCode();
-            int anotherAssemblyHashCode = another.Assembly.GetHashCode();
+            int typeAssemblyHashCode = typeInfo.Assembly.GetHashCode();
+            int anotherAssemblyHashCode = anotherInfo.Assembly.GetHashCode();
             if (typeAssemblyHashCode != anotherAssemblyHashCode)
             {
-                return (type.Assembly.GetReferencedAssemblies().Contains(another.Assembly.GetName()));
+                return (typeInfo.Assembly.GetReferencedAssemblies().Contains(anotherInfo.Assembly.GetName()));
             }
 
             return false;

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if NETSTANDARD16
+using System.Runtime.Loader;
+#endif
 using RomanticWeb.ComponentModel;
 using RomanticWeb.Configuration;
 using RomanticWeb.Converters;
@@ -41,12 +44,17 @@ namespace RomanticWeb
             _trackedScopes = new Dictionary<Scope, Scope>();
             _registeredLogger = new SimpleLogger();
             _container = container;
-            var assemblyNames = from file in Directory.GetFiles(Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath), "RomanticWeb*.dll")
-                                let fileName = Path.GetFileName(file)
-                                where !fileName.ToLower().Contains("test")
-                                select fileName;
-            var defaultAssemblies = String.Join("|", assemblyNames.OrderBy(fileName => fileName.Length));
-            _container.RegisterAssembly(defaultAssemblies);
+            _container.RegisterAssembly(GetType().GetTypeInfo().Assembly);
+            var fluentLibrary = Path.Combine(Path.GetDirectoryName(new Uri(GetType().GetTypeInfo().Assembly.CodeBase).LocalPath), "RomanticWeb.Mapping.Fluent.dll");
+            if (File.Exists(fluentLibrary))
+            {
+#if NETSTANDARD16
+                _container.RegisterAssembly(AssemblyLoadContext.Default.LoadFromAssemblyPath(fluentLibrary));
+#else
+                _container.RegisterAssembly(Assembly.LoadFile(fluentLibrary));
+#endif
+            }
+
             _container.Register<IEntityContextFactory>(f => this);
             _log = new LazyResolvedLogger(() => _registeredLogger);
             _container.RegisterInstance(_log);
@@ -114,11 +122,14 @@ namespace RomanticWeb
         /// <summary>Creates a factory defined in the configuration section.</summary>
         public static EntityContextFactory FromConfiguration(string factoryName)
         {
-            var configuration = ConfigurationSectionHandler.Default.Factories[factoryName];
+            var configuration = ConfigurationSectionHandler.Default.Factories.Cast<FactoryElement>().First(item => item.Name == factoryName);
             var ontologies = from element in configuration.Ontologies.Cast<OntologyElement>()
                              select new Ontology(element.Prefix, element.Uri);
-            var mappingAssemblies = from element in configuration.MappingAssemblies.Cast<MappingAssemblyElement>()
-                                    select Assembly.Load(element.Assembly);
+#if NETSTANDARD16
+            var mappingAssemblies = from element in configuration.MappingAssemblies select AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(element.Assembly));
+#else
+            var mappingAssemblies = from element in configuration.MappingAssemblies.Cast<MappingAssemblyElement>() select Assembly.Load(element.Assembly);
+#endif
 
             var entityContextFactory = new EntityContextFactory()
                 .WithOntology(new OntologyProviderBase(ontologies))
@@ -282,7 +293,7 @@ namespace RomanticWeb
         {
             var mappingBuilder = new MappingBuilder(new[] { new MappingFromAttributes(_log) });
             mappingBuilder.FromAssemblyOf<ITypedEntity>();
-            mappingBuilder.AddMapping(typeof(ITypedEntity).Assembly, new InternalsMappingsSource(typeof(ITypedEntity).Assembly));
+            mappingBuilder.AddMapping(typeof(ITypedEntity).GetTypeInfo().Assembly, new InternalsMappingsSource(typeof(ITypedEntity).GetTypeInfo().Assembly));
             foreach (var source in mappingBuilder.Sources)
             {
                 _container.RegisterInstance(source, source.Description);

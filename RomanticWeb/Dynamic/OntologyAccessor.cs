@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Collections;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities;
@@ -61,7 +62,7 @@ namespace RomanticWeb.Dynamic
             if (propertySpec.IsList)
             {
                 var graphOverride = new UnionGraphSelector();
-                var head = (IRdfListNode<object>)typeof(EntityExtensions)
+                var head = (IRdfListNode<object>)typeof(EntityExtensions).GetTypeInfo()
                     .GetMethod("AsEntity")
                     .MakeGenericMethod(typeof(IRdfListNode<object>))
                     .Invoke(null, new[] { result });

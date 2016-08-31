@@ -14,10 +14,14 @@ namespace RomanticWeb.Entities.Proxies
     {
         private const string AssemblyNameString = "RomanticWeb.Proxies";
         private static readonly AssemblyName AssemblyName = new AssemblyName(AssemblyNameString);
+#if NETSTANDARD16
+        private static readonly AssemblyBuilder AssemblyBuilder = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run);
+#else
         private static readonly AssemblyBuilder AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run);
+#endif
         private static readonly ModuleBuilder ModuleBuilder = AssemblyBuilder.DefineDynamicModule("RomanticWeb.Proxies.dll");
-        private static readonly MethodInfo InvokeGetMethodInfo = typeof(DynamicExtensions).GetMethod("InvokeGet");
-        private static readonly MethodInfo InvokeSetMethodInfo = typeof(DynamicExtensions).GetMethod("InvokeSet");
+        private static readonly MethodInfo InvokeGetMethodInfo = typeof(DynamicExtensions).GetTypeInfo().GetMethod("InvokeGet");
+        private static readonly MethodInfo InvokeSetMethodInfo = typeof(DynamicExtensions).GetTypeInfo().GetMethod("InvokeSet");
         private static readonly IDictionary<int, CallSite<Func<CallSite, object, object>>> GetCallSites = new ConcurrentDictionary<int, CallSite<Func<CallSite, object, object>>>();
         private static readonly IDictionary<int, CallSite<Action<CallSite, object, object>>> SetCallSites = new ConcurrentDictionary<int, CallSite<Action<CallSite, object, object>>>();
         private static readonly CSharpArgumentInfo[] InvokeGetArgs = { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) };
@@ -50,8 +54,8 @@ namespace RomanticWeb.Entities.Proxies
 
             types = new[] { typeof(IEntity) }.Union(types).ToArray();
             string name = String.Format("ProxyOf_{0}_Hash", types.Aggregate(0, (current, item) => current ^ item.GetHashCode()));
-            var type = AssemblyBuilder.GetType(name) ?? CompileResultType(name, types.Union(types.SelectMany(item => item.GetInterfaces())).ToArray());
-            var result = type.GetConstructors().First().Invoke(new[] { instance });
+            var type = AssemblyBuilder.GetType(name) ?? CompileResultType(name, types.Union(types.SelectMany(item => item.GetTypeInfo().GetInterfaces())).ToArray());
+            var result = type.GetTypeInfo().GetConstructors().First().Invoke(new[] { instance });
             return result;
         }
 
@@ -95,13 +99,13 @@ namespace RomanticWeb.Entities.Proxies
             TypeBuilder typeBuilder = GetTypeBuilder(name, types);
             FieldBuilder wrappedObjectFieldBuilder = typeBuilder.DefineField("_wrappedObject", typeof(object), FieldAttributes.Private);
             typeBuilder.CreateConstructor(wrappedObjectFieldBuilder);
-            typeBuilder.CreateProperty(typeof(IProxy).GetProperty("WrappedObject"), wrappedObjectFieldBuilder, true);
-            foreach (var property in from type in types from property in type.GetProperties() where property.CanRead select property)
+            typeBuilder.CreateProperty(typeof(IProxy).GetTypeInfo().GetProperty("WrappedObject"), wrappedObjectFieldBuilder, true);
+            foreach (var property in from type in types from property in type.GetTypeInfo().GetProperties() where property.CanRead select property)
             {
                 typeBuilder.CreateProperty(property, wrappedObjectFieldBuilder);
             }
 
-            Type objectType = typeBuilder.CreateType();
+            Type objectType = typeBuilder.CreateTypeInfo().AsType();
             return objectType;
         }
 
@@ -113,7 +117,7 @@ namespace RomanticWeb.Entities.Proxies
                 new[] { typeof(object) });
             var constructorIl = constructorBuilder.GetILGenerator();
             constructorIl.Emit(OpCodes.Ldarg_0);
-            constructorIl.Emit(OpCodes.Call, typeof(ProxyBase).GetConstructor(Type.EmptyTypes));
+            constructorIl.Emit(OpCodes.Call, typeof(ProxyBase).GetTypeInfo().GetConstructor(Type.EmptyTypes));
             constructorIl.Emit(OpCodes.Nop);
             constructorIl.Emit(OpCodes.Nop);
             constructorIl.Emit(OpCodes.Ldarg_0);
@@ -153,7 +157,7 @@ namespace RomanticWeb.Entities.Proxies
                 getIl.Emit(OpCodes.Ldfld, wrappedObjectFieldBuilder);
                 getIl.Emit(OpCodes.Ldstr, property.Name);
                 getIl.Emit(OpCodes.Call, InvokeGetMethodInfo);
-                getIl.Emit(property.PropertyType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, property.PropertyType);
+                getIl.Emit(property.PropertyType.GetTypeInfo().IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, property.PropertyType);
                 getIl.Emit(OpCodes.Ret);
             }
             else
@@ -183,7 +187,7 @@ namespace RomanticWeb.Entities.Proxies
             setIl.Emit(OpCodes.Ldfld, wrappedObjectFieldBuilder);
             setIl.Emit(OpCodes.Ldstr, property.Name);
             setIl.Emit(OpCodes.Ldarg_1);
-            if (property.PropertyType.IsValueType)
+            if (property.PropertyType.GetTypeInfo().IsValueType)
             {
                 setIl.Emit(OpCodes.Box, property.PropertyType);
             }

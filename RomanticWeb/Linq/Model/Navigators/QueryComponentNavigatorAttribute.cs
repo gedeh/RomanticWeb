@@ -18,14 +18,13 @@ namespace RomanticWeb.Linq.Model.Navigators
         /// <param name="navigatorType">Navigator type.</param>
         internal QueryComponentNavigatorAttribute(Type navigatorType)
         {
-            if (!(typeof(IQueryComponentNavigator)).IsAssignableFrom(navigatorType))
+            if (!(typeof(IQueryComponentNavigator)).GetTypeInfo().IsAssignableFrom(navigatorType))
             {
                 throw new ArgumentOutOfRangeException("navigatorType");
             }
 
-            _constructor = navigatorType.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Where(item => (item.GetParameters().Length == 1) && (typeof(IQueryComponent).IsAssignableFrom(item.GetParameters()[0].ParameterType)))
-                .FirstOrDefault();
+            _constructor = navigatorType.GetTypeInfo().GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+                .FirstOrDefault(item => (item.GetParameters().Length == 1) && (typeof(IQueryComponent).GetTypeInfo().IsAssignableFrom(item.GetParameters()[0].ParameterType)));
 
             if (_constructor == null)
             {

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using RomanticWeb.Collections;
 using RomanticWeb.Diagnostics;
@@ -91,7 +92,7 @@ namespace RomanticWeb.Entities
                     var resultTransformer = _resultTransformers.GetTransformer(property);
                     result = resultTransformer.FromNodes(this, property, Context, objects);
 
-                    if ((result == null) && (property.ReturnType.IsValueType))
+                    if ((result == null) && (property.ReturnType.GetTypeInfo().IsValueType))
                     {
                         result = Activator.CreateInstance(property.ReturnType);
                     }

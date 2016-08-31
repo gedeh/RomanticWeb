@@ -117,14 +117,14 @@ namespace RomanticWeb.Mapping.Attributes
 
         private IList<IPropertyMappingProvider> GetProperties(Type entityType)
         {
-            return (from property in entityType.GetProperties()
+            return (from property in entityType.GetTypeInfo().GetProperties()
                     from attribute in property.GetCustomAttributes<PropertyAttribute>()
                     select attribute.Accept(this, property)).ToList();
         }
 
         private IList<IClassMappingProvider> GetClasses(Type entityType)
         {
-            return entityType.GetCustomAttributes<ClassAttribute>().Select(a => a.Accept(this)).ToList();
+            return entityType.GetTypeInfo().GetCustomAttributes<ClassAttribute>().Select(a => a.Accept(this)).ToList();
         }
     }
 }

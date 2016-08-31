@@ -9,13 +9,12 @@ namespace RomanticWeb.Mapping
         internal static bool IsConstructableEntityMap(this Type mappingType)
         {
             var hasConstructor = new Lazy<bool>(() => HasParameterlessConstructor(mappingType));
-            return (typeof(EntityMap).IsAssignableFrom(mappingType)) && (!mappingType.IsAbstract) && (hasConstructor.Value) && (!mappingType.IsGenericTypeDefinition);
+            return (typeof(EntityMap).IsAssignableFrom(mappingType)) && (!mappingType.GetTypeInfo().IsAbstract) && (hasConstructor.Value) && (!mappingType.GetTypeInfo().IsGenericTypeDefinition);
         }
 
         private static bool HasParameterlessConstructor(Type mappingType)
         {
-            const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            return mappingType.GetConstructor(Flags, null, Type.EmptyTypes, null) != null;
+            return mappingType.GetConstructor(Type.EmptyTypes) != null;
         }
     }
 }

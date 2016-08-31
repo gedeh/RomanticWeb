@@ -35,20 +35,18 @@ namespace RomanticWeb.Entities
             }
 
             _entityId = entityId;
-            _ontologyAccessors = new ConcurrentDictionary<string, OntologyAccessor>(StringComparer.InvariantCultureIgnoreCase);
+            _ontologyAccessors = new ConcurrentDictionary<string, OntologyAccessor>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>Creates a new instance of <see cref="Entity"/> with given entity context.</summary>
         /// <param name="entityId">IRI of the entity.</param>
         /// <param name="context">Entity context to be attached to this entity.</param>
-        internal Entity(EntityId entityId, IEntityContext context)
-            : this(entityId)
+        internal Entity(EntityId entityId, IEntityContext context) : this(entityId)
         {
             _context = context;
         }
 
-        internal Entity(EntityId entityId, IEntityContext context, IFallbackNodeConverter fallbackNodeConverter, IResultTransformerCatalog transformerCatalog)
-            : this(entityId, context)
+        internal Entity(EntityId entityId, IEntityContext context, IFallbackNodeConverter fallbackNodeConverter, IResultTransformerCatalog transformerCatalog) : this(entityId, context)
         {
             _fallbackNodeConverter = fallbackNodeConverter;
             _transformerCatalog = transformerCatalog;
@@ -60,22 +58,10 @@ namespace RomanticWeb.Entities
         public EntityId Id { get { return _entityId; } }
 
         /// <inheritdoc/>
-        public IEntityContext Context
-        {
-            get
-            {
-                return _context;
-            }
-        }
+        public IEntityContext Context { get { return _context; } }
 
         /// <summary>Determines if the entity was initialized.</summary>
-        private bool IsInitialized
-        {
-            get
-            {
-                return (_entityId is BlankId) || _isInitialized;
-            }
-        }
+        private bool IsInitialized { get { return (_entityId is BlankId) || _isInitialized; } }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
@@ -254,37 +240,13 @@ namespace RomanticWeb.Entities
                 _entity = entity;
             }
 
-            public EntityId Id
-            {
-                get
-                {
-                    return _entity.Id;
-                }
-            }
+            public EntityId Id { get { return _entity.Id; } }
 
-            public ICollection<string> KnownOntologies
-            {
-                get
-                {
-                    return _entity._ontologyAccessors.Keys;
-                }
-            }
+            public ICollection<string> KnownOntologies { get { return _entity._ontologyAccessors.Keys; } }
 
-            public IEntityContext Context
-            {
-                get
-                {
-                    return _entity._context;
-                }
-            }
+            public IEntityContext Context { get { return _entity._context; } }
 
-            public bool IsInitialized
-            {
-                get
-                {
-                    return _entity.IsInitialized;
-                }
-            }
+            public bool IsInitialized { get { return _entity.IsInitialized; } }
         }
     }
 }

@@ -87,7 +87,7 @@ namespace RomanticWeb.Mapping.Sources
                     ownerTypeName,
                     TypeAttributes.Public | TypeAttributes.Interface | TypeAttributes.Abstract,
                     null,
-                    new[] { typeof(IRdfListOwner) }).CreateType();
+                    new[] { typeof(IRdfListOwner) }).CreateTypeInfo().AsType();
             var ownerMapType = typeof(ListOwnerMap<>).MakeGenericType(new[] { owner });
 
             var mapBuilderHelper = defineDynamicModule.DefineType(ownerTypeName + "Map", TypeAttributes.Public, ownerMapType);
@@ -128,7 +128,7 @@ namespace RomanticWeb.Mapping.Sources
                    nodeTypeName,
                    TypeAttributes.Public | TypeAttributes.Interface | TypeAttributes.Abstract,
                    null,
-                   new[] { typeof(IRdfListNode<>).MakeGenericType(elementType) }).CreateType();
+                   new[] { typeof(IRdfListNode<>).MakeGenericType(elementType) }).CreateTypeInfo().AsType();
             var converterType = map.ElementConverterType ?? map.ConverterType;
             var ownerMapType = typeof(ListEntryMap<,,>).MakeGenericType(nodeType, elementType, converterType);
 

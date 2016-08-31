@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using RomanticWeb.Mapping.Model;
 
 namespace RomanticWeb.Dynamic
@@ -13,13 +14,13 @@ namespace RomanticWeb.Dynamic
         /// <inheritdoc/>
         public Type GetEntryType(IPropertyMapping property)
         {
-            return Type.GetType(new TypeDictionaryEntityNames(property.EntityMapping.EntityType.GetProperty(property.Name)).EntryTypeFullyQualifiedName, true);
+            return Type.GetType(new TypeDictionaryEntityNames(property.EntityMapping.EntityType.GetTypeInfo().GetProperty(property.Name)).EntryTypeFullyQualifiedName, true);
         }
 
         /// <inheritdoc/>
         public Type GetOwnerType(IPropertyMapping property)
         {
-            return Type.GetType(new TypeDictionaryEntityNames(property.EntityMapping.EntityType.GetProperty(property.Name)).OwnerTypeFullyQualifiedName, true);
+            return Type.GetType(new TypeDictionaryEntityNames(property.EntityMapping.EntityType.GetTypeInfo().GetProperty(property.Name)).OwnerTypeFullyQualifiedName, true);
         }
     }
 }

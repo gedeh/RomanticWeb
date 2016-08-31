@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace RomanticWeb.Collections
 {
@@ -114,7 +115,7 @@ namespace RomanticWeb.Collections
                 foreach (var dependency in instance.Requires)
                 {
                     var matchingInstance = (from otherInstance in instances
-                                            where dependency.IsInstanceOfType(otherInstance)
+                                            where dependency.GetTypeInfo().IsInstanceOfType(otherInstance)
                                             select otherInstance).FirstOrDefault();
                     if ((matchingInstance == null) || (visited.Contains(matchingInstance)))
                     {

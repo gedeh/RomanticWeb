@@ -26,20 +26,22 @@ namespace RomanticWeb
             if ((Object.ReferenceEquals(x, null)) && (Object.ReferenceEquals(y, null))) { return 0; }
             if (Object.ReferenceEquals(y, null)) { return 1; }
             if (Object.ReferenceEquals(x, null)) { return -1; }
-            if (y.IsAssignableFrom(x)) { return -1; }
-            if (x.IsAssignableFrom(y)) { return 1; }
+            var yInfo = y.GetTypeInfo();
+            var xInfo = x.GetTypeInfo();
+            if (yInfo.IsAssignableFrom(x)) { return -1; }
+            if (xInfo.IsAssignableFrom(y)) { return 1; }
             if (y.IsAssignableFromSpecificGeneric(x)) { return -1; }
             if (x.IsAssignableFromSpecificGeneric(y)) { return 1; }
-            int assemblyXHashCode = x.Assembly.GetHashCode();
-            int assemblyYHashCode = y.Assembly.GetHashCode();
+            int assemblyXHashCode = xInfo.Assembly.GetHashCode();
+            int assemblyYHashCode = yInfo.Assembly.GetHashCode();
             if (assemblyXHashCode != assemblyYHashCode)
             {
                 AssemblyDependencyEntry cachedValue = _assemblyDependencyCache
                     .FirstOrDefault(item => (item.AssemblyXHashCode == assemblyXHashCode) && (item.AssemblyYHashCode == assemblyYHashCode));
                 if (cachedValue.Equals(AssemblyDependencyEntry.Empty))
                 {
-                    int? relation = (y.Assembly.GetReferencedAssemblies().Contains(x.Assembly.GetName()) ? (int?)1 :
-                        (x.Assembly.GetReferencedAssemblies().Contains(y.Assembly.GetName()) ? (int?)-1 : null));
+                    int? relation = (yInfo.Assembly.GetReferencedAssemblies().Contains(xInfo.Assembly.GetName()) ? (int?)1 :
+                        (xInfo.Assembly.GetReferencedAssemblies().Contains(yInfo.Assembly.GetName()) ? (int?)-1 : null));
                     _assemblyDependencyCache.Add(cachedValue = new AssemblyDependencyEntry(assemblyXHashCode, assemblyYHashCode, relation));
                 }
 

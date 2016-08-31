@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Collections;
 using RomanticWeb.Converters;
 using RomanticWeb.Diagnostics;
@@ -30,7 +31,7 @@ namespace RomanticWeb.ComponentModel
             registry.Register<IConverterCatalog, ConverterCatalog>(new PerContainerLifetime());
 
             registry.Register<IResultTransformerCatalog, ResultTransformerCatalog>(new PerContainerLifetime());
-            registry.RegisterAssembly(GetType().Assembly, () => new PerContainerLifetime(), (service, impl) => service == typeof(IResultAggregator));
+            registry.RegisterAssembly(GetType().GetTypeInfo().Assembly, () => new PerContainerLifetime(), (service, impl) => service == typeof(IResultAggregator));
 
             registry.Register(factory => CreateEntitySource(factory), new PerContainerLifetime());
 

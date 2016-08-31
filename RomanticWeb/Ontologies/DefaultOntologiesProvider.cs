@@ -122,7 +122,7 @@ namespace RomanticWeb.Ontologies
                 if (((ontologies & ontology) == ontology) && (!_includedOntologies.Contains(ontology)))
                 {
                     string resourceName = System.String.Format("{0}.{1}.", typeof(DefaultOntologiesProvider).Namespace, ontology.ToString());
-                    resourceName = (from manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames()
+                    resourceName = (from manifestResourceName in GetType().GetTypeInfo().Assembly.GetManifestResourceNames()
                                     where manifestResourceName.StartsWith(resourceName)
                                     select manifestResourceName).FirstOrDefault();
                     if (System.String.IsNullOrEmpty(resourceName))
@@ -131,7 +131,7 @@ namespace RomanticWeb.Ontologies
                     }
 
                     IOntology ontologyInstance = _ontologyFactory.Create(
-                        Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName),
+                        GetType().GetTypeInfo().Assembly.GetManifestResourceStream(resourceName),
                         "application/" + (resourceName.EndsWith(".owl") ? "owl" : "rdf") + "+xml");
                     if (ontologyInstance != null)
                     {

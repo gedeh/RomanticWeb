@@ -14,8 +14,8 @@ namespace RomanticWeb.Linq
     public class EntityQueryExecutor : IQueryExecutor
     {
         #region Fields
-        private static readonly MethodInfo EnumerableCastMethod = typeof(Enumerable).GetMethod("Cast");
-        private static readonly MethodInfo EntityLoadMethod = typeof(IEntityContext).GetMethod("Create");
+        private static readonly MethodInfo EnumerableCastMethod = typeof(Enumerable).GetTypeInfo().GetMethod("Cast");
+        private static readonly MethodInfo EntityLoadMethod = typeof(IEntityContext).GetTypeInfo().GetMethod("Create");
         private readonly IEntityContext _entityContext;
         private readonly IEntitySource _entitySource;
         private readonly IQueryOptimizer _queryOptimizer;
