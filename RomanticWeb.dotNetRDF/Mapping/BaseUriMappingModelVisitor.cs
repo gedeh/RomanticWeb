@@ -17,9 +17,9 @@ namespace RomanticWeb.Mapping
         /// <inheritdoc />
         public void Visit(IEntityMapping entityMapping)
         {
-            if (!entityMapping.EntityType.Assembly.IsDynamic)
+            if (!entityMapping.EntityType.GetTypeInfo().Assembly.IsDynamic)
             {
-                _mappingAssemblies.Add(entityMapping.EntityType.Assembly);
+                _mappingAssemblies.Add(entityMapping.EntityType.GetTypeInfo().Assembly);
             }
         }
 

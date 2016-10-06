@@ -36,7 +36,7 @@ namespace RomanticWeb.Tests.DotNetRDF
 
             result.Should().NotBeNull();
             result.Context.Store.GetEntityQuads(id).Should().HaveCount(1);
-            Mock.Get(request).Verify(instance => instance.GetResponse(), Times.Once);
+            Mock.Get(request).Verify(instance => instance.GetResponseAsync(), Times.Once);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace RomanticWeb.Tests.DotNetRDF
 
             result.Should().NotBeNull();
             result.Context.Store.GetEntityQuads(id).Should().HaveCount(2);
-            Mock.Get(request).Verify(instance => instance.GetResponse(), Times.Once);
+            Mock.Get(request).Verify(instance => instance.GetResponseAsync(), Times.Once);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace RomanticWeb.Tests.DotNetRDF
             response.Setup(instance => instance.GetResponseStream()).Returns(data);
             response.SetupGet(instance => instance.ContentType).Returns("text/turtle");
             var result = new Mock<WebRequest>(MockBehavior.Strict);
-            result.Setup(instance => instance.GetResponse()).Returns(response.Object);
+            result.Setup(instance => instance.GetResponseAsync()).ReturnsAsync(response.Object);
             return result.Object;
         }
 

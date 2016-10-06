@@ -8,9 +8,6 @@ namespace RomanticWeb.Mapping.Visitors
     /// <summary>Contract for implementing visitors of mapping providers.</summary>
     public interface IMappingProviderVisitor : IDependentComponent
     {
-        /// <summary>Gets the enumeration of visitors that should be executed before.</summary>
-        IEnumerable<Type> Requires { get; }
-
         /// <summary>Visits the specified collection mapping provider.</summary>
         /// <param name="collectionMappingProvider">The collection mapping provider.</param>
         void Visit(ICollectionMappingProvider collectionMappingProvider);

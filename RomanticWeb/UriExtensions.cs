@@ -40,5 +40,16 @@ namespace RomanticWeb
 
             return result;
         }
+
+        /// <summary>Strips off an query string and fragment from a given <paramref name="uri" />.</summary>
+        /// <param name="uri">Uri to be shortened.</param>
+        /// <returns>Resulting uri without both query string and fragment.</returns>
+        public static Uri GetUriWithoutQuery(this Uri uri)
+        {
+            var uriBuilder = new UriBuilder(uri);
+            uriBuilder.Query = null;
+            uriBuilder.Fragment = null;
+            return uriBuilder.Uri;
+        }
     }
 }

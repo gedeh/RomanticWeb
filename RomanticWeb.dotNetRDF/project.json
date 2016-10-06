@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-*",
+  "dependencies": {
+    "dotNetRDF": "1.0.13-pre2",
+    "NETStandard.Library": "1.6.0",
+    "RomanticWeb": "1.0.0-*",
+    "RomanticWeb.Contracts": "1.0.0-*",
+    "System.ComponentModel.TypeConverter": "4.1.0",
+    "System.Linq.Parallel": "4.0.1"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  },
+  "buildOptions": {
+    "define": [ "NETSTANDARD16" ]
+  }
+}

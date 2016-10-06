@@ -22,8 +22,8 @@ namespace RomanticWeb.Mapping.Model
         public IEntityMapping BuildMapping(IEntityMappingProvider mapping)
         {
             _currentType = mapping.EntityType;
-            var classes = mapping.Classes.Select(BuildMapping);
-            var properties = mapping.Properties.Select(BuildMapping);
+            var classes = mapping.Classes.Select(BuildMapping).Distinct();
+            var properties = mapping.Properties.Select(BuildMapping).Distinct();
             IEnumerable<PropertyMapping> hiddenProperties = new PropertyMapping[0];
 
             var providerWithHiddenProperties = mapping as IEntityMappingProviderWithHiddenProperties;

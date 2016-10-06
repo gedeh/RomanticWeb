@@ -3,32 +3,29 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+#if !NETSTANDARD16
 using System.Xml;
+#endif
 using VDS.RDF.Storage;
 
 namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
 {
-    internal abstract class StorageProviderElement : ConfigurationElement
+    internal abstract class StorageProviderElement
+#if !NETSTANDARD16
+        : ConfigurationElement
+#endif
     {
-        private readonly IDictionary<string, string> _constructorParameters = new Dictionary<string, string>();
-
-        protected virtual IDictionary<string, string> ConstructorParameters
+        /// <summary>Initializes a new instance of the <see cref="StorageProviderElement" /> class.</summary>
+        public StorageProviderElement()
         {
-            get
-            {
-                return _constructorParameters;
-            }
+            ConstructorParameters = new Dictionary<string, string>();
         }
+
+        protected virtual IDictionary<string, string> ConstructorParameters { get; private set; }
 
         protected abstract Type ProviderType { get; }
 
-        protected virtual IEnumerable<string> ValidAttributes
-        {
-            get
-            {
-                yield break;
-            }
-        }
+        protected virtual IEnumerable<string> ValidAttributes { get { yield break; } }
 
         public IStorageProvider CreateStorageProvider()
         {
@@ -41,6 +38,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
             return (IStorageProvider)ctor.Invoke(ctorArguments);
         }
 
+#if !NETSTANDARD16
         internal void DeserializeElementForConfig(XmlReader reader, bool serializeCollectionKey)
         {
             DeserializeElement(reader, serializeCollectionKey);
@@ -61,7 +59,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         {
             ConstructorParameters.Add(name, value);
         }
-
+#endif
         private ConstructorInfo GetBestMatchingConstructor()
         {
             var constructors = (from ctor in ProviderType.GetConstructors()
@@ -73,7 +71,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
             if (!constructors.Any())
             {
                 throw new ConfigurationErrorsException(
-                    string.Format(
+                    String.Format(
                         "Type {0} doesn't contain a public constructor with {1} parameters",
                         ProviderType,
                         ConstructorParameters.Count));
@@ -84,13 +82,12 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
                 return constructors.Single();
             }
 
-            throw new ConfigurationErrorsException(string.Format("Multiple constructors matched on type {0}", ProviderType));
+            throw new ConfigurationErrorsException(String.Format("Multiple constructors matched on type {0}", ProviderType));
         }
 
         private object[] GetConstructorArguments()
         {
             ConstructorInfo constructor = GetBestMatchingConstructor();
-
             return (from param in constructor.GetParameters()
                     let element = ConstructorParameters[param.Name]
                     select Convert.ChangeType(element, param.ParameterType)).ToArray();

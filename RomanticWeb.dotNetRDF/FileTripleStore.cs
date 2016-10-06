@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using VDS.RDF.Query.Datasets;
@@ -15,9 +16,9 @@ namespace RomanticWeb.DotNetRDF
         private const int MaxTries = 5;
         private static readonly object Locker = new Object();
 
-        private FileSystemWatcher _watcher = null;
-        private string _filePath = null;
-        private Stream _fileStream = null;
+        private readonly FileSystemWatcher _watcher;
+        private readonly string _filePath;
+        private readonly Stream _fileStream;
         private IRdfReader _rdfReader = null;
         private IRdfWriter _rdfWriter = null;
         private IStoreReader _storeReader = null;
@@ -194,7 +195,11 @@ namespace RomanticWeb.DotNetRDF
         {
             if (_filePath != null)
             {
-                _storeReader.Load(this, _filePath);
+                using (var fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var streamReader = new StreamReader(fileStream, System.Text.UTF8Encoding.UTF8))
+                {
+                    _storeReader.Load(this, streamReader);
+                }
             }
             else
             {
@@ -215,7 +220,11 @@ namespace RomanticWeb.DotNetRDF
 
             if (_filePath != null)
             {
-                _rdfReader.Load(graph, _filePath);
+                using (var fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var streamReader = new StreamReader(fileStream, System.Text.UTF8Encoding.UTF8))
+                {
+                    _rdfReader.Load(graph, streamReader);
+                }
             }
             else
             {
@@ -256,7 +265,12 @@ namespace RomanticWeb.DotNetRDF
             if (_filePath != null)
             {
                 _watcher.EnableRaisingEvents = false;
-                _storeWriter.Save(this, _filePath);
+                using (var fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Write, FileShare.Read))
+                using (var streamWriter = new StreamWriter(fileStream, System.Text.UTF8Encoding.UTF8))
+                {
+                    _storeWriter.Save(this, streamWriter);
+                }
+
                 _watcher.EnableRaisingEvents = true;
             }
             else
@@ -317,7 +331,12 @@ namespace RomanticWeb.DotNetRDF
 
             if (path.StartsWith("/"))
             {
+#if NETSTANDARD16
+                //// TODO: Make a proper extension method for primary assembly path.
+                path = Path.Combine(Assembly.GetEntryAssembly().CodeBase, path.Substring(1));
+#else
                 path = Path.Combine(AppDomain.CurrentDomain.GetPrimaryAssemblyPath(), path.Substring(1));
+#endif
             }
 
             return path;

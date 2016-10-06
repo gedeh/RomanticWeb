@@ -100,7 +100,7 @@ namespace RomanticWeb.Tests.IntegrationTests.LinkedData
             response.Setup(instance => instance.GetResponseStream()).Returns(stream);
             response.SetupGet(instance => instance.ContentType).Returns("text/turtle");
             var result = new Mock<WebRequest>(MockBehavior.Strict);
-            result.Setup(instance => instance.GetResponse()).Returns(response.Object);
+            result.Setup(instance => instance.GetResponseAsync()).ReturnsAsync(response.Object);
             return result.Object;
         }
     }

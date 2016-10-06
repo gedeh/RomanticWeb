@@ -525,6 +525,20 @@ namespace RomanticWeb.Linq.Sparql
                 _commandText.AppendLine();
             }
         }
+
+        /// <summary>Visits a graph of a strong entity accessor.</summary>
+        /// <param name="entityAccessor">Target strong entity accessor.</param>
+        protected virtual void VisitStrongEntityAccessorGraph(StrongEntityAccessor entityAccessor)
+        {
+            if (entityAccessor.UnboundGraphName != null)
+            {
+                return;
+            }
+
+            _commandText.Append(_indentation);
+            _commandText.AppendFormat("GRAPH <{0}> {{ ?G{1} <{2}> ?{1} . }} ", MetaGraphUri, entityAccessor.About.Name, Foaf.primaryTopic);
+            _commandText.AppendLine();
+        }
         #endregion
 
         #region Private methods
@@ -532,12 +546,7 @@ namespace RomanticWeb.Linq.Sparql
         {
             int startIndex = _commandText.Length;
             _currentEntityAccessor.Push(entityAccessor);
-            if (entityAccessor.UnboundGraphName == null)
-            {
-                _commandText.Append(_indentation);
-                _commandText.AppendFormat("GRAPH <{0}> {{ ?G{1} <{2}> ?{1} . }} ", MetaGraphUri, entityAccessor.About.Name, Foaf.primaryTopic);
-                _commandText.AppendLine();
-            }
+            VisitStrongEntityAccessorGraph(entityAccessor);
 
             _commandText.Append(_indentation);
             _commandText.AppendFormat("GRAPH ?G{0} {{ ", entityAccessor.About.Name);
@@ -836,16 +845,16 @@ namespace RomanticWeb.Linq.Sparql
             {
                 if ((expression.UnboundGraphName != null) && (expression.UnboundGraphName != expression.About))
                 {
-                    _metaGraphVariableName = (_metaGraphVariableName == null ? "graph" : _metaGraphVariableName);
-                    _entityVariableName = (_entityVariableName == null ? expression.About.Name : _entityVariableName);
-                    _ownerVariableName = (_ownerVariableName == null ? expression.About.Name : _ownerVariableName);
+                    _metaGraphVariableName = (_metaGraphVariableName ?? "graph");
+                    _entityVariableName = (_entityVariableName ?? expression.About.Name);
+                    _ownerVariableName = (_ownerVariableName ?? expression.About.Name);
                     _commandText.AppendFormat("IF(BOUND(?G{0}),?G{0},?G{1}) AS ?{2} ", expression.About.Name, expression.UnboundGraphName.Name, _metaGraphVariableName);
                 }
                 else
                 {
-                    _entityVariableName = (_entityVariableName == null ? expression.About.Name : _entityVariableName);
-                    _metaGraphVariableName = (_metaGraphVariableName == null ? String.Format("G{0}", _entityVariableName) : _metaGraphVariableName);
-                    _ownerVariableName = (_ownerVariableName == null ? expression.About.Name : _ownerVariableName);
+                    _entityVariableName = (_entityVariableName ?? expression.About.Name);
+                    _metaGraphVariableName = (_metaGraphVariableName ?? String.Format("G{0}", _entityVariableName));
+                    _ownerVariableName = (_ownerVariableName ?? expression.About.Name);
                     _commandText.AppendFormat("?{0} ?{1} ", _metaGraphVariableName, _entityVariableName);
                 }
             }

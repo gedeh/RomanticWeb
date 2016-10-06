@@ -3,6 +3,57 @@
   "version": 1,
   "targets": {
     ".NETFramework,Version=v4.5": {
+      "dotNetRDF/1.0.3": {
+        "dependencies": {
+          "HtmlAgilityPack": "1.4.6",
+          "Newtonsoft.Json": "5.0.8",
+          "VDS.Common": "[1.2.0]"
+        },
+        "compile": {
+          "lib/net40/dotNetRDF.dll": {}
+        },
+        "runtime": {
+          "lib/net40/dotNetRDF.dll": {}
+        }
+      },
+      "dotNetRDF.Data.Virtuoso/1.0.3": {
+        "dependencies": {
+          "OpenLink.Data.Virtuoso": "6.2.3128.1",
+          "dotNetRDF": "1.0.3"
+        },
+        "compile": {
+          "lib/net40/OpenLink.Data.Virtuoso.dll": {},
+          "lib/net40/dotNetRDF.Data.Virtuoso.dll": {}
+        },
+        "runtime": {
+          "lib/net40/OpenLink.Data.Virtuoso.dll": {},
+          "lib/net40/dotNetRDF.Data.Virtuoso.dll": {}
+        }
+      },
+      "HtmlAgilityPack/1.4.9": {
+        "compile": {
+          "lib/Net45/HtmlAgilityPack.dll": {}
+        },
+        "runtime": {
+          "lib/Net45/HtmlAgilityPack.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "OpenLink.Data.Virtuoso/7.20.3214.1": {
+        "compile": {
+          "lib/net40/virtado4.dll": {}
+        },
+        "runtime": {
+          "lib/net40/virtado4.dll": {}
+        }
+      },
       "Remotion.Linq/2.1.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -142,10 +193,69 @@
         },
         "runtime": {
           "lib/net45/_._": {}
+        }
+      },
+      "VDS.Common/1.2.0": {
+        "compile": {
+          "lib/net40-client/VDS.Common.dll": {}
+        },
+        "runtime": {
+          "lib/net40-client/VDS.Common.dll": {}
         }
       }
     },
     ".NETFramework,Version=v4.5/win": {
+      "dotNetRDF/1.0.3": {
+        "dependencies": {
+          "HtmlAgilityPack": "1.4.6",
+          "Newtonsoft.Json": "5.0.8",
+          "VDS.Common": "[1.2.0]"
+        },
+        "compile": {
+          "lib/net40/dotNetRDF.dll": {}
+        },
+        "runtime": {
+          "lib/net40/dotNetRDF.dll": {}
+        }
+      },
+      "dotNetRDF.Data.Virtuoso/1.0.3": {
+        "dependencies": {
+          "OpenLink.Data.Virtuoso": "6.2.3128.1",
+          "dotNetRDF": "1.0.3"
+        },
+        "compile": {
+          "lib/net40/OpenLink.Data.Virtuoso.dll": {},
+          "lib/net40/dotNetRDF.Data.Virtuoso.dll": {}
+        },
+        "runtime": {
+          "lib/net40/OpenLink.Data.Virtuoso.dll": {},
+          "lib/net40/dotNetRDF.Data.Virtuoso.dll": {}
+        }
+      },
+      "HtmlAgilityPack/1.4.9": {
+        "compile": {
+          "lib/Net45/HtmlAgilityPack.dll": {}
+        },
+        "runtime": {
+          "lib/Net45/HtmlAgilityPack.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "OpenLink.Data.Virtuoso/7.20.3214.1": {
+        "compile": {
+          "lib/net40/virtado4.dll": {}
+        },
+        "runtime": {
+          "lib/net40/virtado4.dll": {}
+        }
+      },
       "Remotion.Linq/2.1.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -285,11 +395,142 @@
         },
         "runtime": {
           "lib/net45/_._": {}
+        }
+      },
+      "VDS.Common/1.2.0": {
+        "compile": {
+          "lib/net40-client/VDS.Common.dll": {}
+        },
+        "runtime": {
+          "lib/net40-client/VDS.Common.dll": {}
         }
       }
     }
   },
   "libraries": {
+    "dotNetRDF/1.0.3": {
+      "sha512": "HKgsPab3FkS3qYRUfy8dC0XZqtxWtdKY3wOb0DmP+zF2X9SWbA0ePxRId7YLbXwNxa8KHU7lL9Fdy12PqqNT5A==",
+      "type": "package",
+      "path": "dotNetRDF/1.0.3",
+      "files": [
+        "dotNetRDF.1.0.3.nupkg.sha512",
+        "dotNetRDF.nuspec",
+        "lib/net35-client/dotNetRDF.dll",
+        "lib/net35-client/dotNetRDF.xml",
+        "lib/net35/dotNetRDF.dll",
+        "lib/net35/dotNetRDF.xml",
+        "lib/net40-client/dotNetRDF.dll",
+        "lib/net40-client/dotNetRDF.xml",
+        "lib/net40/dotNetRDF.dll",
+        "lib/net40/dotNetRDF.xml",
+        "lib/portable-win+net40+sl4+wp/Portable.Runtime.dll",
+        "lib/portable-win+net40+sl4+wp/dotNetRDF.dll",
+        "lib/portable-win+net40+sl4+wp/dotNetRDF.xml",
+        "lib/portable-windows8+net45/Portable.Runtime.dll",
+        "lib/portable-windows8+net45/dotNetRDF.dll",
+        "lib/portable-windows8+net45/dotNetRDF.xml",
+        "lib/sl4-wp/dotNetRDF.dll",
+        "lib/sl4-wp/dotNetRDF.xml",
+        "lib/sl4/dotNetRDF.dll",
+        "lib/sl4/dotNetRDF.xml",
+        "readme.txt"
+      ]
+    },
+    "dotNetRDF.Data.Virtuoso/1.0.3": {
+      "sha512": "ZFriXFfeKe/wpvPAYRVqQ1KTa31TjvHIjIotW1SkG5+q6av/DsBD6Qdtqhc1OC+ZR1xulqfkNXvHKrvzqNZ61w==",
+      "type": "package",
+      "path": "dotNetRDF.Data.Virtuoso/1.0.3",
+      "files": [
+        "dotNetRDF.Data.Virtuoso.1.0.3.nupkg.sha512",
+        "dotNetRDF.Data.Virtuoso.nuspec",
+        "lib/net35-client/OpenLink.Data.Virtuoso.dll",
+        "lib/net35-client/dotNetRDF.Data.Virtuoso.dll",
+        "lib/net35-client/dotNetRDF.Data.Virtuoso.xml",
+        "lib/net35/OpenLink.Data.Virtuoso.dll",
+        "lib/net35/dotNetRDF.Data.Virtuoso.dll",
+        "lib/net35/dotNetRDF.Data.Virtuoso.xml",
+        "lib/net40-client/OpenLink.Data.Virtuoso.dll",
+        "lib/net40-client/dotNetRDF.Data.Virtuoso.dll",
+        "lib/net40-client/dotNetRDF.Data.Virtuoso.xml",
+        "lib/net40/OpenLink.Data.Virtuoso.dll",
+        "lib/net40/dotNetRDF.Data.Virtuoso.dll",
+        "lib/net40/dotNetRDF.Data.Virtuoso.xml"
+      ]
+    },
+    "HtmlAgilityPack/1.4.9": {
+      "sha512": "anZIsi7bbHZ35ZZzvCA+gVWC/mEXVhcJjJvxr3wzUEDsOE4uk0Fa0ZiaxVn83AZpVKVO4RHyqamPkzzJbMUgmQ==",
+      "type": "package",
+      "path": "HtmlAgilityPack/1.4.9",
+      "files": [
+        "HAPIcon.png",
+        "HtmlAgilityPack.1.4.9.nupkg.sha512",
+        "HtmlAgilityPack.nuspec",
+        "lib/Net20/HtmlAgilityPack.dll",
+        "lib/Net20/HtmlAgilityPack.pdb",
+        "lib/Net20/HtmlAgilityPack.xml",
+        "lib/Net40-client/HtmlAgilityPack.dll",
+        "lib/Net40-client/HtmlAgilityPack.pdb",
+        "lib/Net40-client/HtmlAgilityPack.xml",
+        "lib/Net40/HtmlAgilityPack.XML",
+        "lib/Net40/HtmlAgilityPack.dll",
+        "lib/Net40/HtmlAgilityPack.pdb",
+        "lib/Net45/HtmlAgilityPack.XML",
+        "lib/Net45/HtmlAgilityPack.dll",
+        "lib/Net45/HtmlAgilityPack.pdb",
+        "lib/NetCore45/HtmlAgilityPack.dll",
+        "lib/NetCore45/HtmlAgilityPack.pdb",
+        "lib/NetCore45/HtmlAgilityPack.pri",
+        "lib/NetCore45/HtmlAgilityPack.xml",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.dll",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.pdb",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.pdb",
+        "lib/sl3-wp/_._",
+        "lib/sl4/HtmlAgilityPack.XML",
+        "lib/sl4/HtmlAgilityPack.dll",
+        "lib/sl4/HtmlAgilityPack.pdb",
+        "lib/sl5/HtmlAgilityPack.XML",
+        "lib/sl5/HtmlAgilityPack.dll",
+        "lib/sl5/HtmlAgilityPack.pdb",
+        "readme.txt"
+      ]
+    },
+    "Newtonsoft.Json/9.0.1": {
+      "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
+      "type": "package",
+      "path": "Newtonsoft.Json/9.0.1",
+      "files": [
+        "Newtonsoft.Json.9.0.1.nupkg.sha512",
+        "Newtonsoft.Json.nuspec",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "tools/install.ps1"
+      ]
+    },
+    "OpenLink.Data.Virtuoso/7.20.3214.1": {
+      "sha512": "6986sC/C8W1exxZaI+3F0kUCGkz8dD95Stwf/g1QzoXHkyzNhs66lEj0slxcTD/99ju0lqLSxiL5HeEPi2NNJA==",
+      "type": "package",
+      "path": "OpenLink.Data.Virtuoso/7.20.3214.1",
+      "files": [
+        "OpenLink.Data.Virtuoso.7.20.3214.1.nupkg.sha512",
+        "OpenLink.Data.Virtuoso.nuspec",
+        "lib/net20/virtado2.dll",
+        "lib/net35/virtado3.dll",
+        "lib/net40/virtado4.dll"
+      ]
+    },
     "Remotion.Linq/2.1.1": {
       "sha512": "IJn0BqkvwEDpP+2qjvci7n4/a9f7DhKESLWb2/uG4xQh3rTkGTBUz69bI4IivCoKkTFAqjXxYDZw2K/npohjsw==",
       "type": "package",
@@ -1117,12 +1358,44 @@
         "ref/xamarinwatchos10/_._",
         "runtimes/aot/lib/netcore50/System.Threading.dll"
       ]
+    },
+    "VDS.Common/1.2.0": {
+      "sha512": "RYq9JYXxYaY2znFgx2OYxc6KoqndG4/ffC28W7T3mD7l36f/gerofD1yY4YLWZHvJv6KFbkK1epeIPeO/KlyOw==",
+      "type": "package",
+      "path": "VDS.Common/1.2.0",
+      "files": [
+        "VDS.Common.1.2.0.nupkg.sha512",
+        "VDS.Common.nuspec",
+        "lib/net35-client/VDS.Common.dll",
+        "lib/net35-client/VDS.Common.pdb",
+        "lib/net35-client/VDS.Common.xml",
+        "lib/net40-client/VDS.Common.dll",
+        "lib/net40-client/VDS.Common.pdb",
+        "lib/net40-client/VDS.Common.xml",
+        "lib/portable-win+net40+sl40+wp/VDS.Common.dll",
+        "lib/portable-win+net40+sl40+wp/VDS.Common.pdb",
+        "lib/portable-win+net40+sl40+wp/VDS.Common.xml",
+        "lib/portable-windows8+net45/VDS.Common.dll",
+        "lib/portable-windows8+net45/VDS.Common.pdb",
+        "lib/portable-windows8+net45/VDS.Common.xml",
+        "lib/sl4-wp/VDS.Common.dll",
+        "lib/sl4-wp/VDS.Common.pdb",
+        "lib/sl4-wp/VDS.Common.xml",
+        "lib/sl4/VDS.Common.dll",
+        "lib/sl4/VDS.Common.pdb",
+        "lib/sl4/VDS.Common.xml"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "": [
-      "Remotion.Linq >= 2.1.1",
-      "StyleCop.MSBuild >= 4.7.54"
+      "HtmlAgilityPack >= 1.4.9",
+      "Newtonsoft.Json >= 9.0.1",
+      "OpenLink.Data.Virtuoso >= 7.20.3214.1",
+      "StyleCop.MSBuild >= 4.7.54",
+      "VDS.Common >= 1.2.0",
+      "dotNetRDF >= 1.0.3",
+      "dotNetRDF.Data.Virtuoso >= 1.0.3"
     ],
     ".NETFramework,Version=v4.5": []
   }

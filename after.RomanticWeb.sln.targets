@@ -15,29 +15,7 @@
   </Target>
 
   <Target Name="GitHubLink" AfterTargets="Build">
-    <Exec Command='"$(MSBuildProjectDirectory)\Tools\GitHubLink.exe" "$(MSBuildProjectDirectory)" -u https://github.com/MakoLab/RomanticWeb'
+    <Exec Command='"$(MSBuildProjectDirectory)\Tools\GitHubLink.exe" "$(MSBuildProjectDirectory)" -u https://github.com/alien-mcl/RomanticWeb'
           ContinueOnError="true" IgnoreExitCode="true"></Exec>
-  </Target>
-
-  <Target Name="PepitaPackage" AfterTargets="GitHubLink">
-    <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
-             Targets="CopyNugetBinaries;PepitaPackage"
-             Properties="AssemblyName=RomanticWeb.Contracts" />
-
-    <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
-             Targets="CopyNugetBinaries;PepitaPackage"
-             Properties="AssemblyName=RomanticWeb" />
-
-    <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
-             Targets="CopyNugetBinaries;PepitaPackage"
-             Properties="AssemblyName=RomanticWeb.dotNetRDF" />
-
-    <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
-             Targets="CopyNugetBinaries;PepitaPackage"
-             Properties="AssemblyName=RomanticWeb.JsonLd" />
-
-    <MSBuild Projects="$(MSBuildProjectDirectory)\NuGetBuild\NugetBuild.targets"
-             Targets="CopyNugetBinaries;PepitaPackage"
-             Properties="AssemblyName=RomanticWeb.Fody;DestinationFolder=." />
   </Target>
 </Project>

@@ -51,7 +51,11 @@ namespace RomanticWeb
 #if NETSTANDARD16
                 _container.RegisterAssembly(AssemblyLoadContext.Default.LoadFromAssemblyPath(fluentLibrary));
 #else
-                _container.RegisterAssembly(Assembly.LoadFile(fluentLibrary));
+                var fluentLibraryUrl = new Uri(fluentLibrary);
+                var fluentAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(
+                    loadedAssembly => (!loadedAssembly.IsDynamic) && (StringComparer.CurrentCultureIgnoreCase.Equals(loadedAssembly.EscapedCodeBase, fluentLibraryUrl.AbsoluteUri))) ??
+                    Assembly.LoadFile(fluentLibrary);
+                _container.RegisterAssembly(fluentAssembly);
 #endif
             }
 

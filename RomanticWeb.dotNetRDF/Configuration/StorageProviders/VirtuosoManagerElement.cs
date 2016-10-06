@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD16
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using VDS.RDF.Storage;
@@ -16,13 +17,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         private const string PasswordAttributeName = "password";
         private const string TimeoutAttributeName = "timeout";
 
-        protected override Type ProviderType
-        {
-            get
-            {
-                return typeof(VirtuosoManager);
-            }
-        }
+        protected override Type ProviderType { get { return typeof(VirtuosoManager); } }
 
         protected override IEnumerable<string> ValidAttributes
         {
@@ -51,3 +46,4 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         }
     }
 }
+#endif

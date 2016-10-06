@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using RomanticWeb.Vocabularies;
 using VDS.RDF;
+using VDS.RDF.Parsing.Handlers;
 
 namespace RomanticWeb.DotNetRDF
 {
@@ -53,7 +55,19 @@ namespace RomanticWeb.DotNetRDF
                 store.ExpandGraphs((TripleStore)targetStore, metaGraphUri);
             }
         }
-
+#if NETSTANDARD16
+        /// <summary>Loads data from file with optional automated graph generation.</summary>
+        /// <param name="store">Target store to be loaded with data.</param>
+        /// <param name="file">Source file with data.</param>
+        public static void LoadFromFile(this ITripleStore store, string file)
+        {
+            var rdfHandler = new StoreHandler(store);
+            using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                VDS.RDF.Parsing.StreamLoader.Load(rdfHandler, file, fileStream);
+            }
+        }
+#endif
         /// <summary>Loads data from file with optional automated graph generation.</summary>
         /// <param name="store">Target store to be loaded with data.</param>
         /// <param name="file">Source file with data.</param>
@@ -101,7 +115,7 @@ namespace RomanticWeb.DotNetRDF
             INode result = blankNode;
             do
             {
-                Triple triple = store.Triples.Where(item => item.Object.Equals(result)).FirstOrDefault();
+                Triple triple = store.Triples.FirstOrDefault(item => item.Object.Equals(result));
                 if (triple != null)
                 {
                     result = triple.Subject;
@@ -156,11 +170,11 @@ namespace RomanticWeb.DotNetRDF
 
         private static IGraph GetGraph(this ITripleStore store, Uri metaGraphUri, Uri graphBaseUri)
         {
-            IGraph graph = store.Graphs.Where(item => item.BaseUri.AbsoluteUri == graphBaseUri.AbsoluteUri).FirstOrDefault();
+            IGraph graph = store.Graphs.FirstOrDefault(item => item.BaseUri.AbsoluteUri == graphBaseUri.AbsoluteUri);
             if (graph == null)
             {
                 graph = store.AddGraph(graphBaseUri);
-                IGraph metaGraph = store.Graphs.Where(item => item.BaseUri.AbsoluteUri == metaGraphUri.AbsoluteUri).FirstOrDefault();
+                IGraph metaGraph = store.Graphs.FirstOrDefault(item => item.BaseUri.AbsoluteUri == metaGraphUri.AbsoluteUri);
                 if (metaGraph == null)
                 {
                     metaGraph = store.AddGraph(metaGraphUri);

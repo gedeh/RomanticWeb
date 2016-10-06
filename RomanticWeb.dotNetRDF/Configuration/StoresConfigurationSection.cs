@@ -1,38 +1,75 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
+#if NETSTANDARD16
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+#else
+using RomanticWeb.Configuration;
+#endif
 using VDS.RDF;
 using VDS.RDF.Configuration;
 
 namespace RomanticWeb.DotNetRDF.Configuration
 {
-    /// <summary>
-    /// Configuration section for triple stores
-    /// </summary>
-    public class StoresConfigurationSection : ConfigurationSection
+    /// <summary>Configuration section for triple stores.</summary>
+    public class StoresConfigurationSection
+#if !NETSTANDARD16
+        : ConfigurationSection
+#endif
     {
+#if NETSTANDARD16
+        private static readonly IConfigurationRoot Configuration;
+
+        static StoresConfigurationSection()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            try
+            {
+                if (File.Exists("appsettings.json"))
+                {
+                    configurationBuilder.AddJsonFile("appsettings.json");
+                }
+            }
+            catch
+            {
+            }
+
+            Configuration = configurationBuilder.Build();
+        }
+#else
         private const string StoresCollectionElementName = "stores";
         private const string ConfigurationFilesElementName = "dnrConfigurationFiles";
+#endif
 
-        /// <summary>
-        /// Gets the configuration from default configutarion section.
-        /// </summary>
+        /// <summary>Gets the configuration from default configutarion section.</summary>
         public static StoresConfigurationSection Default
         {
             get
             {
+#if NETSTANDARD16
+                var section = Configuration.GetSection("romanticWeb.dotNetRDF");
+                var configurationBinder = new ConfigureFromConfigurationOptions<StoresConfigurationSection>(section);
+                var result = new StoresConfigurationSection();
+                configurationBinder.Configure(result);
+                (result.Stores = new StoresCollection(result)).Initialize(section);
+                return result;
+#else
                 return (StoresConfigurationSection)ConfigurationManager.GetSection("romanticWeb.dotNetRDF")
                        ?? new StoresConfigurationSection();
+#endif
             }
         }
 
-        /// <summary>
-        /// Gets or sets the stores.
-        /// </summary>
+        /// <summary>Gets or sets the stores.</summary>
         public StoresCollection Stores { get; set; }
 
-        /// <summary>
-        /// Gets or sets the configuration files.
-        /// </summary>
+        /// <summary>Gets or sets the configuration files.</summary>
+#if NETSTANDARD16
+        public IEnumerable<ConfigurationFileElement> ConfigurationFiles { get; set; }
+#else
         [ConfigurationProperty(ConfigurationFilesElementName)]
         [ConfigurationCollection(typeof(ConfigurationFilesCollection))]
         public ConfigurationFilesCollection ConfigurationFiles
@@ -40,10 +77,9 @@ namespace RomanticWeb.DotNetRDF.Configuration
             get { return (ConfigurationFilesCollection)this[ConfigurationFilesElementName]; }
             set { this[ConfigurationFilesElementName] = value; }
         }
+#endif
 
-        /// <summary>
-        /// Creates a store defined in configuration.
-        /// </summary>
+        /// <summary>Creates a store defined in configuration.</summary>
         public ITripleStore CreateStore(string name)
         {
             return Stores.Single(store => store.Name == name).CreateTripleStore();
@@ -55,15 +91,18 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
             if (configurationFile != null)
             {
+#if NETSTANDARD16
+                return new ConfigurationLoader(new Uri(configurationFile.Path), configurationFile.AutoConfigure);
+#else
                 return new ConfigurationLoader(configurationFile.Path, configurationFile.AutoConfigure);
+#endif
             }
 
             throw new ConfigurationErrorsException(string.Format("Configuration '{0}' wasn't found", name));
         }
 
-        /// <summary>
-        /// Tries to deserialize stores collection
-        /// </summary>
+#if !NETSTANDARD16
+        /// <summary>Tries to deserialize stores collection</summary>
         protected override bool OnDeserializeUnrecognizedElement(string elementName, System.Xml.XmlReader reader)
         {
             if (elementName == StoresCollectionElementName)
@@ -76,5 +115,6 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
             return base.OnDeserializeUnrecognizedElement(elementName, reader);
         }
+#endif
     }
 }

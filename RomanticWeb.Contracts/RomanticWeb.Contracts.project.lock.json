@@ -3,35 +3,17 @@
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.5": {
-      "PepitaPackage/1.21.4": {
-        "type": "package"
-      },
       "StyleCop.MSBuild/4.7.54": {
         "type": "package"
       }
     },
     ".NETFramework,Version=v4.5/win": {
-      "PepitaPackage/1.21.4": {
-        "type": "package"
-      },
       "StyleCop.MSBuild/4.7.54": {
         "type": "package"
       }
     }
   },
   "libraries": {
-    "PepitaPackage/1.21.4": {
-      "sha512": "4z8/xSuLau9m0ROa4MfXEpvrkGzJbQheO4qgTJwIp187MAxdrGUKvELBCG+SYGE8VDT1v+auRDvdXm2UrT/OrA==",
-      "type": "package",
-      "path": "PepitaPackage/1.21.4",
-      "files": [
-        "PepitaPackage.1.21.4.nupkg.sha512",
-        "PepitaPackage.dll",
-        "PepitaPackage.nuspec",
-        "PepitaPackage.pdb",
-        "build/PepitaPackage.targets"
-      ]
-    },
     "StyleCop.MSBuild/4.7.54": {
       "sha512": "HgkoF6gttzIu6bWCbME6LL/HfkLusQWM9W/0tUD78WpY8G2b1uu0666N7/RVdiyt7uSGGKnH7OBoGgS6svyGMw==",
       "type": "package",
@@ -63,7 +45,6 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "PepitaPackage >= 1.21.4",
       "StyleCop.MSBuild >= 4.7.54"
     ],
     ".NETFramework,Version=v4.5": []

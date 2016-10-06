@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+#if !NETSTANDARD16
 using System.Configuration;
 using System.Linq;
+#endif
 
 namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
 {
     internal class CustomProviderElement : StorageProviderElement
     {
+#if NETSTANDARD16
+        public string TypeName { get; set; }
+
+        public IDictionary<string, string> ConstructorParametersElement { get; set; }
+#else
         private const string TypeAttributeName = "type";
         private const string ConstructorParametersElementName = "parameters";
 
@@ -24,22 +31,19 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
             get { return (KeyValueConfigurationCollection)this[ConstructorParametersElementName]; }
             set { this[ConstructorParametersElementName] = value; }
         }
-
+#endif
         protected override IDictionary<string, string> ConstructorParameters
         {
             get
             {
-                return (from KeyValueConfigurationElement element in ConstructorParametersElement
-                        select element).ToDictionary(e => e.Key, e => e.Value);
+#if NETSTANDARD16
+                return ConstructorParametersElement;
+#else
+                return (from KeyValueConfigurationElement element in ConstructorParametersElement select element).ToDictionary(e => e.Key, e => e.Value);
+#endif
             }
         }
 
-        protected override Type ProviderType
-        {
-            get
-            {
-                return Type.GetType(TypeName);
-            }
-        }
+        protected override Type ProviderType { get { return Type.GetType(TypeName); } }
     }
 }

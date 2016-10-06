@@ -1,19 +1,36 @@
-﻿using System.Configuration;
+﻿#if !NETSTANDARD16
+using System.Configuration;
+#endif
 
 namespace RomanticWeb.DotNetRDF.Configuration
 {
-    /// <summary>
-    /// Configuration for a dotNetRDF configuration file
-    /// </summary>
+    /// <summary>Configuration for a dotNetRDF configuration file.</summary>
+#if NETSTANDARD16
+    public class ConfigurationFileElement
+    {
+        /// <summary>Initializes a new instance of the <see cref="ConfigurationFileElement" /> class.</summary>
+        public ConfigurationFileElement()
+        {
+            AutoConfigure = true;
+        }
+
+        /// <summary>Gets or sets the name.</summary>
+        public string Name { get; set; }
+
+        /// <summary>Gets or sets the path.</summary>
+        public string Path { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether configuration should automatically configured.</summary>
+        public bool AutoConfigure { get; set; }
+    }
+#else
     public class ConfigurationFileElement : ConfigurationElement
     {
         private const string NameAttributeName = "name";
         private const string PathAttributeName = "path";
         private const string AutoConfigureAttributeName = "autoConfigure";
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
+        /// <summary>Gets or sets the name.</summary>
         [ConfigurationProperty(NameAttributeName)]
         public string Name
         {
@@ -21,9 +38,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
             set { this[NameAttributeName] = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the path.
-        /// </summary>
+        /// <summary>Gets or sets the path.</summary>
         [ConfigurationProperty(PathAttributeName)]
         public string Path
         {
@@ -31,9 +46,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
             set { this[PathAttributeName] = value; }
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether configuration should automatically configured.
-        /// </summary>
+        /// <summary>Gets or sets a value indicating whether configuration should automatically configured.</summary>
         [ConfigurationProperty(AutoConfigureAttributeName, DefaultValue = true)]
         public bool AutoConfigure
         {
@@ -41,4 +54,5 @@ namespace RomanticWeb.DotNetRDF.Configuration
             set { this[AutoConfigureAttributeName] = value; }
         }
     }
+#endif
 }

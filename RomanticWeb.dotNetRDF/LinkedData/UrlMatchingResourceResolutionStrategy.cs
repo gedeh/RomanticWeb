@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Security.AccessControl;
-using System.Text;
 using System.Threading.Tasks;
 using RomanticWeb.DotNetRDF;
 using RomanticWeb.Entities;
 using RomanticWeb.Mapping;
-using RomanticWeb.Mapping.Model;
-using RomanticWeb.Mapping.Visitors;
 using RomanticWeb.NamedGraphs;
 using RomanticWeb.Ontologies;
 using RomanticWeb.Vocabularies;
 using VDS.RDF;
 using VDS.RDF.Parsing;
-using VDS.RDF.Writing;
 
 namespace RomanticWeb.LinkedData
 {
@@ -84,7 +78,7 @@ namespace RomanticWeb.LinkedData
                 return _entityContext.Value.Load<IEntity>(id);
             }
 
-            Uri dereferencableUri = new Uri(id.Uri.GetLeftPart(UriPartial.Query));
+            Uri dereferencableUri = id.Uri.GetUriWithoutQuery();
             var graphUri = _namedGraphSelector.SelectGraph(id, null, null);
             var graph = _tripleStore.Graphs.FirstOrDefault(item => AbsoluteUriComparer.Default.Equals(item.BaseUri, graphUri));
             if (graph == null)
@@ -107,9 +101,13 @@ namespace RomanticWeb.LinkedData
         private static WebRequest CreateRequest(Uri uri)
         {
             var result = WebRequest.CreateHttp(uri);
-            result.Method = WebRequestMethods.Http.Get;
+            result.Method = "GET";
             result.Accept = Accept;
+#if NETSTANDARD16
+            result.Headers[HttpRequestHeader.UserAgent] = "RomanticWeb";
+#else
             result.UserAgent = "RomanticWeb";
+#endif
             return result;
         }
 
@@ -150,7 +148,7 @@ namespace RomanticWeb.LinkedData
         private IGraph ObtainResourceData(Uri uri)
         {
             var request = _webRequestFactory(uri);
-            var response = request.GetResponse();
+            var response = Task.Run(async () => await request.GetResponseAsync()).Result;
             using (var stream = response.GetResponseStream())
             {
                 var result = new Graph() { BaseUri = uri };

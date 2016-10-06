@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using RomanticWeb.Entities;
 using RomanticWeb.Model;
 using RomanticWeb.Updates;
@@ -18,19 +19,19 @@ namespace RomanticWeb.DotNetRDF
     internal class DefaultSparqlCommandFactory : ISparqlCommandFactory
     {
         private static readonly string ModifyEntityCommandText =
-            new StreamReader(typeof(DefaultSparqlCommandFactory).Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.ModifyEntityGraph.ru")).ReadToEnd();
+            new StreamReader(typeof(DefaultSparqlCommandFactory).GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.ModifyEntityGraph.ru")).ReadToEnd();
 
         private static readonly string InsterBlankEntityCommandText = 
-            new StreamReader(typeof(DefaultSparqlCommandFactory).Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.InsertBlankEntityData.ru")).ReadToEnd();
+            new StreamReader(typeof(DefaultSparqlCommandFactory).GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.InsertBlankEntityData.ru")).ReadToEnd();
 
         private static readonly string ReconstructCommandText = 
-            new StreamReader(typeof(DefaultSparqlCommandFactory).Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.ReconstructGraph.ru")).ReadToEnd();
+            new StreamReader(typeof(DefaultSparqlCommandFactory).GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.ReconstructGraph.ru")).ReadToEnd();
 
         private static readonly string RemoveReferencesCommandText = 
-            new StreamReader(typeof(DefaultSparqlCommandFactory).Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.RemoveReferences.ru")).ReadToEnd();
+            new StreamReader(typeof(DefaultSparqlCommandFactory).GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.RemoveReferences.ru")).ReadToEnd();
 
         private static readonly string DeleteEntityCommandText = 
-            new StreamReader(typeof(DefaultSparqlCommandFactory).Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.DeleteEntity.ru")).ReadToEnd();
+            new StreamReader(typeof(DefaultSparqlCommandFactory).GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.DotNetRDF.Queries.DeleteEntity.ru")).ReadToEnd();
 
         private readonly Dictionary<Type, Func<dynamic, IEnumerable<SparqlUpdateCommand>>> _commandFactories;
         private readonly Uri _metaGraphUri;

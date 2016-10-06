@@ -3,7 +3,6 @@
   "version": 1,
   "targets": {
     ".NETFramework,Version=v4.5": {
-      "LightInject.Source/4.0.11": {},
       "PepitaPackage/1.21.4": {},
       "Remotion.Linq/2.1.1": {
         "dependencies": {
@@ -148,7 +147,6 @@
       }
     },
     ".NETFramework,Version=v4.5/win": {
-      "LightInject.Source/4.0.11": {},
       "PepitaPackage/1.21.4": {},
       "Remotion.Linq/2.1.1": {
         "dependencies": {
@@ -294,23 +292,6 @@
     }
   },
   "libraries": {
-    "LightInject.Source/4.0.11": {
-      "sha512": "HJlU77lrpURLnkXEtc2T6I4B8KFXBBzjNfRBlYxegvsv4Y8VYXU2BU3rOR79WCu9vcM2LTKL/QPUYWgR5udYDw==",
-      "type": "package",
-      "path": "LightInject.Source/4.0.11",
-      "files": [
-        "LightInject.Source.4.0.11.nupkg.sha512",
-        "LightInject.Source.nuspec",
-        "content/Xamarin.iOS/LightInject/LightInject.cs.pp",
-        "content/monoandroid/LightInject/LightInject.cs.pp",
-        "content/monotouch/LightInject/LightInject.cs.pp",
-        "content/net45/LightInject/LightInject.cs.pp",
-        "content/net46/LightInject/LightInject.cs.pp",
-        "content/netstandard1.1/LightInject/LightInject.cs.pp",
-        "content/netstandard1.3/LightInject/LightInject.cs.pp",
-        "content/portable-net45+netcore45+wpa81/LightInject/LightInject.cs.pp"
-      ]
-    },
     "PepitaPackage/1.21.4": {
       "sha512": "4z8/xSuLau9m0ROa4MfXEpvrkGzJbQheO4qgTJwIp187MAxdrGUKvELBCG+SYGE8VDT1v+auRDvdXm2UrT/OrA==",
       "type": "package",

@@ -6,8 +6,6 @@
     "win": {}
   },
   "dependencies": {
-    "LightInject.Source": "4.0.11",
-    "PepitaPackage": "1.21.4",
     "Remotion.Linq": "2.1.1",
     "StyleCop.MSBuild": "4.7.54"
   }

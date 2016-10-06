@@ -26,3 +26,4 @@ Tests/RomanticWeb.Tests/RomanticWeb.UnitTests.csproj
 *.srcsrv
 VersionAssemblyInfo.cs
 RomanticWeb.Profiler.sln
+.vs

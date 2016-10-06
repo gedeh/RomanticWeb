@@ -1,4 +1,5 @@
-﻿namespace System
+﻿#if !NETSTANDARD16
+namespace System
 {
     /// <summary>Contains useful extension methods for AppDomain class.</summary>
     internal static class AppDomainExtensions
@@ -24,3 +25,4 @@
         }
     }
 }
+#endif

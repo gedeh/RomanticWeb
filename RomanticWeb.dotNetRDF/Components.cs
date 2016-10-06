@@ -5,6 +5,7 @@
         public Components()
         {
             SharedComponent<ISparqlCommandFactory, DefaultSparqlCommandFactory>();
+            SharedComponent<ISparqlCommandExecutionStrategyFactory, DefaultSparqlCommandExecutionStrategyFactory>();
         }
     }
 }
