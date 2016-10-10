@@ -27,4 +27,5 @@ Tests/RomanticWeb.Tests/RomanticWeb.UnitTests.csproj
 VersionAssemblyInfo.cs
 RomanticWeb.Profiler.sln
 .vs
-.lock.json
+*.lock.json
+*.nuget.targets

@@ -1757,7 +1757,10 @@ namespace RomanticWeb.LightInject
             }
         }
 
-        private ILifetime DefaultLifetime => (ILifetime)(defaultLifetimeType != null ? Activator.CreateInstance(defaultLifetimeType) : null);
+        private ILifetime DefaultLifetime()
+        {
+            return (ILifetime)(defaultLifetimeType != null ? Activator.CreateInstance(defaultLifetimeType) : null);
+        }
 
         /// <summary>
         /// Returns <b>true</b> if the container can create the requested service, otherwise <b>false</b>.
@@ -1888,7 +1891,7 @@ namespace RomanticWeb.LightInject
         /// </remarks>
         public void RegisterAssembly(Assembly assembly, Func<Type, Type, bool> shouldRegister)
         {
-            AssemblyScanner.Scan(assembly, this, () => DefaultLifetime, shouldRegister);
+            AssemblyScanner.Scan(assembly, this, () => DefaultLifetime(), shouldRegister);
         }
 
         /// <summary>
@@ -3482,7 +3485,7 @@ namespace RomanticWeb.LightInject
                 ServiceType = serviceType,
                 ServiceName = serviceName,
                 FactoryExpression = rule.Factory,
-                Lifetime = CloneLifeTime(rule.LifeTime) ?? DefaultLifetime
+                Lifetime = CloneLifeTime(rule.LifeTime) ?? DefaultLifetime()
             };
             if (rule.LifeTime != null)
             {
@@ -3600,7 +3603,7 @@ namespace RomanticWeb.LightInject
                 ServiceType = closedGenericServiceType,
                 ImplementingType = closedGenericImplementingType,
                 ServiceName = serviceName,
-                Lifetime = CloneLifeTime(openGenericServiceRegistration.Lifetime) ?? DefaultLifetime
+                Lifetime = CloneLifeTime(openGenericServiceRegistration.Lifetime) ?? DefaultLifetime()
             };
             Register(serviceRegistration);
             return GetEmitMethod(serviceRegistration.ServiceType, serviceRegistration.ServiceName);
@@ -3677,7 +3680,7 @@ namespace RomanticWeb.LightInject
             Ensure.IsNotNull(serviceType, "type");
             Ensure.IsNotNull(implementingType, "implementingType");
             Ensure.IsNotNull(serviceName, "serviceName");
-            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ImplementingType = implementingType, ServiceName = serviceName, Lifetime = lifetime ?? DefaultLifetime };
+            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ImplementingType = implementingType, ServiceName = serviceName, Lifetime = lifetime ?? DefaultLifetime() };
             Register(serviceRegistration);
         }
 
@@ -3804,7 +3807,7 @@ namespace RomanticWeb.LightInject
                 ServiceType = typeof(TService),
                 FactoryExpression = factory,
                 ServiceName = serviceName,
-                Lifetime = lifetime ?? DefaultLifetime
+                Lifetime = lifetime ?? DefaultLifetime()
             };
             Register(serviceRegistration);
         }
