@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>RomanticWeb.Contracts</id>
+    <id>RomanticWeb.Mapping.Fluent</id>
     <version>1.0.0</version>
     <authors>alien-mcl, tpluscode</authors>
     <owners>alien-mcl, tpluscode</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <title>Romantic Web Contracts</title>
+    <title>Romantic Web Fluent Mappings</title>
     <description>ORM Class solution for RDF and SPARQL for .net.</description>
     <releaseNotes>
       * .net Framework 4.5 and .net Standard 1.6 support
@@ -18,10 +18,8 @@
     <projectUrl>http://romanticweb.net/</projectUrl>
     <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2016</copyright>
     <tags>rdf orm semanticweb semantic sparql linq</tags>
-	<dependencies>
-	  <group targetFramework="netstandard1.6">
-        <dependency id="System.ComponentModel.TypeConverter" version="4.1.0" />
-	  </group>
+    <dependencies>
+	  <dependency id="RomanticWeb" version="1.0.0" />
     </dependencies>
   </metadata>
 </package>
