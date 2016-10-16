@@ -10,7 +10,7 @@ using Microsoft.CSharp.RuntimeBinder;
 
 namespace RomanticWeb.Entities.Proxies
 {
-    internal static class DynamicExtensions
+    public static class DynamicExtensions
     {
         private const string AssemblyNameString = "RomanticWeb.Proxies";
         private static readonly AssemblyName AssemblyName = new AssemblyName(AssemblyNameString);
