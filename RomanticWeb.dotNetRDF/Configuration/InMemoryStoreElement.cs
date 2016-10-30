@@ -15,6 +15,8 @@ namespace RomanticWeb.DotNetRDF.Configuration
         /// <param name="configurationSection">Source configuration section.</param>
         public InMemoryStoreElement(IConfigurationSection configurationSection) : base(configurationSection)
         {
+            var threadSafe = configurationSection.GetValue<bool?>("threadSafe");
+            ThreadSafe = (threadSafe.HasValue && threadSafe.Value);
         }
 #else
         private const string ThreadSafeAttributeName = "threadSafe";

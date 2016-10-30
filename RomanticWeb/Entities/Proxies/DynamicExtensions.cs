@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using Microsoft.CSharp.RuntimeBinder;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace RomanticWeb.Entities.Proxies
 {
     public static class DynamicExtensions
     {
         private const string AssemblyNameString = "RomanticWeb.Proxies";
+        private static readonly object Watcher = new Object();
         private static readonly AssemblyName AssemblyName = new AssemblyName(AssemblyNameString);
 #if NETSTANDARD16
         private static readonly AssemblyBuilder AssemblyBuilder = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run);
@@ -54,7 +55,12 @@ namespace RomanticWeb.Entities.Proxies
 
             types = new[] { typeof(IEntity) }.Union(types).ToArray();
             string name = String.Format("ProxyOf_{0}_Hash", types.Aggregate(0, (current, item) => current ^ item.GetHashCode()));
-            var type = AssemblyBuilder.GetType(name) ?? CompileResultType(name, types.Union(types.SelectMany(item => item.GetTypeInfo().GetInterfaces())).ToArray());
+            Type type;
+            lock (Watcher)
+            {
+                type = AssemblyBuilder.GetType(name) ?? CompileResultType(name, types.Union(types.SelectMany(item => item.GetTypeInfo().GetInterfaces())).ToArray());
+            }
+
             var result = type.GetTypeInfo().GetConstructors().First().Invoke(new[] { instance });
             return result;
         }
@@ -69,7 +75,7 @@ namespace RomanticWeb.Entities.Proxies
             CallSite<Func<CallSite, object, object>> callSite;
             if (!GetCallSites.TryGetValue(binderHash, out callSite))
             {
-                var binder = Microsoft.CSharp.RuntimeBinder.Binder.GetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeGetArgs);
+                var binder = Binder.GetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeGetArgs);
                 GetCallSites[binderHash] = callSite = CallSite<Func<CallSite, object, object>>.Create(binder);
             }
 
@@ -87,7 +93,7 @@ namespace RomanticWeb.Entities.Proxies
             CallSite<Action<CallSite, object, object>> callSite;
             if (!SetCallSites.TryGetValue(binderHash, out callSite))
             {
-                var binder = Microsoft.CSharp.RuntimeBinder.Binder.SetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeSetArgs);
+                var binder = Binder.SetMember(CSharpBinderFlags.None, propertyName, target.GetType(), InvokeSetArgs);
                 SetCallSites[binderHash] = callSite = CallSite<Action<CallSite, object, object>>.Create(binder);
             }
 

@@ -15,6 +15,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         /// <param name="configurationSection">Source configuration section.</param>
         public FileStoreElement(IConfigurationSection configurationSection) : base(configurationSection)
         {
+            FilePath = configurationSection.GetValue<string>("filePath");
         }
 
         /// <summary>Gets or sets the dataset file path.</summary>

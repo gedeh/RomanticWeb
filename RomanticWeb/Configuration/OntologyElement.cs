@@ -10,6 +10,7 @@ namespace RomanticWeb.Configuration
     public class OntologyElement
     {
         private Uri _uri;
+
         /// <summary>Gets or sets the ontology prefix.</summary>
         public string Prefix { get; set; }
 

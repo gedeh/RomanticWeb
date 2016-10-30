@@ -10,18 +10,19 @@ namespace RomanticWeb.Dynamic
         private static readonly object Locker = new object();
         private readonly Lazy<AssemblyBuilder> _asmBuilder;
         private readonly Guid _assemblyGuid = Guid.NewGuid();
+        private ModuleBuilder _moduleBuilder;
 
         public EmitHelper()
         {
-            _asmBuilder = new Lazy<AssemblyBuilder>(CreateBuilder);
+            _asmBuilder = new Lazy<AssemblyBuilder>(CreateBuilder, true);
         }
 
         public ModuleBuilder GetDynamicModule()
         {
+            var assemblyBuilder = GetBuilder();
             lock (Locker)
             {
-                var assemblyBuilder = GetBuilder();
-                return assemblyBuilder.GetDynamicModule(DynamicMappingModuleName) ?? assemblyBuilder.DefineDynamicModule(DynamicMappingModuleName);
+                return _moduleBuilder ?? (_moduleBuilder = assemblyBuilder.DefineDynamicModule(DynamicMappingModuleName));
             }
         }
 

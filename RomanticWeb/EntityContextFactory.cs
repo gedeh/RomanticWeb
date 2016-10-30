@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 #if NETSTANDARD16
+using Microsoft.Extensions.DependencyModel;
 using System.Runtime.Loader;
 #endif
 using RomanticWeb.ComponentModel;
@@ -26,6 +27,7 @@ namespace RomanticWeb
     /// <summary>An entrypoint to RomanticWeb, which encapsulates modularity and creation of <see cref="IEntityContext"/>.</summary>
     public class EntityContextFactory : IEntityContextFactory, IComponentRegistryFacade
     {
+        private const string FluentAssemblyName = "RomanticWeb.Mapping.Fluent";
         private static readonly object Locker = new object();
         private readonly ServiceContainer _container;
         private IDictionary<Scope, Scope> _trackedScopes;
@@ -45,20 +47,7 @@ namespace RomanticWeb
             _registeredLogger = new SimpleLogger();
             _container = container;
             _container.RegisterAssembly(GetType().GetTypeInfo().Assembly);
-            var fluentLibrary = Path.Combine(Path.GetDirectoryName(new Uri(GetType().GetTypeInfo().Assembly.CodeBase).LocalPath), "RomanticWeb.Mapping.Fluent.dll");
-            if (File.Exists(fluentLibrary))
-            {
-#if NETSTANDARD16
-                _container.RegisterAssembly(AssemblyLoadContext.Default.LoadFromAssemblyPath(fluentLibrary));
-#else
-                var fluentLibraryUrl = new Uri(fluentLibrary);
-                var fluentAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(
-                    loadedAssembly => (!loadedAssembly.IsDynamic) && (StringComparer.CurrentCultureIgnoreCase.Equals(loadedAssembly.EscapedCodeBase, fluentLibraryUrl.AbsoluteUri))) ??
-                    Assembly.LoadFile(fluentLibrary);
-                _container.RegisterAssembly(fluentAssembly);
-#endif
-            }
-
+            LoadFluentMappingAssembly();
             _container.Register<IEntityContextFactory>(f => this);
             _log = new LazyResolvedLogger(() => _registeredLogger);
             _container.RegisterInstance(_log);
@@ -129,12 +118,7 @@ namespace RomanticWeb
             var configuration = ConfigurationSectionHandler.Default.Factories.Cast<FactoryElement>().First(item => item.Name == factoryName);
             var ontologies = from element in configuration.Ontologies.Cast<OntologyElement>()
                              select new Ontology(element.Prefix, element.Uri);
-#if NETSTANDARD16
-            var mappingAssemblies = from element in configuration.MappingAssemblies select AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(element.Assembly));
-#else
-            var mappingAssemblies = from element in configuration.MappingAssemblies.Cast<MappingAssemblyElement>() select Assembly.Load(element.Assembly);
-#endif
-
+            var mappingAssemblies = from element in configuration.MappingAssemblies.Cast<MappingAssemblyElement>() select element.Load();
             var entityContextFactory = new EntityContextFactory()
                 .WithOntology(new OntologyProviderBase(ontologies))
                 .WithMetaGraphUri(configuration.MetaGraphUri)
@@ -302,6 +286,37 @@ namespace RomanticWeb
             {
                 _container.RegisterInstance(source, source.Description);
             }
+        }
+
+        private void LoadFluentMappingAssembly()
+        {
+#if NETSTANDARD16
+            string fluentLibrary = Path.Combine(AppContext.BaseDirectory, FluentAssemblyName + ".dll");
+            var fluentAssembly = (from library in DependencyContext.Default.RuntimeLibraries
+                where StringComparer.CurrentCultureIgnoreCase.Equals(library.Name, FluentAssemblyName)
+                select Assembly.Load(new AssemblyName(library.Name))).FirstOrDefault();
+#else
+            string fluentLibrary = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FluentAssemblyName + ".dll");
+            var fluentLibraryUrl = new Uri(fluentLibrary);
+            var fluentAssembly = (from loadedAssembly in AppDomain.CurrentDomain.GetAssemblies()
+                where (!loadedAssembly.IsDynamic) && (StringComparer.CurrentCultureIgnoreCase.Equals(loadedAssembly.EscapedCodeBase, fluentLibraryUrl.AbsoluteUri))
+                select loadedAssembly).FirstOrDefault();
+#endif
+            if ((fluentAssembly == null) && (File.Exists(fluentLibrary)))
+            {
+#if NETSTANDARD16
+                fluentAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(fluentLibrary);
+#else
+                fluentAssembly = Assembly.LoadFile(fluentLibrary);
+#endif
+            }
+
+            if (fluentAssembly == null)
+            {
+                return;
+            }
+
+            _container.RegisterAssembly(fluentAssembly);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
     {
 #if NETSTANDARD16
         private static readonly IConfigurationRoot Configuration;
+        private static StoresConfigurationSection _default;
 
         static StoresConfigurationSection()
         {
@@ -50,12 +51,17 @@ namespace RomanticWeb.DotNetRDF.Configuration
             get
             {
 #if NETSTANDARD16
-                var section = Configuration.GetSection("romanticWeb.dotNetRDF");
-                var configurationBinder = new ConfigureFromConfigurationOptions<StoresConfigurationSection>(section);
-                var result = new StoresConfigurationSection();
-                configurationBinder.Configure(result);
-                (result.Stores = new StoresCollection(result)).Initialize(section);
-                return result;
+                if (_default == null)
+                {
+                    _default = new StoresConfigurationSection();
+                    var section = Configuration.GetSection("romanticWeb.dotNetRDF");
+                    var configurationBinder = new ConfigureFromConfigurationOptions<StoresConfigurationSection>(section);
+                    configurationBinder.Configure(_default);
+                    (_default.Stores = new StoresCollection(_default)).Initialize(section.GetSection("stores"));
+                    return _default;
+                }
+
+                return _default;
 #else
                 return (StoresConfigurationSection)ConfigurationManager.GetSection("romanticWeb.dotNetRDF")
                        ?? new StoresConfigurationSection();
@@ -64,7 +70,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         }
 
         /// <summary>Gets or sets the stores.</summary>
-        public StoresCollection Stores { get; set; }
+        public StoresCollection Stores { get; private set; }
 
         /// <summary>Gets or sets the configuration files.</summary>
 #if NETSTANDARD16

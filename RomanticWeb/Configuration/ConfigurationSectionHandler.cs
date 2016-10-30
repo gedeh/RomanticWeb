@@ -17,6 +17,7 @@ namespace RomanticWeb.Configuration
     {
 #if NETSTANDARD16
         private static readonly IConfigurationRoot Configuration;
+        private static ConfigurationSectionHandler _default;
 
         static ConfigurationSectionHandler()
         {
@@ -44,10 +45,14 @@ namespace RomanticWeb.Configuration
             get
             {
 #if NETSTANDARD16
-                var configurationBinder = new ConfigureFromConfigurationOptions<ConfigurationSectionHandler>(Configuration.GetSection("romanticWeb"));
-                var result = new ConfigurationSectionHandler();
-                configurationBinder.Configure(result);
-                return result;
+                if (_default == null)
+                {
+                    _default = new ConfigurationSectionHandler();
+                    var configurationBinder = new ConfigureFromConfigurationOptions<ConfigurationSectionHandler>(Configuration.GetSection("romanticWeb"));
+                    configurationBinder.Configure(_default);
+                }
+
+                return _default;
 #else
                 return (ConfigurationSectionHandler)ConfigurationManager.GetSection("romanticWeb") ?? new ConfigurationSectionHandler();
 #endif
@@ -56,7 +61,7 @@ namespace RomanticWeb.Configuration
 
         /// <summary>Gets or sets the collection of factory configurations.</summary>
 #if NETSTANDARD16
-        public IEnumerable<FactoryElement> Factories { get; set; }
+        public FactoryElement[] Factories { get; set; }
 #else
         /// <summary>Gets or sets the collection of factory configurations.</summary>
         [ConfigurationProperty(FactoryCollectionElementName)]

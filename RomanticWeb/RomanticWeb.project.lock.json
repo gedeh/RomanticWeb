@@ -1,10 +1,9 @@
 {
   "locked": false,
-  "version": 2,
+  "version": 1,
   "targets": {
     ".NETFramework,Version=v4.5": {
       "Remotion.Linq/2.1.1": {
-        "type": "package",
         "dependencies": {
           "System.Collections": "4.0.11",
           "System.Diagnostics.Debug": "4.0.11",
@@ -25,11 +24,8 @@
           "lib/net45/Remotion.Linq.dll": {}
         }
       },
-      "StyleCop.MSBuild/4.7.54": {
-        "type": "package"
-      },
+      "StyleCop.MSBuild/4.7.54": {},
       "System.Collections/4.0.11": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -42,7 +38,6 @@
         }
       },
       "System.Diagnostics.Debug/4.0.11": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -54,7 +49,6 @@
         }
       },
       "System.Linq/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -66,7 +60,6 @@
         }
       },
       "System.Linq.Expressions/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -78,7 +71,6 @@
         }
       },
       "System.Linq.Queryable/4.0.1": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -90,7 +82,6 @@
         }
       },
       "System.ObjectModel/4.0.12": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -102,7 +93,6 @@
         }
       },
       "System.Reflection/4.1.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -111,7 +101,6 @@
         }
       },
       "System.Reflection.Extensions/4.0.1": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -120,7 +109,6 @@
         }
       },
       "System.Runtime/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.ComponentModel.Composition",
@@ -134,7 +122,6 @@
         }
       },
       "System.Runtime.Extensions/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -146,7 +133,6 @@
         }
       },
       "System.Threading/4.0.11": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -161,7 +147,6 @@
     },
     ".NETFramework,Version=v4.5/win": {
       "Remotion.Linq/2.1.1": {
-        "type": "package",
         "dependencies": {
           "System.Collections": "4.0.11",
           "System.Diagnostics.Debug": "4.0.11",
@@ -182,11 +167,8 @@
           "lib/net45/Remotion.Linq.dll": {}
         }
       },
-      "StyleCop.MSBuild/4.7.54": {
-        "type": "package"
-      },
+      "StyleCop.MSBuild/4.7.54": {},
       "System.Collections/4.0.11": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -199,7 +181,6 @@
         }
       },
       "System.Diagnostics.Debug/4.0.11": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -211,7 +192,6 @@
         }
       },
       "System.Linq/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -223,7 +203,6 @@
         }
       },
       "System.Linq.Expressions/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -235,7 +214,6 @@
         }
       },
       "System.Linq.Queryable/4.0.1": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -247,7 +225,6 @@
         }
       },
       "System.ObjectModel/4.0.12": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -259,7 +236,6 @@
         }
       },
       "System.Reflection/4.1.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -268,7 +244,6 @@
         }
       },
       "System.Reflection.Extensions/4.0.1": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -277,7 +252,6 @@
         }
       },
       "System.Runtime/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.ComponentModel.Composition",
@@ -291,7 +265,6 @@
         }
       },
       "System.Runtime.Extensions/4.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -303,7 +276,6 @@
         }
       },
       "System.Threading/4.0.11": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -1153,7 +1125,5 @@
       "StyleCop.MSBuild >= 4.7.54"
     ],
     ".NETFramework,Version=v4.5": []
-  },
-  "tools": {},
-  "projectFileToolGroups": {}
+  }
 }

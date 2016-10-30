@@ -333,7 +333,9 @@ namespace RomanticWeb.DotNetRDF
             {
 #if NETSTANDARD16
                 //// TODO: Make a proper extension method for primary assembly path.
-                path = Path.Combine(Assembly.GetEntryAssembly().CodeBase, path.Substring(1));
+                path = Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase.Replace("file:///", String.Empty).Replace("/", Path.DirectorySeparatorChar.ToString())),
+                    path.Substring(1).Replace("/", Path.DirectorySeparatorChar.ToString()));
 #else
                 path = Path.Combine(AppDomain.CurrentDomain.GetPrimaryAssemblyPath(), path.Substring(1));
 #endif

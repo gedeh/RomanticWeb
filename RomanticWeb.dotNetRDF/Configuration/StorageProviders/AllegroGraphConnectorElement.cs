@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if NETSTANDARD16
+using Microsoft.Extensions.Configuration;
+#endif
 using VDS.RDF.Storage;
 
 namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
@@ -11,6 +14,12 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         private const string CatalogIdAttributeName = "catalogID";
         private const string UsernameAttributeName = "username";
         private const string PasswordAttributeName = "password";
+
+#if NETSTANDARD16
+        internal AllegroGraphConnectorElement(IConfigurationSection configurationSection) : base(configurationSection)
+        {
+        }
+#endif
 
         protected override Type ProviderType
         {

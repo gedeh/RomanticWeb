@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !NETSTANDARD16
+#if NETSTANDARD16
+using Microsoft.Extensions.Configuration;
+#else
 using System.Configuration;
 using System.Linq;
 #endif
@@ -10,6 +12,11 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
     internal class CustomProviderElement : StorageProviderElement
     {
 #if NETSTANDARD16
+        internal CustomProviderElement(IConfigurationSection configurationSection) : base(configurationSection)
+        {
+            TypeName = configurationSection.GetValue<string>("typeName");
+        }
+
         public string TypeName { get; set; }
 
         public IDictionary<string, string> ConstructorParametersElement { get; set; }
@@ -44,6 +51,6 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
             }
         }
 
-        protected override Type ProviderType { get { return Type.GetType(TypeName); } }
+        protected override Type ProviderType { get { return (TypeName != null ? Type.GetType(TypeName) : null); } }
     }
 }

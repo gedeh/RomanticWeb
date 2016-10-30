@@ -14,6 +14,12 @@ namespace RomanticWeb.Configuration
     {
         private Uri _metaGraphUri;
 
+        /// <summary>Initializes a new instance of the <see cref="FactoryElement" /> class.</summary>
+        public FactoryElement()
+        {
+            BaseUris = new BaseUriElement();
+        }
+
         /// <summary>Gets or sets the name.</summary>
         public string Name { get; set; }
 
@@ -24,10 +30,10 @@ namespace RomanticWeb.Configuration
         public bool TrackChanges { get; set; }
 
         /// <summary>Gets or sets the mapping assemblies.</summary>
-        public IEnumerable<MappingAssemblyElement> MappingAssemblies { get; set; }
+        public MappingAssemblyElement[] MappingAssemblies { get; set; }
 
         /// <summary>Gets or sets the ontologies configuration element collection.</summary>
-        public IEnumerable<OntologyElement> Ontologies { get; set; }
+        public OntologyElement[] Ontologies { get; set; }
 
         /// <summary>Gets or sets the base uri configuration element.</summary>
         public BaseUriElement BaseUris { get; set; }

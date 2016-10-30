@@ -58,10 +58,14 @@ namespace RomanticWeb.DotNetRDF.Configuration
         /// <inheritdoc/>
         IEnumerator<StoreElement> IEnumerable<StoreElement>.GetEnumerator()
         {
+#if NETSTANDARD16
+            return _stores.GetEnumerator();
+#else
             foreach (var storeElement in this)
             {
                 yield return (StoreElement)storeElement;
             }
+#endif
         }
 
 #if NETSTANDARD16
@@ -78,7 +82,12 @@ namespace RomanticWeb.DotNetRDF.Configuration
                 Func<StoresCollection, IConfigurationSection, StoreElement> factory;
                 if (StoreElementFactories.TryGetValue(subSection.Key, out factory))
                 {
-                    _stores.Add(factory(this, subSection));
+                    foreach (var store in subSection.GetChildren())
+                    {
+                        var storeInstance = factory(this, store);
+                        storeInstance.Name = subSection.Key;
+                        _stores.Add(storeInstance);
+                    }
                 }
             }
         }

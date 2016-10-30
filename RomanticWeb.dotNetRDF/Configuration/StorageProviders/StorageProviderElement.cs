@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
-#if !NETSTANDARD16
+#if NETSTANDARD16
+using Microsoft.Extensions.Configuration;
+#else
 using System.Xml;
 #endif
 using VDS.RDF.Storage;
@@ -15,11 +17,20 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         : ConfigurationElement
 #endif
     {
+#if NETSTANDARD16
         /// <summary>Initializes a new instance of the <see cref="StorageProviderElement" /> class.</summary>
-        public StorageProviderElement()
+        protected StorageProviderElement(IConfigurationSection configurationSection)
+        {
+            ConstructorParameters = new Dictionary<string, string>();
+            InitializeConstructorParameters(configurationSection);
+        }
+#else
+        /// <summary>Initializes a new instance of the <see cref="StorageProviderElement" /> class.</summary>
+        protected StorageProviderElement()
         {
             ConstructorParameters = new Dictionary<string, string>();
         }
+#endif
 
         protected virtual IDictionary<string, string> ConstructorParameters { get; private set; }
 
@@ -92,5 +103,18 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
                     let element = ConstructorParameters[param.Name]
                     select Convert.ChangeType(element, param.ParameterType)).ToArray();
         }
+#if NETSTANDARD16
+        private void InitializeConstructorParameters(IConfigurationSection configurationSection)
+        {
+            foreach (var property in ValidAttributes)
+            {
+                var value = configurationSection.GetValue<string>(property);
+                if (value != null)
+                {
+                    ConstructorParameters[property] = value;
+                }
+            }
+        }
+#endif
     }
 }

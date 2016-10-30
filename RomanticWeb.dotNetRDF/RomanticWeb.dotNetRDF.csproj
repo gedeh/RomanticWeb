@@ -8,7 +8,7 @@
     <ProjectGuid>{B1C2726C-C24A-4DAF-AEFA-A812E3C3D145}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RomanticWeb.DotNetRDF</RootNamespace>
+    <RootNamespace>RomanticWeb.dotNetRDF</RootNamespace>
     <AssemblyName>RomanticWeb.dotNetRDF</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>

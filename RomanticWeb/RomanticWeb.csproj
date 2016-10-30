@@ -74,6 +74,7 @@
     <Compile Include="Configuration\FactoryElement.cs" />
     <Compile Include="Configuration\MappingAssembliesCollection.cs" />
     <Compile Include="Configuration\MappingAssemblyElement.cs" />
+    <Compile Include="Configuration\MappingAssemblyElementExtensions.cs" />
     <Compile Include="Configuration\OntologiesCollection.cs" />
     <Compile Include="Configuration\OntologyElement.cs" />
     <Compile Include="Configuration\ConfigurationSectionHandler.cs" />
