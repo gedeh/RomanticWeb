@@ -41,7 +41,7 @@ namespace RomanticWeb.ComponentModel
             registry.Register(factory => CreateMappingContext(factory), new PerContainerLifetime());
             registry.Register(factory => CreateMappingsRepository(factory), new PerContainerLifetime());
 
-            registry.Register<IEntityCaster, CastleCoreCaster>(new PerScopeLifetime());
+            registry.Register<IEntityCaster, InternalProxyCaster>(new PerScopeLifetime());
 
             registry.Register(factory => CreateEntityProxy(factory));
 

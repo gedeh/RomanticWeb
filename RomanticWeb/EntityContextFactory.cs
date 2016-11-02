@@ -296,7 +296,7 @@ namespace RomanticWeb
                 where StringComparer.CurrentCultureIgnoreCase.Equals(library.Name, FluentAssemblyName)
                 select Assembly.Load(new AssemblyName(library.Name))).FirstOrDefault();
 #else
-            string fluentLibrary = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FluentAssemblyName + ".dll");
+            string fluentLibrary = Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory, FluentAssemblyName + ".dll");
             var fluentLibraryUrl = new Uri(fluentLibrary);
             var fluentAssembly = (from loadedAssembly in AppDomain.CurrentDomain.GetAssemblies()
                 where (!loadedAssembly.IsDynamic) && (StringComparer.CurrentCultureIgnoreCase.Equals(loadedAssembly.EscapedCodeBase, fluentLibraryUrl.AbsoluteUri))

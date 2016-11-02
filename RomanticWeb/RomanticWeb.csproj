@@ -138,7 +138,7 @@
     <Compile Include="Entities\ResultPostprocessing\RdfListTransformer.cs" />
     <Compile Include="IEntityCache.cs" />
     <Compile Include="Entities\IEntityCaster.cs" />
-    <Compile Include="Entities\CastleCoreCaster.cs" />
+    <Compile Include="Entities\InternalProxyCaster.cs" />
     <Compile Include="IThreadSafeEntityStore.cs" />
     <Compile Include="InMemoryEntityCache.cs" />
     <Compile Include="EntityContextFactory.cs" />

@@ -9,7 +9,7 @@ using RomanticWeb.NamedGraphs;
 
 namespace RomanticWeb.Entities
 {
-    internal class CastleCoreCaster : IEntityCaster
+    internal class InternalProxyCaster : IEntityCaster
     {
         private static readonly EntityMapping EntityMapping = new EntityMapping(typeof(IEntity));
 
@@ -21,7 +21,7 @@ namespace RomanticWeb.Entities
         private readonly IEntityMapping _typedEntityMapping;
         private readonly IPropertyMapping _typesPropertyMapping;
 
-        public CastleCoreCaster(
+        public InternalProxyCaster(
             Func<Entity, IEntityMapping, IEntityProxy> proxyFactory,
             IMappingsRepository mappings,
             INamedGraphSelector graphSelector,

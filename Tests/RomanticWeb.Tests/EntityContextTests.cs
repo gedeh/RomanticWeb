@@ -86,7 +86,7 @@ namespace RomanticWeb.Tests
                 new TestCache(),
                 new DefaultBlankNodeIdGenerator(),
                 catalog,
-                new CastleCoreCaster((entity, mapping) => new EntityProxy(entity, mapping, catalog, new TestGraphSelector(), null), _mappings.Object, new TestGraphSelector(), _entityStore.Object),
+                new InternalProxyCaster((entity, mapping) => new EntityProxy(entity, mapping, catalog, new TestGraphSelector(), null), _mappings.Object, new TestGraphSelector(), _entityStore.Object),
                 _changesTracker.Object,
                 null);
         }
