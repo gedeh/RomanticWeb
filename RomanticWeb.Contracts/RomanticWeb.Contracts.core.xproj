@@ -19,6 +19,7 @@
     <DnxInvisibleContent Include="RomanticWeb.Contracts.csproj.DotSettings" />
     <DnxInvisibleContent Include="RomanticWeb.Contracts.nuget.targets" />
     <DnxInvisibleContent Include="RomanticWeb.Contracts.project.json" />
+    <DnxInvisibleContent Include="Settings.StyleCop" />
     <DnxInvisibleContent Include="StyleCop.Cache" />
     <DnxInvisibleContent Include=".vs" />
   </ItemGroup>

@@ -21,6 +21,7 @@
     <DnxInvisibleContent Include="RomanticWeb.project.json" />
     <DnxInvisibleContent Include="Settings.StyleCop" />
     <DnxInvisibleContent Include="StyleCop.Cache" />
+    <DnxInvisibleContent Include=".vs" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

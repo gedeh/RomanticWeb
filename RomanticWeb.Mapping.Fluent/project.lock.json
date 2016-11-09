@@ -362,10 +362,10 @@
           "System.Xml.XDocument": "4.0.11"
         },
         "compile": {
-          "lib/netstandard1.0/Newtonsoft.Json.dll": {}
+          "lib/netstandard1.6/Newtonsoft.Json.dll": {}
         },
         "runtime": {
-          "lib/netstandard1.0/Newtonsoft.Json.dll": {}
+          "lib/netstandard1.6/Newtonsoft.Json.dll": {}
         }
       },
       "Remotion.Linq/2.1.1": {
@@ -1712,6 +1712,50 @@
           "NETStandard.Library": "1.6.0",
           "System.ComponentModel.TypeConverter": "4.1.0"
         }
+      },
+      "RomanticWeb.Contracts.core/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "NETStandard.Library": "1.6.0",
+          "System.ComponentModel.TypeConverter": "4.1.0"
+        },
+        "compile": {
+          "netstandard1.6/RomanticWeb.Contracts.core.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/RomanticWeb.Contracts.core.dll": {}
+        }
+      },
+      "RomanticWeb.core/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "Microsoft.CSharp": "4.0.1",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.DependencyModel": "1.0.0",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+          "NETStandard.Library": "1.6.0",
+          "Remotion.Linq": "2.1.1",
+          "RomanticWeb.Contracts": "1.0.0",
+          "System.ComponentModel.TypeConverter": "4.1.0",
+          "System.Diagnostics.TraceSource": "4.0.0",
+          "System.Dynamic.Runtime": "4.0.11",
+          "System.Globalization": "4.0.11",
+          "System.Net.Requests": "4.0.11",
+          "System.Reflection": "4.1.0",
+          "System.Reflection.Emit": "4.0.1",
+          "System.Reflection.Emit.ILGeneration": "4.0.1",
+          "System.Reflection.Emit.Lightweight": "4.0.1",
+          "System.Runtime.Loader": "4.0.0"
+        },
+        "compile": {
+          "netstandard1.6/RomanticWeb.core.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/RomanticWeb.core.dll": {}
+        }
       }
     }
   },
@@ -2025,6 +2069,8 @@
         "lib/net45/Newtonsoft.Json.xml",
         "lib/netstandard1.0/Newtonsoft.Json.dll",
         "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.6/Newtonsoft.Json.dll",
+        "lib/netstandard1.6/Newtonsoft.Json.xml",
         "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
         "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
         "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
@@ -5632,6 +5678,16 @@
     "RomanticWeb.Contracts/1.0.0": {
       "type": "project",
       "path": "../RomanticWeb.Contracts/project.json"
+    },
+    "RomanticWeb.Contracts.core/1.0.0": {
+      "type": "project",
+      "path": "../RomanticWeb.Contracts/project.json",
+      "msbuildProject": "../RomanticWeb.Contracts/RomanticWeb.Contracts.core.xproj"
+    },
+    "RomanticWeb.core/1.0.0": {
+      "type": "project",
+      "path": "../RomanticWeb/project.json",
+      "msbuildProject": "../RomanticWeb/RomanticWeb.core.xproj"
     }
   },
   "projectFileDependencyGroups": {

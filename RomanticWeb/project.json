@@ -26,6 +26,12 @@
         }
     },
     "buildOptions": {
+        "compile": {
+            "includeFiles": [
+                "../.build/CommonAssemblyInfo.cs",
+                "../.build/VersionAssemblyInfo.cs"
+            ]
+        },
         "define": [ "NETSTANDARD16" ],
         "embed": [
             "Ontologies/CNT.owl",
