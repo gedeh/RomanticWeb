@@ -21,7 +21,7 @@ namespace RomanticWeb.Converters
             IntegerTypes[typeof(ushort)] = new[] { Xsd.UnsignedShort };
             IntegerTypes[typeof(sbyte)] = new[] { Xsd.Byte };
             IntegerTypes[typeof(byte)] = new[] { Xsd.UnsignedByte };
-            IntegerTypes[typeof(long)] = new[] { Xsd.Long, Xsd.Integer, Xsd.NonPositiveInteger, Xsd.NegativeInteger };
+            IntegerTypes[typeof(long)] = new[] { Xsd.Long, Xsd.Integer, Xsd.NonPositiveInteger, Xsd.UnsignedInteger };
             IntegerTypes[typeof(ulong)] = new[] { Xsd.UnsignedLong, Xsd.NonNegativeInteger, Xsd.PositiveInteger };
         }
 

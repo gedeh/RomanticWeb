@@ -1,14 +1,12 @@
-using System;
+#if !NETSTANDARD16
 using NUnit.Framework;
 using RomanticWeb.DotNetRDF;
-using RomanticWeb.Tests.Helpers;
 using VDS.RDF;
-using VDS.RDF.Storage;
 
 namespace RomanticWeb.Tests.IntegrationTests.Virtuoso
 {
     [TestFixture]
-    public class LoadingTests:LoadingTestsBase
+    public class LoadingTests : LoadingTestsBase
     {
         private ITripleStore _store;
 
@@ -16,9 +14,9 @@ namespace RomanticWeb.Tests.IntegrationTests.Virtuoso
         {
             get
             {
-                if (_store==null)
+                if (_store == null)
                 {
-                    _store=new PersistentTripleStore(new VirtuosoManager("DB","dba","dba"));
+                    _store = new PersistentTripleStore(new VirtuosoManager("DB", "dba", "dba"));
                 }
 
                 return _store;
@@ -36,7 +34,8 @@ namespace RomanticWeb.Tests.IntegrationTests.Virtuoso
 
         protected override void ChildTeardown()
         {
-            _store=null;
+            _store = null;
         }
     }
 }
+#endif

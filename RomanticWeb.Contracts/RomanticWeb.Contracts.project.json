@@ -1,11 +1,11 @@
 ﻿{
-  "frameworks": {
-    "net45": {}
-  },
-  "runtimes": {
-    "win": {}
-  },
-  "dependencies": {
-    "StyleCop.MSBuild": "4.7.54"
-  }
+    "frameworks": {
+        "net45": {}
+    },
+    "runtimes": {
+        "win": {}
+    },
+    "dependencies": {
+        "StyleCop.MSBuild": "4.7.54"
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO.Ports;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
@@ -14,16 +13,6 @@ namespace RomanticWeb.Tests.Converters
     [TestFixture]
     public class DoubleConverterTests : XsdConverterTestsBase<DoubleConverter>
     {
-        protected override IEnumerable<Uri> SupportedXsdTypes
-        {
-            get
-            {
-                yield return Xsd.Float;
-                yield return Xsd.Double;
-            }
-        }
-
-        [Test, Combinatorial]
         public void Should_convert_values_from_literals(
             [ValueSource("ConverterTestCases")] Tuple<string, Uri, object> pair, 
             [Values("pl", "en")] string culture)
@@ -39,6 +28,13 @@ namespace RomanticWeb.Tests.Converters
                 Assert.That(value, Is.InstanceOf(pair.Item3.GetType()));
                 Assert.That(value, Is.EqualTo(pair.Item3));
             }
+        }
+
+        [TestCase(Xsd.BaseUri + "float", typeof(float))]
+        [TestCase(Xsd.BaseUri + "double", typeof(double))]
+        public void Should_support_converting_supported_xsd_types(string type, Type netType)
+        {
+            Converter.CanConvert(Node.ForLiteral(string.Empty, new Uri(type))).DatatypeMatches.Should().Be(MatchResult.ExactMatch);
         }
 
         private IEnumerable ConverterTestCases()

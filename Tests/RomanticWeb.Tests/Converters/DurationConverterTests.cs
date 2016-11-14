@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
@@ -12,15 +12,7 @@ namespace RomanticWeb.Tests.Converters
     [TestFixture]
     public class DurationConverterTests : XsdConverterTestsBase<DurationConverter>
     {
-        protected override IEnumerable<Uri> SupportedXsdTypes
-        {
-            get
-            {
-                yield return Xsd.Duration;
-            }
-        }
-
-        private IEnumerable TimeSpanValues
+        private static IEnumerable TimeSpanValues
         {
             get
             {
@@ -38,6 +30,12 @@ namespace RomanticWeb.Tests.Converters
         {
             var duration = Converter.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object);
             Assert.That(duration, Is.EqualTo(expected));
+        }
+
+        [TestCase(Xsd.BaseUri + "duration", typeof(Duration))]
+        public void Should_support_converting_supported_xsd_types(string type, Type netType)
+        {
+            Converter.CanConvert(Node.ForLiteral(string.Empty, new Uri(type))).DatatypeMatches.Should().Be(MatchResult.ExactMatch);
         }
     }
 }

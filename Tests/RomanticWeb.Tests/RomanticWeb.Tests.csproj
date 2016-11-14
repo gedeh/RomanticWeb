@@ -36,49 +36,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dotNetRDF, Version=1.0.3.0, Culture=neutral, PublicKeyToken=6055ffe4c97cc780, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\dotNetRDF.1.0.3\lib\net40\dotNetRDF.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="dotNetRDF.Data.Virtuoso, Version=1.0.3.0, Culture=neutral, PublicKeyToken=6055ffe4c97cc780, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\dotNetRDF.Data.Virtuoso.1.0.3\lib\net40\dotNetRDF.Data.Virtuoso.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentAssertions, Version=4.13.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.13.0\lib\net45\FluentAssertions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="FluentAssertions.Core, Version=4.13.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentAssertions.4.13.0\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Moq, Version=4.2.1402.2112, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OpenLink.Data.Virtuoso, Version=6.2.3128.1, Culture=neutral, PublicKeyToken=6654f6917d07cb95, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\dotNetRDF.Data.Virtuoso.1.0.3\lib\net40\OpenLink.Data.Virtuoso.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Remotion.Linq.2.1.1\lib\net45\Remotion.Linq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Resourcer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Resourcer.Fody.1.4.2\lib\portable-net45+netcore45+wpa81+wp8\Resourcer.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -89,10 +49,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VDS.Common, Version=1.2.0.0, Culture=neutral, PublicKeyToken=ab5f4eb908061bf0, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\VDS.Common.1.2.0\lib\net40-client\VDS.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="virtado4, Version=4.0.0.0, Culture=neutral, PublicKeyToken=391bf132017ae989, processorArchitecture=MSIL">
       <HintPath>..\..\packages\OpenLink.Data.Virtuoso.7.20.3214.1\lib\net40\virtado4.dll</HintPath>
       <Private>True</Private>
@@ -215,6 +171,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TestGraphs\ComplexRdfLists.trig" />
     <EmbeddedResource Include="TestGraphs\SharedBlankNodes.trig" />
+    <None Include="RomanticWeb.Tests.project.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestGraphs\LargeDataset.nq" />
@@ -3172,7 +3129,6 @@
     <EmbeddedResource Include="Linq\Queries\SelectFriendByNameWithSubquery.rq" />
     <EmbeddedResource Include="Linq\Queries\SelectFriendByName.rq" />
     <EmbeddedResource Include="Linq\Queries\SelectFriendByIdSubstring.rq" />
-    <None Include="packages.config" />
     <EmbeddedResource Include="TestGraphs\Collections.trig" />
     <EmbeddedResource Include="TestGraphs\MixedCollections.trig" />
     <EmbeddedResource Include="TestGraphs\TriplesInUnmappedGraphs.trig" />

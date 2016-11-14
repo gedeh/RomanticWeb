@@ -214,7 +214,7 @@ namespace RomanticWeb.Tests.Collections
             {
                 // then
                 var currentChar = (char)(StartChar + i);
-                keyValuePair.Key.Should().Be(currentChar.ToString(CultureInfo.InvariantCulture));
+                keyValuePair.Key.Should().Be(currentChar.ToString());
                 keyValuePair.Value.Should().Be(i++);
             }
         }

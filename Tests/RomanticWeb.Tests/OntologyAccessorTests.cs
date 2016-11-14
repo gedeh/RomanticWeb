@@ -20,7 +20,7 @@ namespace RomanticWeb.Tests
         private IOntology _ontology;
         private Mock<IEntityStore> _store;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TestFixtureSetup()
         {
             _ontology = new TestOntologyProvider().Ontologies.First();

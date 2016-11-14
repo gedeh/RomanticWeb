@@ -289,8 +289,8 @@
     }, {
       "@id": "#t0041",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "@language: null",
       "name": "@language: null resets the default language",
+      "purpose": "Setting a language to null resets a default language",
       "input": "expand-0041-in.jsonld",
       "expect": "expand-0041-out.jsonld"
     }, {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -14,14 +13,6 @@ namespace RomanticWeb.Tests.Converters
     [TestFixture]
     public class DecimalConverterTests : XsdConverterTestsBase<DecimalConverter>
     {
-        protected override IEnumerable<Uri> SupportedXsdTypes
-        {
-            get
-            {
-                yield return Xsd.Decimal;
-            }
-        }
-
         [Test, Combinatorial]
         public void Should_convert_values_from_literals(
             [ValueSource("LiteralsToConvert")]Tuple<string, decimal> pair,
@@ -49,6 +40,12 @@ namespace RomanticWeb.Tests.Converters
         public void Should_not_convert_non_numbers(string literal)
         {
             Converter.Invoking(instance => instance.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object)).ShouldThrow<FormatException>();
+        }
+
+        [TestCase(Xsd.BaseUri + "decimal", typeof(decimal))]
+        public void Should_support_converting_supported_xsd_types(string type, Type netType)
+        {
+            Converter.CanConvert(Node.ForLiteral(string.Empty, new Uri(type))).DatatypeMatches.Should().Be(MatchResult.ExactMatch);
         }
 
         private static IEnumerable LiteralsToConvert()

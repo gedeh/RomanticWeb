@@ -17,7 +17,7 @@ namespace RomanticWeb.Tests.JsonLd
     [TestFixture]
     public class JsonLdTestSuiteTests
     {
-        private readonly string _testsRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"JsonLd\test-suite\tests");
+        private static readonly string TestsRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"JsonLd\test-suite\tests");
 
         private IJsonLdProcessor _processor;
 
@@ -67,7 +67,7 @@ namespace RomanticWeb.Tests.JsonLd
 
                 if (options.Property("expandContext") != null)
                 {
-                    jsonOptions.ExpandContext = File.ReadAllText(Path.Combine(_testsRoot, (string)options["expandContext"]));
+                    jsonOptions.ExpandContext = File.ReadAllText(Path.Combine(TestsRoot, (string)options["expandContext"]));
                 }
             }
 
@@ -137,19 +137,19 @@ namespace RomanticWeb.Tests.JsonLd
             }
         }
 
-        private IEnumerable<TestCaseData> ExpandTestsCases()
+        private static IEnumerable<TestCaseData> ExpandTestsCases()
         {
-            return ReadTestManifests("Expand test", _testsRoot, "expand-manifest.jsonld");
+            return ReadTestManifests("Expand test", TestsRoot, "expand-manifest.jsonld");
         }
 
-        private IEnumerable<TestCaseData> RdfToJsonTestCases()
+        private static IEnumerable<TestCaseData> RdfToJsonTestCases()
         {
-            return ReadTestManifests("RDF to JSON-LD test", _testsRoot, "fromRdf-manifest.jsonld");
+            return ReadTestManifests("RDF to JSON-LD test", TestsRoot, "fromRdf-manifest.jsonld");
         }
 
-        private IEnumerable<TestCaseData> JsonToRdfTestsCases()
+        private static IEnumerable<TestCaseData> JsonToRdfTestsCases()
         {
-            return ReadTestManifests("JSON-LD to RDF test", _testsRoot, "toRdf-manifest.jsonld");
+            return ReadTestManifests("JSON-LD to RDF test", TestsRoot, "toRdf-manifest.jsonld");
         }
 
         private IEnumerable<IEntityQuad> GetQuads(string fileName, bool useNQuads = true)

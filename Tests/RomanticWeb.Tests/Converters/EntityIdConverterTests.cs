@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
 using RomanticWeb.Entities;
 using RomanticWeb.Model;
-using RomanticWeb.Vocabularies;
 
 namespace RomanticWeb.Tests.Converters
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using RomanticWeb.Mapping.Sources;
@@ -40,17 +41,9 @@ namespace RomanticWeb.Tests.Mapping
             propertyMapping.Uri.Should().Be(new Uri("urn:generic:collection"));
         }
 
-        [Test]
-        public void Should_provide_all_entity_mappings()
-        {
-            var mappings = MappingsRepository.Count();
-
-            mappings.Should().NotBe(0);
-        }
-
         protected override IEnumerable<IMappingProviderSource> CreateMappingSources()
         {
-            yield return new AttributeMappingsSource(typeof(IAnimal).Assembly, null);
+            yield return new AttributeMappingsSource(typeof(IAnimal).GetTypeInfo().Assembly, null);
         }
     }
 }

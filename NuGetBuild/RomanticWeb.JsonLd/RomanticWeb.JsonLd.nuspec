@@ -5,7 +5,7 @@
     <version>$version$</version>
     <authors>alien-mcl, tpluscode</authors>
     <owners>alien-mcl, tpluscode</owners>
-    <description>$description$</description>
+    <description>RomanticWeb Json-LD processor.</description>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes>Initial release</releaseNotes>
     <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>

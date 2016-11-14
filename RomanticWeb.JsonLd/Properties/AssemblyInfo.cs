@@ -2,6 +2,6 @@
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("RomanticWeb.JsonLd")]
-[assembly: AssemblyDescription("RomanticWeb Json-LD processor")]
+[assembly: AssemblyDescription("RomanticWeb Json-LD processor.")]
 
 [assembly: InternalsVisibleTo("RomanticWeb.Tests")]

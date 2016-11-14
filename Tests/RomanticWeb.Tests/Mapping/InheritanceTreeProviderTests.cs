@@ -27,8 +27,8 @@ namespace RomanticWeb.Tests.Mapping
         public void Should_ignore_overriden_parent_properties()
         {
             // given
-            var child = CreateEntity(typeof(IDerivedLevel2), typeof(IDerivedLevel2), new Uri("urn:in:child"));
-            var parent = CreateEntity(typeof(IDerived), typeof(IDerived), new Uri("urn:in:parent"));
+            var child = CreateEntity(typeof(IDerivedLevel2), new Uri("urn:in:child"));
+            var parent = CreateEntity(typeof(IDerived), new Uri("urn:in:parent"));
 
             // when
             var provider = new InheritanceTreeProvider(child, parent.AsEnumerable());
@@ -38,10 +38,10 @@ namespace RomanticWeb.Tests.Mapping
             provider.Properties.Single().GetTerm(_ontology).Should().Be(new Uri("urn:in:child"));
         }
 
-        private IEntityMappingProvider CreateEntity(Type entityType, Type propertyType, Uri uri)
+        private IEntityMappingProvider CreateEntity(Type entityType, Uri uri)
         {
             var propertyMapping = new Mock<IPropertyMappingProvider>();
-            propertyMapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(GetType(), propertyType));
+            propertyMapping.SetupGet(instance => instance.PropertyInfo).Returns(entityType.GetTypeInfo().GetProperty("Property"));
             propertyMapping.Setup(instance => instance.GetTerm).Returns(provider => uri);
 
             var result = new Mock<IEntityMappingProvider>();

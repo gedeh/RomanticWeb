@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -9,28 +8,9 @@ using RomanticWeb.Vocabularies;
 
 namespace RomanticWeb.Tests.Converters
 {
+    [TestFixture]
     public class IntegerConverterTests : XsdConverterTestsBase<IntegerConverter>
     {
-        protected override IEnumerable<Uri> SupportedXsdTypes
-        {
-            get
-            {
-                yield return Xsd.Integer;
-                yield return Xsd.Int;
-                yield return Xsd.Long;
-                yield return Xsd.Short;
-                yield return Xsd.Byte;
-                yield return Xsd.NonNegativeInteger;
-                yield return Xsd.NonPositiveInteger;
-                yield return Xsd.NegativeInteger;
-                yield return Xsd.PositiveInteger;
-                yield return Xsd.UnsignedByte;
-                yield return Xsd.UnsignedInt;
-                yield return Xsd.UnsignedLong;
-                yield return Xsd.UnsignedShort;
-            }
-        }
-
         [TestCase("0", 0)]
         [TestCase("5", 5)]
         [TestCase("-20", -20)]
@@ -56,6 +36,24 @@ namespace RomanticWeb.Tests.Converters
         public void Should_not_convert_non_numbers(string literal)
         {
             Converter.Invoking(instance => instance.Convert(Node.ForLiteral(literal), new Mock<IEntityContext>().Object)).ShouldThrow<FormatException>();
+        }
+
+        [TestCase(Xsd.BaseUri + "integer", typeof(long))]
+        [TestCase(Xsd.BaseUri + "int", typeof(int))]
+        [TestCase(Xsd.BaseUri + "long", typeof(long))]
+        [TestCase(Xsd.BaseUri + "short", typeof(short))]
+        [TestCase(Xsd.BaseUri + "byte", typeof(sbyte))]
+        [TestCase(Xsd.BaseUri + "nonNegativeInteger", typeof(long))]
+        [TestCase(Xsd.BaseUri + "nonPositiveInteger", typeof(long))]
+        [TestCase(Xsd.BaseUri + "unsignedInteger", typeof(long))]
+        [TestCase(Xsd.BaseUri + "positiveInteger", typeof(long))]
+        [TestCase(Xsd.BaseUri + "unsignedByte", typeof(byte))]
+        [TestCase(Xsd.BaseUri + "unsignedInt", typeof(uint))]
+        [TestCase(Xsd.BaseUri + "unsignedLong", typeof(ulong))]
+        [TestCase(Xsd.BaseUri + "unsignedShort", typeof(ushort))]
+        public void Should_support_converting_supported_xsd_types(string type, Type netType)
+        {
+            Converter.CanConvert(Node.ForLiteral(string.Empty, new Uri(type))).DatatypeMatches.Should().Be(MatchResult.ExactMatch);
         }
     }
 }

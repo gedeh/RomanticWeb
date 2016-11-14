@@ -30,38 +30,35 @@ namespace RomanticWeb.Tests
         private Mock<IBaseUriSelectionPolicy> _baseUriSelector;
         private Mock<IDatasetChangesTracker> _changesTracker;
 
-        private IEnumerable<Lazy<IEntity>> TypedAndUntypedEntities
+        private Lazy<IEntity> UntypedEntity
         {
             get
             {
-                Setup();
+                return new Lazy<IEntity>(() =>
+                    {
+                        _entityStore.Setup(s => s.GetObjectsForPredicate(It.IsAny<EntityId>(), It.IsAny<Uri>(), It.IsAny<Uri>())).Returns(new Node[0]);
+                        return _entityContext.Load<IEntity>(new EntityId("http://magi/people/Tomasz"));
+                    });
+            }
+        }
 
-                yield return new Lazy<IEntity>(
-                    () =>
-                        {
-                            _entityStore.Setup(
-                                s => s.GetObjectsForPredicate(It.IsAny<EntityId>(), It.IsAny<Uri>(), It.IsAny<Uri>()))
-                                        .Returns(new Node[0]);
-                            return _entityContext.Load<IEntity>(new EntityId("http://magi/people/Tomasz"));
-                        });
-                yield return new Lazy<IEntity>(
-                    () =>
-                        {
-                            _entityStore.Setup(
-                                s => s.GetObjectsForPredicate(It.IsAny<EntityId>(), It.IsAny<Uri>(), It.IsAny<Uri>()))
-                                        .Returns(new Node[0]);
-                            _mappings.Setup(m => m.MappingFor(typeof(IPerson)))
-                                     .Returns(new EntityMapping(typeof(IPerson)));
-                            return _entityContext.Load<IPerson>(new EntityId("http://magi/people/Tomasz"));
-                        });
+        private Lazy<IEntity> TypedEntity
+        {
+            get
+            {
+                return new Lazy<IEntity>(() =>
+                    {
+                        _entityStore.Setup(s => s.GetObjectsForPredicate(It.IsAny<EntityId>(), It.IsAny<Uri>(), It.IsAny<Uri>())).Returns(new Node[0]);
+                        _mappings.Setup(m => m.MappingFor(typeof(IPerson))).Returns(new EntityMapping(typeof(IPerson)));
+                        return _entityContext.Load<IPerson>(new EntityId("http://magi/people/Tomasz"));
+                    });
             }
         }
 
         [SetUp]
         public void Setup()
         {
-            _typesMapping = new TestPropertyMapping(
-                typeof(ITypedEntity), typeof(IEnumerable<EntityId>), "Types", Rdf.type);
+            _typesMapping = new TestPropertyMapping(typeof(ITypedEntity), typeof(IEnumerable<EntityId>), "Types", Rdf.type);
             _factory = new Mock<IEntityContextFactory>();
             _ontologyProvider = new TestOntologyProvider();
             _mappings = new Mock<IMappingsRepository>();
@@ -99,11 +96,22 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
-        public void Creating_new_Entity_should_create_an_instance_with_id(Lazy<IEntity> lazyEntity)
+        public void Creating_new_untyped_Entity_should_create_an_instance_with_id()
         {
             // when
-            dynamic entity = lazyEntity.Value;
+            dynamic entity = UntypedEntity.Value;
+
+            // when
+            Assert.That(entity, Is.Not.Null);
+            Assert.That(entity, Is.InstanceOf<IEntity>());
+            Assert.That(entity.Id, Is.EqualTo(new EntityId("http://magi/people/Tomasz")));
+        }
+
+        [Test]
+        public void Creating_new_typed_Entity_should_create_an_instance_with_id()
+        {
+            // when
+            dynamic entity = TypedEntity.Value;
 
             // when
             Assert.That(entity, Is.Not.Null);
@@ -118,11 +126,10 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
-        public void Creating_new_Entity_should_add_getters_for_known_ontology_namespaces(Lazy<IEntity> lazyEntity)
+        public void Creating_new_untyped_Entity_should_add_getters_for_known_ontology_namespaces()
         {
             // given
-            dynamic entity = lazyEntity.Value.AsDynamic();
+            dynamic entity = UntypedEntity.Value.AsDynamic();
 
             // when
             var foaf = entity.foaf;
@@ -133,14 +140,69 @@ namespace RomanticWeb.Tests
         }
 
         [Test]
-        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
-        public void Creating_new_Entity_should_not_add_getters_for_any_other_ontology_namespaces(Lazy<IEntity> lazyEntity)
+        public void Creating_new_typed_Entity_should_add_getters_for_known_ontology_namespaces()
         {
             // given
-            dynamic entity = lazyEntity.Value.AsDynamic();
+            dynamic entity = TypedEntity.Value.AsDynamic();
+
+            // when
+            var foaf = entity.foaf;
+
+            // then
+            Assert.That(foaf, Is.Not.Null);
+            Assert.That(foaf, Is.InstanceOf<OntologyAccessor>());
+        }
+
+        [Test]
+        public void Creating_new_untyped_Entity_should_not_add_getters_for_any_other_ontology_namespaces()
+        {
+            // given
+            dynamic entity = UntypedEntity.Value.AsDynamic();
 
             // when
             Assert.Throws<RuntimeBinderException>(() => { var test = entity.dcterms; });
+        }
+
+        [Test]
+        public void Creating_new_typed_Entity_should_not_add_getters_for_any_other_ontology_namespaces()
+        {
+            // given
+            dynamic entity = TypedEntity.Value.AsDynamic();
+
+            // when
+            Assert.Throws<RuntimeBinderException>(() => { var test = entity.dcterms; });
+        }
+
+        [Test]
+        public void Accessing_untyped_entity_id_should_not_trigger_lazy_load()
+        {
+            // given
+            IEntity entity = UntypedEntity.Value;
+            _store.ResetCalls();
+            dynamic dynEntity = entity.AsDynamic();
+
+            // when
+            var id = entity.Id;
+            id = dynEntity.Id;
+
+            // then
+            _store.Verify(s => s.LoadEntity(It.IsAny<EntityId>()), Times.Never);
+        }
+
+        [Test]
+        public void Accessing_typed_entity_id_should_not_trigger_lazy_load()
+        {
+            // given
+            IEntity entity = TypedEntity.Value;
+            _store.ResetCalls();
+            dynamic dynEntity = entity.AsDynamic();
+
+            // when
+            var id = entity.Id;
+            id = dynEntity.Id;
+
+            // then
+            _store.Verify(s => s.LoadEntity(It.IsAny<EntityId>()), Times.Never);
         }
 
         [Test]
@@ -155,22 +217,6 @@ namespace RomanticWeb.Tests
             Assert.AreEqual(entity, typed);
             Assert.AreEqual(entity.GetHashCode(), typed.GetHashCode());
             _mappings.Verify(m => m.MappingFor(typeof(IPerson)), Times.Once);
-        }
-
-        [Test]
-        [TestCaseSource(typeof(EntityContextTests), "TypedAndUntypedEntities")]
-        public void Accessing_entity_id_should_not_trigger_lazy_load(Lazy<IEntity> lazyEntity)
-        {
-            // given
-            IEntity entity = lazyEntity.Value;
-            dynamic dynEntity = entity.AsDynamic();
-
-            // when
-            var id = entity.Id;
-            id = dynEntity.Id;
-
-            // then
-            _store.Verify(s => s.LoadEntity(It.IsAny<EntityId>()), Times.Never);
         }
 
         [Test]

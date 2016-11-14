@@ -1,48 +1,48 @@
 <?xml version="1.0"?>
 <package>
-  <metadata>
-    <id>RomanticWeb</id>
-    <version>1.0.0</version>
-    <authors>alien-mcl, tpluscode</authors>
-    <owners>alien-mcl, tpluscode</owners>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <title>Romantic Web</title>
-    <description>ORM Class solution for RDF and SPARQL for .net.</description>
-    <releaseNotes>
-      * .net Framework 4.5 and .net Standard 1.6 support
-      * further performance improvements
-      * more granular libralier
-    </releaseNotes>
-    <licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
-    <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
-    <projectUrl>http://romanticweb.net/</projectUrl>
-    <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2016</copyright>
-    <tags>rdf orm semanticweb semantic sparql linq</tags>
-	<dependencies>
-	  <group targetFramework="net45">
-	    <dependency id="RomanticWeb.Contracts" version="1.0" />
-        <dependency id="Remotion.Linq" version="2.1.1" />
-	  </group>
-	  <group targetFramework="netstandard1.6">
-        <dependency id="Microsoft.CSharp" version="4.0.1" />
-        <dependency id="Microsoft.Extensions.Configuration.Json" version="1.0.0" />
-        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="1.0.0" />
-        <dependency id="Microsoft.Extensions.DependencyModel" version="1.0.0" />
-        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="1.0.0" />
-        <dependency id="Remotion.Linq" version="2.1.1" />
-        <dependency id="RomanticWeb.Contracts" version="1.0.0" />
-        <dependency id="System.ComponentModel.TypeConverter" version="4.1.0" />
-        <dependency id="System.Diagnostics.TraceSource" version="4.0.0" />
-        <dependency id="System.Dynamic.Runtime" version="4.0.11" />
-        <dependency id="System.Globalization" version="4.0.11" />
-        <dependency id="System.Linq.Parallel" version="4.0.1" />
-        <dependency id="System.Net.Requests" version="4.0.11" />
-        <dependency id="System.Reflection" version="4.1.0" />
-        <dependency id="System.Reflection.Emit" version="4.0.1" />
-        <dependency id="System.Reflection.Emit.ILGeneration" version="4.0.1" />
-        <dependency id="System.Reflection.Emit.Lightweight" version="4.0.1" />
-        <dependency id="System.Runtime.Loader" version="4.0.0" />
-	  </group>
-    </dependencies>
-  </metadata>
+    <metadata>
+        <id>RomanticWeb</id>
+        <version>$version$</version>
+        <authors>alien-mcl, tpluscode</authors>
+        <owners>alien-mcl, tpluscode</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <title>Romantic Web</title>
+        <description>ORM Class solution for RDF and SPARQL for .net.</description>
+        <releaseNotes>
+            * .net Framework 4.5 and .net Standard 1.6 support
+            * further performance improvements
+            * more granular libralier
+        </releaseNotes>
+        <licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
+        <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
+        <projectUrl>http://romanticweb.net/</projectUrl>
+        <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2016</copyright>
+        <tags>rdf orm semanticweb semantic sparql linq</tags>
+        <dependencies>
+            <group targetFramework="net45">
+                <dependency id="RomanticWeb.Contracts" version="$version$" />
+                <dependency id="Remotion.Linq" version="2.1.1" />
+            </group>
+            <group targetFramework="netstandard1.6">
+                <dependency id="Microsoft.CSharp" version="4.0.1" />
+                <dependency id="Microsoft.Extensions.Configuration.Json" version="1.0.0" />
+                <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="1.0.0" />
+                <dependency id="Microsoft.Extensions.DependencyModel" version="1.0.0" />
+                <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="1.0.0" />
+                <dependency id="Remotion.Linq" version="2.1.1" />
+                <dependency id="RomanticWeb.Contracts" version="$version$" />
+                <dependency id="System.ComponentModel.TypeConverter" version="4.1.0" />
+                <dependency id="System.Diagnostics.TraceSource" version="4.0.0" />
+                <dependency id="System.Dynamic.Runtime" version="4.0.11" />
+                <dependency id="System.Globalization" version="4.0.11" />
+                <dependency id="System.Linq.Parallel" version="4.0.1" />
+                <dependency id="System.Net.Requests" version="4.0.11" />
+                <dependency id="System.Reflection" version="4.1.0" />
+                <dependency id="System.Reflection.Emit" version="4.0.1" />
+                <dependency id="System.Reflection.Emit.ILGeneration" version="4.0.1" />
+                <dependency id="System.Reflection.Emit.Lightweight" version="4.0.1" />
+                <dependency id="System.Runtime.Loader" version="4.0.0" />
+            </group>
+        </dependencies>
+    </metadata>
 </package>

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Dynamic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -45,7 +40,7 @@ namespace RomanticWeb.Tests.Globalization
             var store = new Mock<IEntityStore>();
             store.Setup(instance => instance.GetObjectsForPredicate(entityId, predicate, It.IsAny<Uri>())).Returns(values);
             var context = new Mock<IEntityContext>();
-            context.SetupGet(instance => instance.CurrentCulture).Returns(CultureInfo.GetCultureInfo(language));
+            context.SetupGet(instance => instance.CurrentCulture).Returns(new CultureInfo(language));
             context.SetupGet(instance => instance.Store).Returns(store.Object);
             var entity = new Entity(entityId, context.Object);
             context.Setup(instance => instance.InitializeEnitity(entity));

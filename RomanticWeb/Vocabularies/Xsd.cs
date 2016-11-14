@@ -40,7 +40,7 @@ namespace RomanticWeb.Vocabularies
 
         public static readonly Uri UnsignedShort = new Uri(BaseUri + "unsignedShort");
 
-        public static readonly Uri NegativeInteger = new Uri(BaseUri + "unsignedInteger");
+        public static readonly Uri UnsignedInteger = new Uri(BaseUri + "unsignedInteger");
 
         public static readonly Uri PositiveInteger = new Uri(BaseUri + "positiveInteger");
 

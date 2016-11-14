@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.Converters;
@@ -8,18 +8,9 @@ using RomanticWeb.Vocabularies;
 
 namespace RomanticWeb.Tests.Converters
 {
+    [TestFixture]
     public class DateTimeConverterTests : XsdConverterTestsBase<DateTimeConverter>
     {
-        protected override IEnumerable<Uri> SupportedXsdTypes
-        {
-            get
-            {
-                yield return Xsd.Date;
-                yield return Xsd.DateTime;
-                yield return Xsd.Time;
-            }
-        }
-
         [TestCase("2010-03-23")]
         public void Should_convert_date_only(string dateValue)
         {
@@ -77,6 +68,14 @@ namespace RomanticWeb.Tests.Converters
             // then
             Assert.That(date.Kind, Is.EqualTo(DateTimeKind.Utc));
             Assert.That(date.TimeOfDay, Is.EqualTo(new DateTime(2010, 03, 23, hour, minutes, 44).TimeOfDay));
+        }
+
+        [TestCase(Xsd.BaseUri + "date", typeof(DateTime))]
+        [TestCase(Xsd.BaseUri + "dateTime", typeof(DateTime))]
+        [TestCase(Xsd.BaseUri + "time", typeof(DateTime))]
+        public void Should_support_converting_supported_xsd_types(string type, Type netType)
+        {
+            Converter.CanConvert(Node.ForLiteral(string.Empty, new Uri(type))).DatatypeMatches.Should().Be(MatchResult.ExactMatch);
         }
     }
 }

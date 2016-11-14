@@ -1,27 +1,30 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-  <metadata>
-    <id>RomanticWeb.Contracts</id>
-    <version>1.0.0</version>
-    <authors>alien-mcl, tpluscode</authors>
-    <owners>alien-mcl, tpluscode</owners>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <title>Romantic Web Contracts</title>
-    <description>ORM Class solution for RDF and SPARQL for .net.</description>
-    <releaseNotes>
-      * .net Framework 4.5 and .net Standard 1.6 support
-      * further performance improvements
-      * more granular libralier
-    </releaseNotes>
-    <licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
-    <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
-    <projectUrl>http://romanticweb.net/</projectUrl>
-    <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2016</copyright>
-    <tags>rdf orm semanticweb semantic sparql linq</tags>
-	<dependencies>
-	  <group targetFramework="netstandard1.6">
-        <dependency id="System.ComponentModel.TypeConverter" version="4.1.0" />
-	  </group>
-    </dependencies>
-  </metadata>
+    <metadata>
+        <id>RomanticWeb.Contracts</id>
+        <version>$version$</version>
+        <authors>alien-mcl, tpluscode</authors>
+        <owners>alien-mcl, tpluscode</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <title>Romantic Web Contracts</title>
+        <description>RDF-Object Mapping for the Semantic Web in .net contracts.</description>
+        <releaseNotes>
+            * .net Framework 4.5 and .net Standard 1.6 support
+            * further performance improvements
+            * more granular libralier
+        </releaseNotes>
+        <licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
+        <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
+        <projectUrl>http://romanticweb.net/</projectUrl>
+        <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2016</copyright>
+        <tags>rdf orm semanticweb semantic sparql linq</tags>
+        <dependencies>
+            <group targetFramework="net45.6">
+            </group>
+            <group targetFramework="netstandard1.6">
+                <dependency id="NETStandard.Library" version="1.6.0" />
+                <dependency id="System.ComponentModel.TypeConverter" version="4.1.0" />
+            </group>
+        </dependencies>
+    </metadata>
 </package>

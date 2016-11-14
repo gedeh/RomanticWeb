@@ -84,14 +84,17 @@ namespace RomanticWeb.Tests.Configuration
         public void Should_load_configurations()
         {
             // given
+            var temp = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var loader = _configuration.OpenConfiguration("default");
+            Environment.CurrentDirectory = temp;
 
             // then
             loader.LoadObject("store").Should().BeOfType<VDS.RDF.TripleStore>();
             loader.LoadObject(new Uri("urn:by:uri")).Should().BeOfType<VDS.RDF.TripleStore>();
         }
 
-        public IEnumerable GetProviderConfigurations()
+        public static IEnumerable GetProviderConfigurations()
         {
             var virtuoso = typeof(VDS.RDF.Storage.VirtuosoManager);
             yield return new TestCaseData("virtuoso-connectionString", virtuoso)
