@@ -26,18 +26,9 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
         static StoresConfigurationSection()
         {
-            var configurationBuilder = new ConfigurationBuilder();
-            try
-            {
-                if (File.Exists("appsettings.json"))
-                {
-                    configurationBuilder.AddJsonFile("appsettings.json");
-                }
-            }
-            catch
-            {
-            }
-
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true);
             Configuration = configurationBuilder.Build();
         }
 #else
@@ -74,7 +65,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
         /// <summary>Gets or sets the configuration files.</summary>
 #if NETSTANDARD16
-        public IEnumerable<ConfigurationFileElement> ConfigurationFiles { get; set; }
+        public ConfigurationFileElement[] ConfigurationFiles { get; set; }
 #else
         [ConfigurationProperty(ConfigurationFilesElementName)]
         [ConfigurationCollection(typeof(ConfigurationFilesCollection))]
@@ -98,7 +89,13 @@ namespace RomanticWeb.DotNetRDF.Configuration
             if (configurationFile != null)
             {
 #if NETSTANDARD16
-                return new ConfigurationLoader(new Uri(configurationFile.Path), configurationFile.AutoConfigure);
+                var uri = new Uri(configurationFile.Path, UriKind.RelativeOrAbsolute);
+                if (!uri.IsAbsoluteUri)
+                {
+                    uri = new Uri("file:///" + Path.Combine(Directory.GetCurrentDirectory(), configurationFile.Path));
+                }
+
+                return new ConfigurationLoader(uri, configurationFile.AutoConfigure);
 #else
                 return new ConfigurationLoader(configurationFile.Path, configurationFile.AutoConfigure);
 #endif

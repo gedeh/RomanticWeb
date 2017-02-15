@@ -51,10 +51,13 @@ namespace RomanticWeb.Tests.Mapping
         private IEntityMappingProvider CreateOpenGenericProvider(string propertyName)
         {
             var type = typeof(IGenericParent<>);
-            var _provider = new Mock<VisitableEntityMappingProviderBase>();
+            var propertyMappingProvider = CreatePropertyMappingProvider(type.GetProperty(propertyName));
+            var _provider = new Mock<VisitableEntityMappingProviderBase>(MockBehavior.Strict);
             _provider.SetupGet(p => p.EntityType).Returns(type);
-            _provider.SetupGet(p => p.Properties).Returns(new[] { CreatePropertyMappingProvider(type.GetProperty(propertyName)) });
+            _provider.SetupGet(p => p.Properties).Returns(new[] { propertyMappingProvider });
             _provider.SetupGet(p => p.Classes).Returns(new List<IClassMappingProvider>());
+            _provider.As<IMappingProvider>().Setup(instance => instance.Accept(It.IsAny<IMappingProviderVisitor>()))
+                .Callback<IMappingProviderVisitor>(visitor => _provider.Object.Accept(visitor));
 
             return _provider.Object;
         }

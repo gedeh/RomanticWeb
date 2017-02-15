@@ -13,12 +13,9 @@ namespace RomanticWeb.Configuration
     public class FactoryElement
     {
         private Uri _metaGraphUri;
-
-        /// <summary>Initializes a new instance of the <see cref="FactoryElement" /> class.</summary>
-        public FactoryElement()
-        {
-            BaseUris = new BaseUriElement();
-        }
+        private MappingAssemblyElement[] _mappingAssemblies = Array.Empty<MappingAssemblyElement>();
+        private OntologyElement[] _ontologies = Array.Empty<OntologyElement>();
+        private BaseUriElement _baseUris = new BaseUriElement();
 
         /// <summary>Gets or sets the name.</summary>
         public string Name { get; set; }
@@ -30,19 +27,36 @@ namespace RomanticWeb.Configuration
         public bool TrackChanges { get; set; }
 
         /// <summary>Gets or sets the mapping assemblies.</summary>
-        public MappingAssemblyElement[] MappingAssemblies { get; set; }
+        public MappingAssemblyElement[] MappingAssemblies
+        {
+            get { return _mappingAssemblies; }
+            set { _mappingAssemblies = value ?? Array.Empty<MappingAssemblyElement>(); }
+        }
 
         /// <summary>Gets or sets the ontologies configuration element collection.</summary>
-        public OntologyElement[] Ontologies { get; set; }
+        public OntologyElement[] Ontologies
+        {
+            get { return _ontologies; }
+            set { _ontologies = value ?? Array.Empty<OntologyElement>(); }
+        }
 
         /// <summary>Gets or sets the base uri configuration element.</summary>
-        public BaseUriElement BaseUris { get; set; }
+        public BaseUriElement BaseUris
+        {
+            get { return _baseUris; }
+            set { _baseUris = value ?? new BaseUriElement(); }
+        }
 
         /// <summary>Gets or sets the meta graph URI.</summary>
         public Uri MetaGraphUri
         {
             get { return _metaGraphUri; }
             set { UriValidator.Default.Validate(_metaGraphUri = value); }
+        }
+
+        internal void Validate()
+        {
+            UriValidator.Default.Validate(_metaGraphUri);
         }
     }
 #else

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -17,7 +18,7 @@ namespace RomanticWeb.Tests
         public void Setup()
         {
             store = new TripleStore();
-            store.LoadFromEmbeddedResource(System.String.Format("{0}.ttl, {1}", GetType().FullName, GetType().Assembly.FullName), new Uri("http://app.magi/graphs"));
+            store.LoadFromEmbeddedResource(System.String.Format("{0}.ttl, {1}", GetType().FullName, GetType().GetTypeInfo().Assembly.FullName), new Uri("http://app.magi/graphs"));
         }
 
         [Test]

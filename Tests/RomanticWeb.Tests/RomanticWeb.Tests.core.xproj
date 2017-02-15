@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>8a1ee743-e472-486a-984a-5e11a40f4e87</ProjectGuid>
-    <RootNamespace>RomanticWeb.TestEntities.MixedMappings</RootNamespace>
+    <RootNamespace>RomanticWeb.Tests</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
@@ -18,14 +18,18 @@
   <ItemGroup>
     <DnxInvisibleContent Include="FodyWeavers.xml" />
     <DnxInvisibleContent Include="packages.config" />
-    <DnxInvisibleContent Include="RomanticWeb.TestEntities.csproj.DotSettings" />
-    <DnxInvisibleContent Include="RomanticWeb.TestEntities.nuget.targets" />
-    <DnxInvisibleContent Include="RomanticWeb.TestEntities.project.json" />
     <DnxInvisibleContent Include="RomanticWeb.Tests.csproj.DotSettings" />
+    <DnxInvisibleContent Include="RomanticWeb.Tests.nuget.targets" />
+    <DnxInvisibleContent Include="RomanticWeb.Tests.project.json" />
+    <DnxInvisibleContent Include="RomanticWeb.Tests.csproj.DotSettings" />
+    <DnxInvisibleContent Include="RomanticWeb.Tests.nuget.targets" />
     <DnxInvisibleContent Include="RomanticWeb.Tests.project.json" />
     <DnxInvisibleContent Include="Settings.StyleCop" />
     <DnxInvisibleContent Include="StyleCop.Cache" />
     <DnxInvisibleContent Include=".vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

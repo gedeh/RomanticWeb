@@ -70,8 +70,6 @@
     <Compile Include="..\.build\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Dictionaries\DictionaryEntityNames.cs" />
-    <Compile Include="Dictionaries\CecilDictionaryEntityNames.cs" />
     <Compile Include="Dictionaries\DictionaryMappingMeta.cs" />
     <Compile Include="Dictionaries\DictionaryMappingMetaFactory.cs" />
     <Compile Include="DictionaryCache.cs" />
@@ -98,6 +96,10 @@
     <ProjectReference Include="..\RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.csproj">
       <Project>{d9a45427-9698-44b8-83ab-e07351f3531d}</Project>
       <Name>RomanticWeb.Mapping.Fluent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RomanticWeb\RomanticWeb.csproj">
+      <Project>{0EE621E3-4A27-44B5-AEA9-04B43E730D46}</Project>
+      <Name>RomanticWeb</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

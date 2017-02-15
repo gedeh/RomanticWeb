@@ -16,7 +16,7 @@ namespace RomanticWeb.Tests.Converters
         {
             // given
             var context = new Mock<IEntityContext>(MockBehavior.Strict);
-            context.SetupGet(instance => instance.CurrentCulture).Returns(() => (language != null ? CultureInfo.GetCultureInfo(language) : CultureInfo.InvariantCulture));
+            context.SetupGet(instance => instance.CurrentCulture).Returns(() => (language != null ? new CultureInfo(language) : CultureInfo.InvariantCulture));
 
             // when
             var value = _converter.ConvertBack(literal, context.Object);

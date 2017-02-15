@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+
 #if !NETSTANDARD16
 using System.Configuration;
 #endif
@@ -22,9 +24,9 @@ namespace RomanticWeb.Configuration
         {
             var uri = value as Uri;
 
-            if ((uri != null) && (!uri.IsAbsoluteUri))
+            if ((uri == null) || (!uri.IsAbsoluteUri))
             {
-                throw new ArgumentException("Ontology must be a valid absolute URI");
+                throw new ConfigurationErrorsException("Ontology must be a valid absolute URI");
             }
         }
     }

@@ -6,7 +6,8 @@
         "RomanticWeb": "1.0.0-*",
         "RomanticWeb.Contracts": "1.0.0-*",
         "System.ComponentModel.TypeConverter": "4.1.0",
-        "System.Linq.Parallel": "4.0.1"
+        "System.Linq.Parallel": "4.0.1",
+        "System.Threading.Tasks.Parallel": "4.0.1"
     },
     "frameworks": {
         "netstandard1.6": {

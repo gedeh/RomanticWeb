@@ -20,6 +20,7 @@
     <DnxInvisibleContent Include="packages.config" />
     <DnxInvisibleContent Include="RomanticWeb.TestEntities.csproj.DotSettings" />
     <DnxInvisibleContent Include="RomanticWeb.TestEntities.FluentMappings.csproj.DotSettings" />
+    <DnxInvisibleContent Include="RomanticWeb.TestEntities.FluentMappings.nuget.targets" />
     <DnxInvisibleContent Include="RomanticWeb.TestEntities.FluentMappings.project.json" />
     <DnxInvisibleContent Include="RomanticWeb.TestEntities.nuget.targets" />
     <DnxInvisibleContent Include="RomanticWeb.TestEntities.project.json" />

@@ -13,6 +13,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.dotNetRDF.core"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2EE8F175-E929-4E80-8E32-31A8A80345DB}"
 	ProjectSection(SolutionItems) = preProject
+		Tests\appsettings.json = Tests\appsettings.json
 		global.json = global.json
 	EndProjectSection
 EndProject
@@ -23,6 +24,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1C9A13
 		NuGetBuild\RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.nuspec = NuGetBuild\RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.nuspec
 		NuGetBuild\RomanticWeb\RomanticWeb.nuspec = NuGetBuild\RomanticWeb\RomanticWeb.nuspec
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.TestEntities.core", "Tests\RomanticWeb.TestEntities\RomanticWeb.TestEntities.core.xproj", "{50209114-9441-4C7A-8A7A-1747D886D124}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.TestEntities.FluentMappings.core", "Tests\RomanticWeb.TestEntities.FluentMappings\RomanticWeb.TestEntities.FluentMappings.core.xproj", "{3279E686-91AA-4869-B927-DC94348259F6}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.TestEntities.MixedMappings.core", "Tests\RomanticWeb.TestEntities.MixedMappings\RomanticWeb.TestEntities.MixedMappings.core.xproj", "{4E874E1D-BA13-4911-A367-2761130FF720}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Tests.core", "Tests\RomanticWeb.Tests\RomanticWeb.Tests.core.xproj", "{8A1EE743-E472-486A-984A-5E11A40F4E87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,8 +57,30 @@ Global
 		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50209114-9441-4C7A-8A7A-1747D886D124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50209114-9441-4C7A-8A7A-1747D886D124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50209114-9441-4C7A-8A7A-1747D886D124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50209114-9441-4C7A-8A7A-1747D886D124}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3279E686-91AA-4869-B927-DC94348259F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3279E686-91AA-4869-B927-DC94348259F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3279E686-91AA-4869-B927-DC94348259F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3279E686-91AA-4869-B927-DC94348259F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E874E1D-BA13-4911-A367-2761130FF720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E874E1D-BA13-4911-A367-2761130FF720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E874E1D-BA13-4911-A367-2761130FF720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E874E1D-BA13-4911-A367-2761130FF720}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{50209114-9441-4C7A-8A7A-1747D886D124} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{3279E686-91AA-4869-B927-DC94348259F6} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{4E874E1D-BA13-4911-A367-2761130FF720} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{8A1EE743-E472-486A-984A-5E11A40F4E87} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
 	EndGlobalSection
 EndGlobal

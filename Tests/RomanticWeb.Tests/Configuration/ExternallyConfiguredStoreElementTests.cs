@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using FluentAssertions;
+#if NETSTANDARD16
+using Microsoft.Extensions.Configuration;
+#endif
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.DotNetRDF.Configuration;
@@ -18,7 +21,15 @@ namespace RomanticWeb.Tests.Configuration
         [SetUp]
         public void Setup()
         {
+#if NETSTANDARD16
+            var subSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
+            subSection.SetupGet(instance => instance.Value).Returns("test");
+            var configurationSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
+            configurationSection.Setup(instance => instance.GetSection("name")).Returns(subSection.Object);
+            _element = new ExternallyConfiguredStoreElement(configurationSection.Object, new StoresConfigurationSection());
+#else
             _element = new ExternallyConfiguredStoreElement(new StoresConfigurationSection());
+#endif
             _loader = new Mock<IConfigurationLoader>(MockBehavior.Strict);
             _element.ConfigurationLoader = _loader.Object;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,17 +16,24 @@ namespace RomanticWeb.Tests
         [SetUp]
         public void Setup()
         {
-            _configuration = (ConfigurationSectionHandler)ConfigurationManager.GetSection("romanticWeb");
+            Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), "netcoreapp1.0"));
+            _configuration = ConfigurationSectionHandler.Default;
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), ".."));
         }
 
         [Test]
-        public void Should_contain_added_assemlies()
+        public void Should_contain_added_assemblies()
         {
             // given
-            var factory = _configuration.Factories["default"];
+            var factory = _configuration.Factories.Cast<FactoryElement>().First(item => item.Name == "default");
 
             // then
-            factory.MappingAssemblies.Count.Should().Be(2);
+            factory.MappingAssemblies.Should().HaveCount(2);
             factory.MappingAssemblies.Cast<MappingAssemblyElement>()
                                      .Select(e => e.Assembly)
                                      .Should().ContainInOrder("Magi.Balthazar.Contracts", "Magi.Web");
@@ -35,10 +43,10 @@ namespace RomanticWeb.Tests
         public void Should_contain_added_ontology_prefixes()
         {
             // given
-            var factory = _configuration.Factories["default"];
+            var factory = _configuration.Factories.Cast<FactoryElement>().First(item => item.Name == "default");
 
             // then
-            factory.Ontologies.Count.Should().Be(2);
+            factory.Ontologies.Should().HaveCount(2);
             factory.Ontologies.Cast<OntologyElement>()
                               .Select(e => e.Prefix)
                               .Should().ContainInOrder("lemon", "frad");
@@ -51,7 +59,7 @@ namespace RomanticWeb.Tests
         public void Should_contain_default_base_uri()
         {
             // given
-            var factory = _configuration.Factories["default"];
+            var factory = _configuration.Factories.Cast<FactoryElement>().First(item => item.Name == "default");
 
             // then
             factory.BaseUris.Default.Should().Be(new Uri("http://www.romanticweb.com/"));
@@ -61,7 +69,7 @@ namespace RomanticWeb.Tests
         public void Should_contain_meta_graph_uri()
         {
             // given
-            var factory = _configuration.Factories["default"];
+            var factory = _configuration.Factories.Cast<FactoryElement>().First(item => item.Name == "default");
 
             // then
             factory.MetaGraphUri.Should().Be(new Uri("http://meta.romanticweb.com/"));
@@ -70,14 +78,14 @@ namespace RomanticWeb.Tests
         [Test]
         public void Should_require_meta_graph_uri()
         {
-            Assert.Throws<ConfigurationErrorsException>(() => ConfigurationManager.GetSection("missingMetaGraph"));
+            Assert.Throws<ConfigurationErrorsException>(() => ConfigurationSectionHandler.GetConfiguration("missingMetaGraph"));
         }
 
         [Test]
         public void Empty_configuration_should_be_populated()
         {
             // given
-            var factory = _configuration.Factories["empty"];
+            var factory = _configuration.Factories.Cast<FactoryElement>().First(item => item.Name == "empty");
 
             // then
             factory.Ontologies.Should().BeEmpty();

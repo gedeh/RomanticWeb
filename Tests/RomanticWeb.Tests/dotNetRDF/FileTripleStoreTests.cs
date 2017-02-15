@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Resourcer;
 using RomanticWeb.DotNetRDF;
 using RomanticWeb.Vocabularies;
 using VDS.RDF;
@@ -26,10 +26,11 @@ namespace RomanticWeb.Tests.DotNetRDF
         [SetUp]
         protected void Setup()
         {
-            filePath = Path.Combine(AppDomain.CurrentDomain.GetApplicationStoragePath(), "test.trig");
-            if (!Directory.Exists(AppDomain.CurrentDomain.GetApplicationStoragePath()))
+            var binDirectory = AppDomainExtensions.GetPrimaryAssemblyPath();
+            filePath = Path.Combine(binDirectory, "test.trig");
+            if (!Directory.Exists(binDirectory))
             {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.GetApplicationStoragePath());
+                Directory.CreateDirectory(binDirectory);
             }
 
             if (File.Exists(filePath))
@@ -38,7 +39,7 @@ namespace RomanticWeb.Tests.DotNetRDF
             }
 
             FileStream fileStream = File.Create(filePath);
-            Resource.AsStream("RomanticWeb.Tests.TestGraphs.TriplesWithLiteralSubjects.trig").CopyTo(fileStream);
+            GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.TestGraphs.TriplesWithLiteralSubjects.trig").CopyTo(fileStream);
             fileStream.Close();
         }
 
@@ -150,7 +151,7 @@ namespace RomanticWeb.Tests.DotNetRDF
         private MemoryStream CreateMemoryStream()
         {
             MemoryStream stream = new MemoryStream();
-            Resource.AsStream("RomanticWeb.Tests.TestGraphs.TriplesWithLiteralSubjects.trig").CopyTo(stream);
+            GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.TestGraphs.TriplesWithLiteralSubjects.trig").CopyTo(stream);
             return stream;
         }
 

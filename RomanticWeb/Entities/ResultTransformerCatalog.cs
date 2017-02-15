@@ -55,7 +55,7 @@ namespace RomanticWeb.Entities
             }
             else if (property is IDictionaryMapping)
             {
-                return new DictionaryTransformer();
+                return new DictionaryTransformer(_emitHelper);
             }
 
             return new SimpleTransformer(new SingleOrDefault());

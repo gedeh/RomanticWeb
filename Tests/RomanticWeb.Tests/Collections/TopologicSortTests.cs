@@ -8,7 +8,7 @@ using RomanticWeb.Mapping.Providers;
 using RomanticWeb.TestEntities;
 using RomanticWeb.TestEntities.Inheritance;
 
-namespace RomanticWeb.Collections.Tests
+namespace RomanticWeb.Tests.Collections
 {
     [TestFixture]
     public class TopologicSortTests

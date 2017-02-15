@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using FluentAssertions;
 using Moq;
@@ -30,7 +31,11 @@ namespace RomanticWeb.Tests.DotNetRDF
             WebRequest request = null;
             Stream data = new MemoryStream();
             SerializeTriples(graph, data);
-            _strategy = new UrlMatchingResourceResolutionStrategy(CreateOntologyProvider(), new[] { typeof(IPerson).Assembly }, new[] { BaseUri }, uri => request = CreateWebRequest(uri, data));
+            _strategy = new UrlMatchingResourceResolutionStrategy(
+                CreateOntologyProvider(),
+                new[] { typeof(IPerson).GetTypeInfo().Assembly },
+                new[] { BaseUri },
+                uri => request = CreateWebRequest(uri, data));
 
             var result = _strategy.Resolve(id);
 
@@ -50,7 +55,11 @@ namespace RomanticWeb.Tests.DotNetRDF
             WebRequest request = null;
             Stream data = new MemoryStream();
             SerializeTriples(graph, data);
-            _strategy = new UrlMatchingResourceResolutionStrategy(CreateOntologyProvider(), new[] { typeof(IPerson).Assembly }, new[] { BaseUri }, uri => request = CreateWebRequest(uri, data));
+            _strategy = new UrlMatchingResourceResolutionStrategy(
+                CreateOntologyProvider(),
+                new[] { typeof(IPerson).GetTypeInfo().Assembly },
+                new[] { BaseUri },
+                uri => request = CreateWebRequest(uri, data));
 
             var result = _strategy.Resolve(id);
             _strategy.Resolve(another);

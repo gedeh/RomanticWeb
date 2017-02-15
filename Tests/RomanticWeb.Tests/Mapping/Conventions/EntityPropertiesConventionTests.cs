@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -17,25 +18,21 @@ namespace RomanticWeb.Tests.Mapping.Conventions
     {
         private EntityPropertiesConvention _convention;
 
-        private interface ITestEntity : IEntity
-        {
-        }
-
         [SetUp]
         public void Setup()
         {
             _convention = new EntityPropertiesConvention();
         }
 
-        [TestCase(typeof(ITestEntity))]
-        [TestCase(typeof(IList<ITestEntity>), Description = "Should work for collection type")]
-        [TestCase(typeof(IEntity))]
-        [TestCase(typeof(IList<IEntity>), Description = "Should work for collection type")]
-        public void Should_be_applied_to_property_IEntity_property_type(Type type)
+        [TestCase("TestEntity")]
+        [TestCase("TestEntityList", Description = "Should work for collection type")]
+        [TestCase("Entity")]
+        [TestCase("EntityList", Description = "Should work for collection type")]
+        public void Should_be_applied_to_property_IEntity_property_type(string propertyName)
         {
             // given
             var convention = new Mock<IPropertyMappingProvider>();
-            convention.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(type));
+            convention.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty(propertyName));
             convention.SetupGet(instance => instance.ConverterType).Returns(default(Type));
 
             // when
@@ -45,15 +42,15 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             shouldApply.Should().BeTrue();
         }
 
-        [TestCase(typeof(ITestEntity), typeof(AsEntityConverter<ITestEntity>))]
-        [TestCase(typeof(IList<ITestEntity>), typeof(AsEntityConverter<ITestEntity>), Description = "Should work for collection type")]
-        [TestCase(typeof(IPerson), typeof(AsEntityConverter<IPerson>))]
-        [TestCase(typeof(IList<IEntity>), typeof(AsEntityConverter<IEntity>), Description = "Should work for collection type")]
-        public void Should_set_converter_for_property_with_IEntity_property_type(Type type, Type converterType)
+        [TestCase("TestEntity", typeof(AsEntityConverter<ITestEntity>))]
+        [TestCase("TestEntityList", typeof(AsEntityConverter<ITestEntity>), Description = "Should work for collection type")]
+        [TestCase("Person", typeof(AsEntityConverter<IPerson>))]
+        [TestCase("EntityList", typeof(AsEntityConverter<IEntity>), Description = "Should work for collection type")]
+        public void Should_set_converter_for_property_with_IEntity_property_type(string propertyName, Type converterType)
         {
             // given
             var convention = new Mock<IPropertyMappingProvider>();
-            convention.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(type));
+            convention.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty(propertyName));
             convention.SetupGet(instance => instance.ConverterType).Returns(default(Type));
             convention.SetupSet(instance => instance.ConverterType = converterType);
 

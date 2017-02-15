@@ -75,6 +75,7 @@
     <Compile Include="Inheritance\ISpecificContainer.cs" />
     <Compile Include="Inheritance\Specialized\IInterface.cs" />
     <Compile Include="IPerson.cs" />
+    <Compile Include="ITestEntity.cs" />
     <Compile Include="LargeDataset\IViscosityComplex.cs" />
     <Compile Include="LargeDataset\ICureComplex.cs" />
     <Compile Include="LargeDataset\IProduct.cs" />

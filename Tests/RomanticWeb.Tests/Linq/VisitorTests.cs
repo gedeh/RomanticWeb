@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Moq;
 using NUnit.Framework;
@@ -173,7 +175,7 @@ namespace RomanticWeb.Tests.Linq
             {
                 new Tuple<IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons select person,
-                    Resourcer.Resource.AsString("Queries.SelectAll.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectAll.rq")).ReadToEnd(),
                     "Gperson0",
                     "person0",
                     "s",
@@ -181,7 +183,7 @@ namespace RomanticWeb.Tests.Linq
                     "o"),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons where person.FirstName == "Karol" select person,
-                    Resourcer.Resource.AsString("Queries.SelectByName.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectByName.rq")).ReadToEnd(),
                     "Gperson0",
                     "person0",
                     "s",
@@ -189,7 +191,7 @@ namespace RomanticWeb.Tests.Linq
                     "o"),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons where person.Friends.Any(friend => friend.FirstName == "Karol") select person,
-                    Resourcer.Resource.AsString("Queries.SelectFriendByNameWithSubquery.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectFriendByNameWithSubquery.rq")).ReadToEnd(),
                     "Gperson0",
                     "person0",
                     "s",
@@ -197,7 +199,7 @@ namespace RomanticWeb.Tests.Linq
                     "o"),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons from friend in person.Friends where friend.FirstName == "Karol" select person,
-                    Resourcer.Resource.AsString("Queries.SelectFriendByName.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectFriendByName.rq")).ReadToEnd(),
                     "Gperson0",
                     "person0",
                     "s",
@@ -205,7 +207,7 @@ namespace RomanticWeb.Tests.Linq
                     "o"),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons where person.Friend.Friends.Any(friend => Regex.IsMatch(friend.FirstName, "Ka.*")) select person,
-                    Resourcer.Resource.AsString("Queries.SelectEntityComplexSubquery.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectEntityComplexSubquery.rq")).ReadToEnd(),
                     "Gperson0",
                     "person0",
                     "s",
@@ -213,7 +215,7 @@ namespace RomanticWeb.Tests.Linq
                     "o"),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons select person,
-                    Resourcer.Resource.AsString("Queries.Ask.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.Ask.rq")).ReadToEnd(),
                     null,
                     null,
                     null,
@@ -221,7 +223,7 @@ namespace RomanticWeb.Tests.Linq
                     null),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons select person,
-                    Resourcer.Resource.AsString("Queries.SelectCountDistinct.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectCountDistinct.rq")).ReadToEnd(),
                     null,
                     null,
                     null,
@@ -229,12 +231,12 @@ namespace RomanticWeb.Tests.Linq
                     null),
                 new Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string>(
                     from person in _persons from friend in person.Friends where friend.Id.ToString().Contains("Karol") select person,
-                    Resourcer.Resource.AsString("Queries.SelectFriendByIdSubstring.rq"),
+                    new StreamReader(GetType().GetTypeInfo().Assembly.GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectFriendByIdSubstring.rq")).ReadToEnd(),
                     "Gperson0",
                     "person0",
                     "s",
                     "p",
-                    "o"),
+                    "o")
             };
         }
 

@@ -5,17 +5,28 @@
         "RomanticWeb.Contracts": "1.0.0-*",
         "RomanticWeb.Mapping.Fluent": "1.0.0-*",
         "RomanticWeb.dotNetRDF": "1.0.0-*",
-        "RomanticWeb": "1.0.0-*",
         "RomanticWeb.TestEntities": "1.0.0-*",
         "RomanticWeb.TestEntities.FluentMappings": "1.0.0-*",
         "RomanticWeb.TestEntities.MixedMappings": "1.0.0-*",
         "FluentAssertions": "4.17.0",
         "NUnit": "3.5.0",
-        "Moq": "4.6.38-alpha"
+        "Moq": "4.6.38-alpha",
+        "RomanticWeb": "1.0.0-*",
+        "dotnet-test-nunit": "3.4.0-beta-3"
     },
+    "testRunner": "nunit",
     "frameworks": {
-        "netstandard1.6": {
-            "imports": "dnxcore50"
+        "netcoreapp1.0": {
+            "imports": [
+                "netcoreapp1.0",
+                "portable-net45+win8"
+            ],
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "version": "1.0.0-*",
+                    "type": "platform"
+                }
+            }
         }
     },
     "buildOptions": {
@@ -23,6 +34,7 @@
             "exclude": [ "JsonLd" ]
         },
         "define": [ "NETSTANDARD16" ],
+        "copyToOutput": [ "../appsettings.json", "config.ttl" ],
         "embed": [
             "Linq/Queries/Ask.rq",
             "Linq/Queries/SelectAll.rq",
@@ -41,7 +53,7 @@
             "TestGraphs/EntityWithManyTypes.trig",
             "TestGraphs/InheritedPropertyGraph.trig",
             "TestGraphs/InheritingEntities.trig",
-            "TestGraphs/LargeDataset.trig",
+            "TestGraphs/LargeDataset.nq",
             "TestGraphs/LooseCollections.trig",
             "TestGraphs/MixedCollections.trig",
             "TestGraphs/RdfLists.trig",

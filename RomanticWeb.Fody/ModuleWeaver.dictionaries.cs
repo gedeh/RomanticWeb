@@ -2,6 +2,7 @@
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
+using RomanticWeb.Dynamic;
 using RomanticWeb.Fody.Dictionaries;
 
 namespace RomanticWeb.Fody
@@ -38,7 +39,11 @@ namespace RomanticWeb.Fody
         private void CreateDictionaryOwnerType(DictionaryMappingMeta dictionary)
         {
             var declaringType = dictionary.Property.DeclaringType;
-            var names = new CecilDictionaryEntityNames(dictionary.Property);
+            var names = new DictionaryEntityNames(
+                dictionary.Property.DeclaringType.Namespace,
+                dictionary.Property.DeclaringType.Name,
+                dictionary.Property.Name,
+                dictionary.Property.DeclaringType.Module.Assembly.Name.Name);
             var dictionaryOwnerType = new TypeDefinition(names.Namespace, names.OwnerTypeName, declaringType.Attributes);
 
             var genericArgs = dictionary.EntryType.JoinWith(dictionary.GenericArguments);
@@ -53,7 +58,11 @@ namespace RomanticWeb.Fody
         private void CreateDictionaryEntryType(DictionaryMappingMeta dictionary)
         {
             var declaringType = dictionary.Property.DeclaringType;
-            var names = new CecilDictionaryEntityNames(dictionary.Property);
+            var names = new DictionaryEntityNames(
+                dictionary.Property.DeclaringType.Namespace,
+                dictionary.Property.DeclaringType.Name,
+                dictionary.Property.Name,
+                dictionary.Property.DeclaringType.Module.Assembly.Name.Name);
             var entryType = new TypeDefinition(names.Namespace, names.EntryTypeName, declaringType.Attributes);
 
             var baseType = Imports.DictionaryEntryTypeRef.MakeGenericInstanceType(dictionary.GenericArguments);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 #if NETSTANDARD16
 using Microsoft.Extensions.Configuration;
 #else
@@ -12,14 +13,30 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
     internal class CustomProviderElement : StorageProviderElement
     {
 #if NETSTANDARD16
+        private IDictionary<string, string> _parameters = new Dictionary<string, string>();
+
         internal CustomProviderElement(IConfigurationSection configurationSection) : base(configurationSection)
         {
             TypeName = configurationSection.GetValue<string>("typeName");
+            var parameters = configurationSection.GetSection("parameters");
+            if (parameters == null)
+            {
+                return;
+            }
+
+            foreach (var parameter in parameters.GetChildren())
+            {
+                _parameters.Add(parameter.GetValue<string>("key"), parameter.GetValue<string>("value"));
+            }
         }
 
         public string TypeName { get; set; }
 
-        public IDictionary<string, string> ConstructorParametersElement { get; set; }
+        public IDictionary<string, string> Parameters
+        {
+            get { return _parameters; }
+            set { _parameters = value ?? new Dictionary<string, string>(); }
+        }
 #else
         private const string TypeAttributeName = "type";
         private const string ConstructorParametersElementName = "parameters";
@@ -44,7 +61,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
             get
             {
 #if NETSTANDARD16
-                return ConstructorParametersElement;
+                return _parameters;
 #else
                 return (from KeyValueConfigurationElement element in ConstructorParametersElement select element).ToDictionary(e => e.Key, e => e.Value);
 #endif

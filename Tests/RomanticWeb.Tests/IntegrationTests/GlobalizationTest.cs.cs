@@ -15,14 +15,14 @@ namespace RomanticWeb.Tests.IntegrationTests
         {
             var person = EntityContext.Create<IPerson>(new EntityId("http://temp.uri/person"));
             person.Name = "Carl";
-            EntityContext.CurrentCulture = CultureInfo.GetCultureInfo("pl");
+            EntityContext.CurrentCulture = new CultureInfo("pl");
             person.Name = "Karol";
-            EntityContext.CurrentCulture = CultureInfo.GetCultureInfo("en");
+            EntityContext.CurrentCulture = new CultureInfo("en");
             person.Name = "Charles";
             EntityContext.Commit();
 
             person.Name.Should().Be("Charles");
-            EntityContext.CurrentCulture = CultureInfo.GetCultureInfo("pl");
+            EntityContext.CurrentCulture = new CultureInfo("pl");
             person.Name.Should().Be("Karol");
             EntityContext.CurrentCulture = CultureInfo.InvariantCulture;
             person.Name.Should().Be("Carl");

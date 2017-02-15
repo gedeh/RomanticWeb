@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -16,7 +17,14 @@ namespace RomanticWeb.Tests.Configuration
         [SetUp]
         public void Setup()
         {
+            Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), "netcoreapp1.0"));
             _configuration = StoresConfigurationSection.Default;
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), ".."));
         }
 
         [Test]
@@ -84,11 +92,14 @@ namespace RomanticWeb.Tests.Configuration
         public void Should_load_configurations()
         {
             // given
+#if NETSTANDARD16
+            var loader = _configuration.OpenConfiguration("default");
+#else
             var temp = Environment.CurrentDirectory;
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var loader = _configuration.OpenConfiguration("default");
             Environment.CurrentDirectory = temp;
-
+#endif
             // then
             loader.LoadObject("store").Should().BeOfType<VDS.RDF.TripleStore>();
             loader.LoadObject(new Uri("urn:by:uri")).Should().BeOfType<VDS.RDF.TripleStore>();
@@ -96,6 +107,7 @@ namespace RomanticWeb.Tests.Configuration
 
         public static IEnumerable GetProviderConfigurations()
         {
+#if !NETSTANDARD16
             var virtuoso = typeof(VDS.RDF.Storage.VirtuosoManager);
             yield return new TestCaseData("virtuoso-connectionString", virtuoso)
                 .SetDescription("Virtoso with direct connection string");
@@ -109,7 +121,7 @@ namespace RomanticWeb.Tests.Configuration
                 .SetDescription("Virtoso with server, port, user, pass and db");
             yield return new TestCaseData("virtuoso-server-timeout", virtuoso)
                 .SetDescription("Virtoso with server, port, user, pass, db and timeout");
-
+#endif
             var allegro = typeof(VDS.RDF.Storage.AllegroGraphConnector);
             yield return new TestCaseData("allegro-baseUri-storeID", allegro)
                 .SetDescription("Allegro with two parameters");

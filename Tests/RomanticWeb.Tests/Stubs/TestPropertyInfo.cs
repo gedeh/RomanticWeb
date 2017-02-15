@@ -1,121 +1,55 @@
-using System;
-using System.Globalization;
-using System.Reflection;
+﻿using System.Collections.Generic;
+using RomanticWeb.Entities;
+using RomanticWeb.TestEntities;
 
 namespace RomanticWeb.Tests.Stubs
 {
-    internal class TestPropertyInfo : PropertyInfo
+    /// <summary>Provides test properties.</summary>
+    public class TestPropertyInfo
     {
-        private readonly Type _type;
-        private readonly Type _declaringType;
-        private readonly string _name;
+        /// <summary>Gets or sets an integer enumeration.</summary>
+        public IEnumerable<int> IntegerEnumeration { get; set; }
 
-        public TestPropertyInfo(Type type, Type declaringType = null, string name = "Property")
-        {
-            _type = type;
-            _declaringType = declaringType;
-            _name = name;
-        }
+        /// <summary>Gets or sets an integer collection.</summary>
+        public ICollection<int> IntegerCollection { get; set; }
 
-        public override string Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
+        /// <summary>Gets or sets an integer array.</summary>
+        public int[] IntegerArray { get; set; }
 
-        public override Type DeclaringType
-        {
-            get
-            {
-                return _declaringType;
-            }
-        }
+        /// <summary>Gets or sets an integer list.</summary>
+        public IList<int> IntegerList { get; set; }
 
-        public override Type ReflectedType
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        /// <summary>Gets or sets an integer set.</summary>
+        public ISet<int> IntegerSet { get; set; }
 
-        public override Type PropertyType
-        {
-            get
-            {
-                return _type;
-            }
-        }
+        /// <summary>Gets or sets an integer-string dictionary.</summary>
+        public IDictionary<int, string> IntegerStringDictionary { get; set; }
 
-        public override PropertyAttributes Attributes
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        /// <summary>Gets or sets an integer-integer dictionary.</summary>
+        public IDictionary<int, int> IntegerIntegerDictionary { get; set; }
 
-        public override bool CanRead
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        /// <summary>Gets or sets a floating point operation value.</summary>
+        public float Float { get; set; }
 
-        public override bool CanWrite
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        /// <summary>Gets or sets an integer value.</summary>
+        public int Integer { get; set; }
 
-        public override object[] GetCustomAttributes(bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>Gets or sets an integer value if any.</summary>
+        public int? NullableInteger { get; set; }
 
-        public override bool IsDefined(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>Gets or sets a test entity.</summary>
+        public ITestEntity TestEntity { get; set; }
 
-        public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>Gets or sets a collection of test entities.</summary>
+        public IList<ITestEntity> TestEntityList { get; set; }
 
-        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>Gets or sets a person.</summary>
+        public IPerson Person { get; set; }
 
-        public override MethodInfo[] GetAccessors(bool nonPublic)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>Gets or sets an entity.</summary>
+        public IEntity Entity { get; set; }
 
-        public override MethodInfo GetGetMethod(bool nonPublic)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override MethodInfo GetSetMethod(bool nonPublic)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ParameterInfo[] GetIndexParameters()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>Gets or sets a list of entities.</summary>
+        public IList<IEntity> EntityList { get; set; }
     }
 }

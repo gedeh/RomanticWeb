@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -32,7 +33,7 @@ namespace RomanticWeb.Tests
         public void Adding_attribute_mappings_for_an_Assembly_twice_should_add_only_one_repository_single_call()
         {
             // given
-            var withMappings = typeof(IPerson).Assembly;
+            var withMappings = typeof(IPerson).GetTypeInfo().Assembly;
 
             // when
             _entityContextFactory.WithMappings(
@@ -51,7 +52,7 @@ namespace RomanticWeb.Tests
         public void Adding_fluent_mappings_for_an_Assembly_twice_should_add_only_one_repository_single_call()
         {
             // given
-            var withMappings = typeof(IPerson).Assembly;
+            var withMappings = typeof(IPerson).GetTypeInfo().Assembly;
 
             // when
             _entityContextFactory.WithMappings(
@@ -70,7 +71,7 @@ namespace RomanticWeb.Tests
         public void Adding_attribute_mappings_for_an_Assembly_twice_should_add_only_one_repository()
         {
             // given
-            var withMappings = typeof(IPerson).Assembly;
+            var withMappings = typeof(IPerson).GetTypeInfo().Assembly;
 
             // when
             _entityContextFactory.WithMappings(m => m.FromAssembly(withMappings));
@@ -85,7 +86,7 @@ namespace RomanticWeb.Tests
         public void Adding_fluent_mappings_for_an_Assembly_twice_should_add_only_one_repository()
         {
             // given
-            var withMappings = typeof(IPerson).Assembly;
+            var withMappings = typeof(IPerson).GetTypeInfo().Assembly;
 
             // when
             _entityContextFactory.WithMappings(m => m.FromAssembly(withMappings));

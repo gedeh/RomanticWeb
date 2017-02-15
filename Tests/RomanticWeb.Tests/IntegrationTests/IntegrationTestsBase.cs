@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using Moq;
 using NUnit.Framework;
 using RomanticWeb.DotNetRDF;
@@ -84,7 +85,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         protected virtual void BuildMappings(MappingBuilder m)
         {
             m.FromAssemblyOf<IAnimal>();
-            m.AddMapping(GetType().Assembly, Mappings);
+            m.AddMapping(GetType().GetTypeInfo().Assembly, Mappings);
         }
 
         protected virtual void ChildTeardown()

@@ -25,13 +25,21 @@ namespace RomanticWeb.Tests.Helpers
 
         public void Dispose()
         {
-            Thread.CurrentThread.CurrentCulture = this._rollbackCulture;
+#if NETSTANDARD16
+            CultureInfo.CurrentCulture = this._rollbackCulture;
+#else
+            System.Threading.Thread.CurrentThread.CurrentCulture = this._rollbackCulture;
+#endif
         }
 
         private void CommonConstructor(CultureInfo cultureinfo)
         {
-            _rollbackCulture = Thread.CurrentThread.CurrentCulture;
-            Thread.CurrentThread.CurrentCulture = cultureinfo;
+            _rollbackCulture = CultureInfo.CurrentCulture;
+#if NETSTANDARD16
+            CultureInfo.CurrentCulture = cultureinfo;
+#else
+            System.Threading.Thread.CurrentThread.CurrentCulture = cultureinfo;
+#endif
         }
     }
 }

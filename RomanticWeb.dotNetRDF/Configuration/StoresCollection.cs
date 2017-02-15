@@ -84,9 +84,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
                 {
                     foreach (var store in subSection.GetChildren())
                     {
-                        var storeInstance = factory(this, store);
-                        storeInstance.Name = subSection.Key;
-                        _stores.Add(storeInstance);
+                        _stores.Add(factory(this, store));
                     }
                 }
             }

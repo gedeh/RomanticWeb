@@ -81,8 +81,8 @@ namespace RomanticWeb.DotNetRDF
         private IEnumerable<SparqlUpdateCommand> CreateGraphUpdateCommand(GraphUpdate change)
         {
             INodeFactory factory = new NodeFactory();
-            var removedTriples = ConvertTriples(change.RemovedQuads, factory);
-            var addedTriples = ConvertTriples(change.AddedQuads, factory);
+            var removedTriples = ConvertTriples(change.RemovedQuads, factory).Replace("\\u", "\\\\u");
+            var addedTriples = ConvertTriples(change.AddedQuads, factory).Replace("\\u", "\\\\u");
 
             var format = change.Entity is BlankId ? InsterBlankEntityCommandText : ModifyEntityCommandText;
             var commandText = string.Format(format, removedTriples, addedTriples);
@@ -101,7 +101,7 @@ namespace RomanticWeb.DotNetRDF
         private IEnumerable<SparqlUpdateCommand> CreateReconstructCommand(GraphReconstruct change)
         {
             INodeFactory factory = new NodeFactory();
-            var addedTriples = ConvertTriples(change.AddedQuads, factory);
+            var addedTriples = ConvertTriples(change.AddedQuads, factory).Replace("\\u", "\\\\u");
 
             var commandText = string.Format(ReconstructCommandText, addedTriples);
             var deleteCommands = new SparqlParameterizedString(commandText);

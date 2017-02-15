@@ -29,14 +29,14 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
         }
 
-        [TestCase(typeof(int))]
-        [TestCase(typeof(IList<int>), Description = "Should work for collection type")]
-        [TestCase(typeof(int?), Description = "Should work for nullable type")]
-        public void Should_be_applied_to_property_without_converter_with_known_property_type(Type type)
+        [TestCase("Integer")]
+        [TestCase("IntegerList", Description = "Should work for collection type")]
+        [TestCase("NullableInteger", Description = "Should work for nullable type")]
+        public void Should_be_applied_to_property_without_converter_with_known_property_type(string propertyName)
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = MakePropertyMappingProvider(new TestPropertyInfo(type), default(Type));
+            var mapping = MakePropertyMappingProvider(propertyName, default(Type));
 
             // when
             var shouldApply = ((IPropertyConvention)_convention).ShouldApply(mapping.Object);
@@ -49,7 +49,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         public void Should_not_be_applied_to_property_with_unknown_property_type()
         {
             // given
-            var mapping = MakePropertyMappingProvider(new TestPropertyInfo(typeof(float)), default(Type));
+            var mapping = MakePropertyMappingProvider("Float", default(Type));
 
             // when
             var shouldApply = ((IPropertyConvention)_convention).ShouldApply(mapping.Object);
@@ -63,7 +63,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = MakePropertyMappingProvider(new TestPropertyInfo(typeof(int)), default(Type));
+            var mapping = MakePropertyMappingProvider("Integer", default(Type));
 
             // when
             ((IPropertyConvention)_convention).Apply(mapping.Object);
@@ -77,7 +77,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(IList<int>)), default(Type));
+            var mapping = MakeCollectionMappingProvider("IntegerList", default(Type));
 
             // when
             ((IPropertyConvention)_convention).Apply(mapping.Object);
@@ -91,7 +91,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(IList<int>)), default(Type), StoreAs.RdfList);
+            var mapping = MakeCollectionMappingProvider("IntegerList", default(Type), StoreAs.RdfList);
 
             // when
             ((IPropertyConvention)_convention).Apply(mapping.Object);
@@ -105,7 +105,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(IList<int>)), default(Type), default(StoreAs), typeof(Type));
+            var mapping = MakeCollectionMappingProvider("IntegerList", default(Type), default(StoreAs), typeof(Type));
 
             // when
             ((ICollectionConvention)_convention).Apply(mapping.Object);
@@ -120,7 +120,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             // given
             _convention.SetDefault<int[], Base64BinaryConverter>();
             _convention.SetDefault<int, IntegerConverter>();
-            var mapping = MakeCollectionMappingProvider(new TestPropertyInfo(typeof(int[])), default(Type));
+            var mapping = MakeCollectionMappingProvider("IntegerArray", default(Type));
 
             // when
             ((IPropertyConvention)_convention).Apply(mapping.Object);
@@ -135,7 +135,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             // given
             _convention.SetDefault<int, IntegerConverter>();
             var keyMapping = MakePropertyMappingProvider(null, default(Type));
-            var mapping = MakeDictionaryMappingProvider(new TestPropertyInfo(typeof(IDictionary<int, int>)), keyMapping.Object, MakePropertyMappingProvider(null, default(Type)).Object);
+            var mapping = MakeDictionaryMappingProvider("IntegerIntegerDictionary", keyMapping.Object, MakePropertyMappingProvider(null, default(Type)).Object);
 
             // when
             ((IDictionaryConvention)_convention).Apply(mapping.Object);
@@ -150,7 +150,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             // given
             _convention.SetDefault<int, IntegerConverter>();
             var valueMapping = MakePropertyMappingProvider(null, default(Type));
-            var mapping = MakeDictionaryMappingProvider(new TestPropertyInfo(typeof(IDictionary<int, int>)), MakePropertyMappingProvider(null, default(Type)).Object, valueMapping.Object);
+            var mapping = MakeDictionaryMappingProvider("IntegerIntegerDictionary", MakePropertyMappingProvider(null, default(Type)).Object, valueMapping.Object);
 
             // when
             ((IDictionaryConvention)_convention).Apply(mapping.Object);
@@ -159,19 +159,19 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             valueMapping.VerifySet(instance => instance.ConverterType = typeof(IntegerConverter), Times.Once);
         }
 
-        private Mock<IPropertyMappingProvider> MakePropertyMappingProvider(PropertyInfo property, Type converterType)
+        private Mock<IPropertyMappingProvider> MakePropertyMappingProvider(string propertyName, Type converterType)
         {
             var result = new Mock<IPropertyMappingProvider>();
-            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.SetupGet(instance => instance.PropertyInfo).Returns(propertyName != null ? typeof(TestPropertyInfo).GetProperty(propertyName) : null);
             result.SetupGet(instance => instance.ConverterType).Returns(() => converterType);
             result.SetupSet(instance => instance.ConverterType = It.IsAny<Type>()).Callback<Type>(type => converterType = type);
             return result;
         }
 
-        private Mock<ICollectionMappingProvider> MakeCollectionMappingProvider(PropertyInfo property, Type converterType, StoreAs storeAs = default(StoreAs), Type elementConverterType = null)
+        private Mock<ICollectionMappingProvider> MakeCollectionMappingProvider(string propertyName, Type converterType, StoreAs storeAs = default(StoreAs), Type elementConverterType = null)
         {
             var result = new Mock<ICollectionMappingProvider>();
-            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty(propertyName));
             result.SetupGet(instance => instance.ConverterType).Returns(converterType);
             result.SetupSet(instance => instance.ConverterType = It.IsAny<Type>());
             result.SetupGet(instance => instance.StoreAs).Returns(storeAs);
@@ -181,10 +181,10 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             return result;
         }
 
-        private Mock<IDictionaryMappingProvider> MakeDictionaryMappingProvider(PropertyInfo property, IPredicateMappingProvider key, IPredicateMappingProvider value)
+        private Mock<IDictionaryMappingProvider> MakeDictionaryMappingProvider(string propertyName, IPredicateMappingProvider key, IPredicateMappingProvider value)
         {
             var result = new Mock<IDictionaryMappingProvider>();
-            result.SetupGet(instance => instance.PropertyInfo).Returns(property);
+            result.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty(propertyName));
             result.SetupGet(instance => instance.Key).Returns(key);
             result.SetupGet(instance => instance.Value).Returns(value);
             return result;

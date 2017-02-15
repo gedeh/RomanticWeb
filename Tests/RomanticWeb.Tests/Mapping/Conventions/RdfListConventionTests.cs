@@ -27,7 +27,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             var mapping = new Mock<ICollectionMappingProvider>();
-            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(IList<int>)));
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty("IntegerList"));
             mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
 
             // when
@@ -37,15 +37,15 @@ namespace RomanticWeb.Tests.Mapping.Conventions
             shouldApply.Should().BeTrue();
         }
 
-        [TestCase(typeof(ICollection<int>))]
-        [TestCase(typeof(IEnumerable<int>))]
-        [TestCase(typeof(ISet<int>))]
-        [TestCase(typeof(IDictionary<int, string>))]
-        public void Should_not_be_applied_for_non_list_collections(Type collectionType)
+        [TestCase("IntegerCollection")]
+        [TestCase("IntegerEnumeration")]
+        [TestCase("IntegerSet")]
+        [TestCase("IntegerStringDictionary")]
+        public void Should_not_be_applied_for_non_list_collections(string propertyName)
         {
             // given
             var mapping = new Mock<ICollectionMappingProvider>();
-            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(collectionType));
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty(propertyName));
             mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
 
             // when
@@ -60,7 +60,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             var mapping = new Mock<ICollectionMappingProvider>();
-            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(int)));
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty("Integer"));
             mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
 
             // when
@@ -75,7 +75,7 @@ namespace RomanticWeb.Tests.Mapping.Conventions
         {
             // given
             var mapping = new Mock<ICollectionMappingProvider>();
-            mapping.SetupGet(instance => instance.PropertyInfo).Returns(new TestPropertyInfo(typeof(int)));
+            mapping.SetupGet(instance => instance.PropertyInfo).Returns(typeof(TestPropertyInfo).GetProperty("Integer"));
             mapping.SetupGet(instance => instance.StoreAs).Returns(StoreAs.Undefined);
             mapping.SetupSet(instance => instance.StoreAs = StoreAs.RdfList);
 

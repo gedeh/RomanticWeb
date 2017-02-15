@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 
 namespace RomanticWeb.Dynamic
 {
-    internal class EmitHelper
+    public class EmitHelper
     {
         private const string DynamicMappingModuleName = "DynamicDictionaryMappings";
         private static readonly object Locker = new object();

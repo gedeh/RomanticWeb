@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using RomanticWeb.Mapping;
@@ -162,8 +163,8 @@ namespace RomanticWeb.Tests.Mapping
 
         protected override IEnumerable<IMappingProviderSource> CreateMappingSources()
         {
-            yield return new FluentMappingsSource(typeof(IHidesMember).Assembly, null);
-            yield return new AttributeMappingsSource(typeof(IHidesMember).Assembly, null);
+            yield return new FluentMappingsSource(typeof(IHidesMember).GetTypeInfo().Assembly, null);
+            yield return new AttributeMappingsSource(typeof(IHidesMember).GetTypeInfo().Assembly, null);
         }
     }
 }

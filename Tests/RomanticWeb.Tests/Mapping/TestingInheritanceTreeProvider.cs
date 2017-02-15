@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Moq;
 using RomanticWeb.Mapping.Providers;
 using RomanticWeb.Mapping.Visitors;
@@ -63,7 +64,7 @@ namespace RomanticWeb.Tests.Mapping
                 get
                 {
                     var result = new Mock<IPropertyMappingProvider>();
-                    result.SetupGet(instance => instance.PropertyInfo).Returns(typeof(IParentLevel3).GetProperty("InParent3"));
+                    result.SetupGet(instance => instance.PropertyInfo).Returns(typeof(IParentLevel3).GetTypeInfo().GetProperty("InParent3"));
                     result.Setup(instance => instance.GetTerm).Returns(GetUri);
                     yield return result.Object;
                 }

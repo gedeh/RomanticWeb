@@ -9,3 +9,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("RomanticWeb.Tests")]
 [assembly: InternalsVisibleTo("ImpromptuInterfaceDynamicAssembly")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: InternalsVisibleTo("RomanticWeb.Fody")]

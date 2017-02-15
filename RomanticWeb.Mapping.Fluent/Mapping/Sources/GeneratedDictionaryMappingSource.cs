@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Remotion.Linq;
+using RomanticWeb.Collections;
 using RomanticWeb.Collections.Mapping;
 using RomanticWeb.Diagnostics;
 using RomanticWeb.Dynamic;
@@ -64,9 +66,8 @@ namespace RomanticWeb.Mapping.Sources
         private EntityMap CreateDictionaryOwnerMapping(IDictionaryMappingProvider map)
         {
             // todo: refactoring
-            var actualEntityType = map.PropertyInfo.DeclaringType;
-            var owner = actualEntityType.GetTypeInfo().Assembly.GetType(string.Format("{0}_{1}_Owner", actualEntityType.FullName, map.PropertyInfo.Name));
-            var entry = actualEntityType.GetTypeInfo().Assembly.GetType(string.Format("{0}_{1}_Entry", actualEntityType.FullName, map.PropertyInfo.Name));
+            var entry = GetOrCreateDictionaryEntryType(map.PropertyInfo);
+            var owner = GetOrCreateDictionaryEntryType(map.PropertyInfo, true);
             var type = typeof(DictionaryOwnerMap<,,,>);
             var typeArguments = new[] { owner, entry }.Concat(map.PropertyInfo.PropertyType.GenericTypeArguments).ToArray();
             var ownerMapType = type.MakeGenericType(typeArguments);
@@ -103,14 +104,13 @@ namespace RomanticWeb.Mapping.Sources
 
         private EntityMap CreateDictionaryEntryMapping(IDictionaryMappingProvider map)
         {
-            var actualEntityType = map.PropertyInfo.DeclaringType;
-            var entry = actualEntityType.GetTypeInfo().Assembly.GetType(string.Format("{0}_{1}_Entry", actualEntityType.FullName, map.PropertyInfo.Name));
+            var entry = GetOrCreateDictionaryEntryType(map.PropertyInfo);
             var type = typeof(DictionaryEntryMap<,,>);
             var typeArguments = new[] { entry }.Concat(map.PropertyInfo.PropertyType.GenericTypeArguments).ToArray();
             var ownerMapType = type.MakeGenericType(typeArguments);
 
             var defineDynamicModule = _emitHelper.GetDynamicModule();
-            Type mapType = null;
+            Type mapType;
             lock (defineDynamicModule)
             {
                 mapType = defineDynamicModule.GetOrEmitType(entry.Name + "Map", builder => EmitEntryMap(map, builder, entry, ownerMapType));
@@ -119,8 +119,7 @@ namespace RomanticWeb.Mapping.Sources
             return (EntityMap)Activator.CreateInstance(mapType);
         }
 
-        private TypeBuilder EmitEntryMap(
-            IDictionaryMappingProvider map, ModuleBuilder defineDynamicModule, Type entry, Type ownerMapType)
+        private TypeBuilder EmitEntryMap(IDictionaryMappingProvider map, ModuleBuilder defineDynamicModule, Type entry, Type ownerMapType)
         {
             var typeBuilderHelper = defineDynamicModule.DefineType(entry.Name + "Map", TypeAttributes.Public, ownerMapType);
             var setupKeyMethod = typeBuilderHelper.DefineMethod(
@@ -155,6 +154,48 @@ namespace RomanticWeb.Mapping.Sources
 
             ilGenerator.Emit(OpCodes.Pop);
             ilGenerator.Emit(OpCodes.Ret);  
+        }
+
+        private Type GetOrCreateDictionaryEntryType(PropertyInfo property, bool obtainOwnerType = false)
+        {
+            var dictionaryEntityNames = new DictionaryEntityNames(
+                property.DeclaringType.Namespace,
+                property.DeclaringType.Name,
+                property.Name,
+                property.DeclaringType.GetTypeInfo().Assembly.GetName().Name);
+
+            Type type = null;
+            string typeName;
+            if (obtainOwnerType)
+            {
+                var entryType = GetOrCreateDictionaryEntryType(property);
+                typeName = dictionaryEntityNames.OwnerTypeName;
+                type = typeof(IDictionaryOwner<,,>).MakeGenericType(new[] {entryType}.Concat(property.PropertyType.GetGenericArguments()).ToArray());
+            }
+            else
+            {
+                typeName = dictionaryEntityNames.EntryTypeName;
+                type = typeof(IDictionaryEntry<,>).MakeGenericType(property.PropertyType.GetGenericArguments());
+            }
+
+            return property.DeclaringType.GetTypeInfo().Assembly.GetType(typeName) ??
+                   (Type)GetType().GetMethod("CreateDictionaryEntryType", BindingFlags.Instance | BindingFlags.NonPublic)
+                       .MakeGenericMethod(type)
+                       .Invoke(this, new object[] { typeName });
+        }
+
+        private Type CreateDictionaryEntryType<T>(string typeName)
+        {
+            var dynamicModule = _emitHelper.GetDynamicModule();
+            Type result;
+            lock (dynamicModule)
+            {
+                result = dynamicModule.GetOrEmitType(
+                    typeName,
+                    builder => dynamicModule.DefineType(typeName, TypeAttributes.Public | TypeAttributes.Interface | TypeAttributes.Abstract, null, new[] { typeof(T) }));
+            }
+
+            return result;
         }
     }
 }

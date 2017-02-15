@@ -23,7 +23,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
             }
 
             ConfigurationSection = configurationSection;
-            Name = configurationSection.Key;
+            Name = configurationSection.GetValue<string>("name");
         }
 
         /// <summary>Gets or sets the name.</summary>

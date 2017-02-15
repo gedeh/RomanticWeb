@@ -22,7 +22,8 @@ namespace RomanticWeb.Entities.ResultPostprocessing
         }
 
         /// <summary>Initializes a new instance of the <see cref="DictionaryTransformer"/> class.</summary>
-        public DictionaryTransformer() : this(new DefaultDictionaryTypeProvider())
+        /// <param name="emitHelper">The code emitting helper.</param>
+        public DictionaryTransformer(EmitHelper emitHelper) : this(new DefaultDictionaryTypeProvider(emitHelper))
         {
         }
 

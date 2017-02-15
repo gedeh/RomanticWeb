@@ -1,14 +1,14 @@
 ﻿namespace RomanticWeb.Dynamic
 {
     /// <summary>Contains the type names of dictionary IEntities, which are used to access dictionary triples.</summary>
-    internal abstract class DictionaryEntityNames
+    internal class DictionaryEntityNames
     {
         private readonly string _ns;
         private readonly string _entityTypeName;
         private readonly string _propertyName;
         private readonly string _assemblyName;
 
-        protected DictionaryEntityNames(string @namespace, string entityTypeName, string propertyName, string assemblyName)
+        internal DictionaryEntityNames(string @namespace, string entityTypeName, string propertyName, string assemblyName)
         {
             _ns = @namespace;
             _entityTypeName = entityTypeName;
