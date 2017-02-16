@@ -66,7 +66,7 @@ namespace RomanticWeb.Dynamic
                 }
             }
 
-            return mappingAssembly.GetType(isOwnerType ? entityName.OwnerTypeName : entityName.EntryTypeName);
+            return mappingAssembly.GetType(isOwnerType ? entityName.FullOwnerTypeName : entityName.FullEntryTypeName);
         }
     }
 }

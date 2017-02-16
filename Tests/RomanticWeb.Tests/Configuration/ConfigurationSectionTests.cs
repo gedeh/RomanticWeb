@@ -16,15 +16,19 @@ namespace RomanticWeb.Tests
         [SetUp]
         public void Setup()
         {
+#if NETSTANDARD16
             Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), "netcoreapp1.0"));
+#endif
             _configuration = ConfigurationSectionHandler.Default;
         }
+#if NETSTANDARD16
 
         [TearDown]
         public void Teardown()
         {
             Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), ".."));
         }
+#endif
 
         [Test]
         public void Should_contain_added_assemblies()

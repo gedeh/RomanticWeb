@@ -28,6 +28,12 @@
         /// <summary>Gets the name of the dictionary entry type.</summary>
         public string EntryTypeName { get { return string.Format("{0}_{1}_Entry", _entityTypeName, _propertyName); } }
 
+        /// <summary>Gets the full name of the dictionary owner type.</summary>
+        public string FullOwnerTypeName { get { return string.Format("{0}.{1}", Namespace, OwnerTypeName); } }
+
+        /// <summary>Gets the full name of the dictionary entry type.</summary>
+        public string FullEntryTypeName { get { return string.Format("{0}.{1}", Namespace, EntryTypeName); } }
+
         /// <summary>Gets the dictionary types' namespace.</summary>
         public string Namespace { get { return _ns; } }
     }

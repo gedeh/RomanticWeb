@@ -93,6 +93,10 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RomanticWeb.Contracts\RomanticWeb.Contracts.csproj">
+      <Project>{17315f2e-393a-422f-80ba-575794350285}</Project>
+      <Name>RomanticWeb.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.csproj">
       <Project>{d9a45427-9698-44b8-83ab-e07351f3531d}</Project>
       <Name>RomanticWeb.Mapping.Fluent</Name>
@@ -108,6 +112,9 @@
   <Target Name="AfterBuild">
     <ItemGroup>
       <OutputFiles Include="$(OutputPath)$(AssemblyName).*" />
+      <OutputFiles Include="$(OutputPath)RomanticWeb.*" />
+      <OutputFiles Include="$(OutputPath)RomanticWeb.Contracts*" />
+      <OutputFiles Include="$(OutputPath)RomanticWeb.Mapping.Fluent.*" />
     </ItemGroup>
     <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(SolutionDir)Tools" />
   </Target>

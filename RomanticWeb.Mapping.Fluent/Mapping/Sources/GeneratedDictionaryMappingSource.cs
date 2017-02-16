@@ -169,12 +169,12 @@ namespace RomanticWeb.Mapping.Sources
             if (obtainOwnerType)
             {
                 var entryType = GetOrCreateDictionaryEntryType(property);
-                typeName = dictionaryEntityNames.OwnerTypeName;
+                typeName = dictionaryEntityNames.FullOwnerTypeName;
                 type = typeof(IDictionaryOwner<,,>).MakeGenericType(new[] {entryType}.Concat(property.PropertyType.GetGenericArguments()).ToArray());
             }
             else
             {
-                typeName = dictionaryEntityNames.EntryTypeName;
+                typeName = dictionaryEntityNames.FullEntryTypeName;
                 type = typeof(IDictionaryEntry<,>).MakeGenericType(property.PropertyType.GetGenericArguments());
             }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 #if NETSTANDARD16
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 #else
 using System.Configuration;

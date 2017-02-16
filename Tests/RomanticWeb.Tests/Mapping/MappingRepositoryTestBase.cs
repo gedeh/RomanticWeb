@@ -61,7 +61,7 @@ namespace RomanticWeb.Tests.Mapping
             }
 
             var emitHelper = _container.GetInstance<EmitHelper>();
-            return emitHelper.GetDynamicModule().Assembly.GetType(name.Split(',')[0].Split('.').Last());
+            return emitHelper.GetDynamicModule().Assembly.GetType(name.Split(',')[0]);
         }
 
         protected abstract IEnumerable<IMappingProviderSource> CreateMappingSources();

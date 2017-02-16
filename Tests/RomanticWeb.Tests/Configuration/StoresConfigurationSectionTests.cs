@@ -17,15 +17,19 @@ namespace RomanticWeb.Tests.Configuration
         [SetUp]
         public void Setup()
         {
+#if NETSTANDARD16
             Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), "netcoreapp1.0"));
+#endif
             _configuration = StoresConfigurationSection.Default;
         }
 
+#if NETSTANDARD16
         [TearDown]
         public void Teardown()
         {
             Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), ".."));
         }
+#endif
 
         [Test]
         public void Should_allow_to_load_thread_in_memory_store()

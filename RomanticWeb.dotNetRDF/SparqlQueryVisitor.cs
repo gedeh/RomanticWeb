@@ -24,6 +24,9 @@ namespace RomanticWeb.DotNetRDF
             _shouldOverrideMetaGraphQuery = requiresQueryOptimizations;
         }
 
+        /// <summary>Gets a value indicating whether this query optimized.</summary>
+        public bool IsQueryOptimized { get { return _shouldOverrideMetaGraphQuery; } }
+
         /// <inheritdoc />
         public override void VisitQuery(IQuery query)
         {
@@ -34,9 +37,6 @@ namespace RomanticWeb.DotNetRDF
 
             base.VisitQuery(query);
         }
-
-        /// <summary>Gets a value indicating whether this query optimized.</summary>
-        public bool IsQueryOptimized { get { return _shouldOverrideMetaGraphQuery; } }
 
         /// <inheritdoc />
         protected override void VisitStrongEntityAccessorGraph(StrongEntityAccessor entityAccessor)
