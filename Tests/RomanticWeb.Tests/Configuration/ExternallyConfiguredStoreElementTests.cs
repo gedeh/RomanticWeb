@@ -43,7 +43,7 @@ namespace RomanticWeb.Tests.Configuration
         {
             _loader.VerifyAll();
 #if NETSTANDARD16
-            Directory.SetCurrentDirectory(BinDirectory);
+            Directory.SetCurrentDirectory(BaseDirectory);
 #endif
         }
 

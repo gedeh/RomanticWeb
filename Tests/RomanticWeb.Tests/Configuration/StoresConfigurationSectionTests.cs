@@ -29,7 +29,7 @@ namespace RomanticWeb.Tests.Configuration
         [TearDown]
         public void Teardown()
         {
-            Directory.SetCurrentDirectory(BinDirectory);
+            Directory.SetCurrentDirectory(BaseDirectory);
         }
 #endif
 

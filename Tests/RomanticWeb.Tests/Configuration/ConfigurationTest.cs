@@ -1,5 +1,7 @@
 ﻿#if NETSTANDARD16
 using System.IO;
+using System.Text.RegularExpressions;
+
 #endif
 
 namespace RomanticWeb.Tests
@@ -9,7 +11,7 @@ namespace RomanticWeb.Tests
 #if NETSTANDARD16
         private static string _binDirectory;
 
-        protected static string BinDirectory
+        protected static string BaseDirectory
         {
             get
             {
@@ -19,6 +21,20 @@ namespace RomanticWeb.Tests
                 }
 
                 return _binDirectory;
+            }
+        }
+
+        protected static string BinDirectory
+        {
+            get
+            {
+                var result = BaseDirectory;
+                if (!Regex.IsMatch(result, "debug", RegexOptions.IgnoreCase))
+                {
+                    result = Path.Combine(result, "bin", "debug");
+                }
+
+                return result;
             }
         }
 #endif
