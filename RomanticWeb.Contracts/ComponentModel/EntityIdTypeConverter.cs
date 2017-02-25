@@ -9,6 +9,7 @@ namespace RomanticWeb.ComponentModel
     /// <summary><see cref="TypeConverter"/> between <see cref="EntityId"/> and <see cref="Uri"/>.</summary>
     public class EntityIdTypeConverter : TypeConverter
     {
+        /// <summary>Exposes a default instance of the <see cref="UriTypeConverter" /> used for comparison.</summary>
         protected static readonly UriTypeConverter UriTypeConverter;
 
         static EntityIdTypeConverter()

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Configuration;
 
-#if !NETSTANDARD16
-using System.Configuration;
-#endif
-
 namespace RomanticWeb.Configuration
 {
     /// <summary>Provides validation of <see cref="Uri"/> values.</summary>

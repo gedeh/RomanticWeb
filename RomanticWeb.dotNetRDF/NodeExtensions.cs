@@ -5,7 +5,7 @@ using VDS.RDF;
 
 namespace RomanticWeb.DotNetRDF
 {
-    /// <summary>Estension methods for <see cref="INode"/>s.</summary>
+    /// <summary>Estension methods for <see cref="VDS.RDF.INode"/>s.</summary>
     public static class NodeExtensions
     {
         /// <summary>Converts a dotNetRDF's <see cref="VDS.RDF.INode"/> into RomanticWeb's <see cref="Node"/>.</summary>

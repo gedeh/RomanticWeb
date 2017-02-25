@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Configuration;
+#if NETSTANDARD16
+using System.IO;
+#endif
 using FluentAssertions;
 #if NETSTANDARD16
 using Microsoft.Extensions.Configuration;
@@ -13,7 +16,7 @@ using VDS.RDF.Configuration;
 namespace RomanticWeb.Tests.Configuration
 {
     [TestFixture]
-    public class ExternallyConfiguredStoreElementTests
+    public class ExternallyConfiguredStoreElementTests : ConfigurationTest
     {
         private ExternallyConfiguredStoreElement _element;
         private Mock<IConfigurationLoader> _loader;
@@ -22,6 +25,7 @@ namespace RomanticWeb.Tests.Configuration
         public void Setup()
         {
 #if NETSTANDARD16
+            Directory.SetCurrentDirectory(Path.Combine(BinDirectory, "netcoreapp1.0"));
             var subSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
             subSection.SetupGet(instance => instance.Value).Returns("test");
             var configurationSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
@@ -38,6 +42,9 @@ namespace RomanticWeb.Tests.Configuration
         public void Teardown()
         {
             _loader.VerifyAll();
+#if NETSTANDARD16
+            Directory.SetCurrentDirectory(BinDirectory);
+#endif
         }
 
         [Test]

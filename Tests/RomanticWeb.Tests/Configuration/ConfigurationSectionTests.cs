@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
+#if NETSTANDARD16
 using System.IO;
+#endif
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,7 +11,7 @@ using RomanticWeb.Configuration;
 namespace RomanticWeb.Tests
 {
     [TestFixture]
-    public class ConfigurationTests
+    public class ConfigurationTests : ConfigurationTest
     {
         private ConfigurationSectionHandler _configuration;
 
@@ -17,7 +19,7 @@ namespace RomanticWeb.Tests
         public void Setup()
         {
 #if NETSTANDARD16
-            Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), "netcoreapp1.0"));
+            Directory.SetCurrentDirectory(Path.Combine(BinDirectory, "netcoreapp1.0"));
 #endif
             _configuration = ConfigurationSectionHandler.Default;
         }
@@ -26,7 +28,7 @@ namespace RomanticWeb.Tests
         [TearDown]
         public void Teardown()
         {
-            Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), ".."));
+            Directory.SetCurrentDirectory(BinDirectory);
         }
 #endif
 

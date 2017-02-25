@@ -23,8 +23,8 @@ namespace RomanticWeb.DotNetRDF.Configuration
         private readonly StoresConfigurationSection _stores;
         private IConfigurationLoader _configurationLoader;
 
-        /// <summary>Initializes a new instance of the <see cref="ExternallyConfiguredStoreElement"/> class.</summary>
 #if NETSTANDARD16
+        /// <summary>Initializes a new instance of the <see cref="ExternallyConfiguredStoreElement"/> class.</summary>
         /// <param name="configurationSection">Source configuration section.</param>
         /// <param name="stores">Stores configuration section.</param>
         public ExternallyConfiguredStoreElement(IConfigurationSection configurationSection, StoresConfigurationSection stores) : base(configurationSection)
@@ -32,6 +32,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
             _stores = stores;
         }
 #else
+        /// <summary>Initializes a new instance of the <see cref="ExternallyConfiguredStoreElement"/> class.</summary>
         /// <param name="stores">Stores configuration section.</param>
         public ExternallyConfiguredStoreElement(StoresConfigurationSection stores)
         {

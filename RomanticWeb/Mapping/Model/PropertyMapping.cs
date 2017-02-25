@@ -19,6 +19,7 @@ namespace RomanticWeb.Mapping.Model
             ReturnType = returnType;
             Name = name;
             Uri = predicateUri;
+            _isHidden = false;
             _hashCode = CalculateHashCode();
         }
 

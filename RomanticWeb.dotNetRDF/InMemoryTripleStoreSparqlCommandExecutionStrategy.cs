@@ -15,7 +15,7 @@ namespace RomanticWeb.DotNetRDF
     /// <summary>Provides a default implementation of the <see cref="ISparqlCommandExecutionStrategy" /> for in-memory triple stores.</summary>
     public class InMemoryTripleStoreSparqlCommandExecutionStrategy : PersistentTripleStoreSparqlCommandExecutionStrategy
     {
-        private const int QueryOptimizationTriplesCountThreshold = 10000;
+        private const int QueryOptimizationTriplesCountThreshold = 1000000;
         private const long Timeout = 2000;
         private readonly LeviathanQueryProcessor _processor;
 
@@ -31,7 +31,7 @@ namespace RomanticWeb.DotNetRDF
         public override bool ExecuteAsk(IQuery sparqlQuery)
         {
             SparqlQueryVariables variables;
-            return ((SparqlResultSet)_processor.ProcessQuery(GetSparqlQuery(sparqlQuery, out variables))).Result;
+            return ((SparqlResultSet)_processor.ProcessQuery(CreateSparqlQuery(sparqlQuery, out variables))).Result;
         }
 
         /// <inheritdoc />
@@ -110,7 +110,7 @@ namespace RomanticWeb.DotNetRDF
             }
         }
 
-        private SparqlQuery GetSparqlQuery(IQuery sparqlQuery, out SparqlQueryVariables variables)
+        private SparqlQuery CreateSparqlQuery(IQuery sparqlQuery, out SparqlQueryVariables variables)
         {
             SparqlQueryParser parser = new SparqlQueryParser();
             bool isQueryOptimized = false;
@@ -119,7 +119,7 @@ namespace RomanticWeb.DotNetRDF
 
         private string ParseQuery(IQuery sparqlQuery, out SparqlQueryVariables variables, ref bool isQueryOptimized)
         {
-            SparqlQueryVisitor queryVisitor = new SparqlQueryVisitor(isQueryOptimized);
+            var queryVisitor = new SparqlQueryVisitor(isQueryOptimized);
             queryVisitor.MetaGraphUri = MetaGraphUri;
             queryVisitor.VisitQuery(sparqlQuery);
             variables = queryVisitor.Variables;

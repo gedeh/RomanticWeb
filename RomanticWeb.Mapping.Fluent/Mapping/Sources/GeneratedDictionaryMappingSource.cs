@@ -170,7 +170,7 @@ namespace RomanticWeb.Mapping.Sources
             {
                 var entryType = GetOrCreateDictionaryEntryType(property);
                 typeName = dictionaryEntityNames.FullOwnerTypeName;
-                type = typeof(IDictionaryOwner<,,>).MakeGenericType(new[] {entryType}.Concat(property.PropertyType.GetGenericArguments()).ToArray());
+                type = typeof(IDictionaryOwner<,,>).MakeGenericType(new[] { entryType }.Concat(property.PropertyType.GetGenericArguments()).ToArray());
             }
             else
             {

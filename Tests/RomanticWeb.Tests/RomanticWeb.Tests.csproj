@@ -36,10 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions.Core, Version=4.13.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.13.0\lib\net45\FluentAssertions.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -49,10 +45,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="virtado4, Version=4.0.0.0, Culture=neutral, PublicKeyToken=391bf132017ae989, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenLink.Data.Virtuoso.7.20.3214.1\lib\net40\virtado4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseUriSelectorBuilderTests.cs" />
@@ -61,6 +53,7 @@
     <Compile Include="Collections\RdfDictionaryTests.cs" />
     <Compile Include="Collections\RdfListAdapterTests.cs" />
     <Compile Include="Configuration\ConfigurationSectionTests.cs" />
+    <Compile Include="Configuration\ConfigurationTest.cs" />
     <Compile Include="Configuration\ExternallyConfiguredStoreElementTests.cs" />
     <Compile Include="Configuration\StoresConfigurationSectionTests.cs" />
     <Compile Include="ConstantBaseUriSelectionPolicyTests.cs" />
@@ -127,7 +120,6 @@
     <Compile Include="Mapping\MappingRepositoryTestBase.cs" />
     <Compile Include="Mapping\MixedMappingTests.cs" />
     <Compile Include="Mapping\TestingInheritanceTreeProvider.cs" />
-    <Compile Include="NamedGraphs\NamedGraphSelectorTests.cs" />
     <Compile Include="dotNetRDF\TripleStoreAdapterTests.cs" />
     <Compile Include="EntityContextFactoryTests.cs" />
     <Compile Include="EntityContextTests.cs" />
@@ -172,6 +164,7 @@
     <EmbeddedResource Include="TestGraphs\ComplexRdfLists.trig" />
     <EmbeddedResource Include="TestGraphs\SharedBlankNodes.trig" />
     <None Include="RomanticWeb.Tests.project.json" />
+    <EmbeddedResource Include="TestGraphs\ComplexDataset.nq" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestGraphs\LargeDataset.nq" />

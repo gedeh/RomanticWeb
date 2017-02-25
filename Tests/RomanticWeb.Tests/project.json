@@ -48,6 +48,7 @@
             "TestGraphs/BasicDatatypes.trig",
             "TestGraphs/BlankNodes.trig",
             "TestGraphs/Collections.trig",
+            "TestGraphs/ComplexDataset.nq",
             "TestGraphs/ComplexRdfLists.trig",
             "TestGraphs/Dictionary.trig",
             "TestGraphs/EntityWithManyTypes.trig",

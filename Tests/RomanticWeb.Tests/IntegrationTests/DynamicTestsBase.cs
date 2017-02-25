@@ -183,24 +183,6 @@ namespace RomanticWeb.Tests.IntegrationTests
         }
 
         [Test]
-        [Ignore("Nested lists are not yet considered.")]
-        public void Should_allow_reading_nested_rdf_lists_as_collection_of_lists()
-        {
-            // given
-            LoadTestFile("RdfLists.trig");
-
-            // when
-            dynamic tomasz = EntityContext.Load<IEntity>(new EntityId("http://magi/math/array")).AsDynamic();
-            dynamic numbers = tomasz.math.List_matrix[0];
-
-            // then
-            Assert.That(numbers != null);
-            Assert.That(numbers.Count, Is.EqualTo(2));
-            ((IList)numbers[0]).Should().ContainInOrder(0L, 1L, 2L);
-            ((IList)numbers[1]).Should().ContainInOrder(3L, 4L, 5L);
-        }
-
-        [Test]
         public void Should_read_rdf_lists_which_dont_use_blank_nodes()
         {
             // given

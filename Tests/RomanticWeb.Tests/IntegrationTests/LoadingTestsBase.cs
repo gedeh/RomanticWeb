@@ -16,10 +16,7 @@ namespace RomanticWeb.Tests.IntegrationTests
     {
         private static readonly EntityId EntityId = new EntityId("http://magi/people/Tomasz");
 
-        internal interface ITrackedScopes
-        {
-            IEnumerable<Scope> TrackedScopes { get; }
-        }
+        internal interface ITrackedScopes { IEnumerable<Scope> TrackedScopes { get; } }
 
         [Test]
         public void Should_load_as_best_derived_type_in_inheritance_tree()
@@ -164,7 +161,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         public void Should_select_entities_by_sub_query(string propertyId)
         {
             // given
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
 
             ICureComplex property = EntityContext.Load<ICureComplex>(new EntityId(new Uri(propertyId)));
 
@@ -180,10 +177,10 @@ namespace RomanticWeb.Tests.IntegrationTests
         [Test]
         [Repeat(10)]
         [TestCase("SCV", 2)]
-        public void Should_return_limited_number_of_entities_from_large_dataset(string searchString, int expectedCount)
+        public void Should_return_limited_number_of_entities_from_complex_dataset(string searchString, int expectedCount)
         {
             // given
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
 
             // when
             IList<IProduct> products = EntityContext.AsQueryable<IProduct>()
@@ -200,7 +197,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         public void Should_return_count_of_entities(string searchString, int expectedCount)
         {
             // given
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
 
             // when
             int count = EntityContext.AsQueryable<IProduct>().Count(item => item.Name.ToLower().Contains(searchString.ToLower()));
@@ -213,7 +210,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         public void Should_return_filtered_entities()
         {
             // given
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
 
             // when
             IList<IProduct> products = (from product in EntityContext.AsQueryable<IProduct>()
@@ -229,7 +226,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         public void Should_read_entity_predicates(string productId, string predicateUri)
         {
             // given
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
 
             // when
             IProduct product = EntityContext.Load<IProduct>(new EntityId(productId));
@@ -244,7 +241,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         public void Should_read_blank_node(string productId, string predicateUri)
         {
             // given
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
 
             // when
             IProduct product = EntityContext.Load<IProduct>(new EntityId(productId));
@@ -257,7 +254,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [Test]
         public void Should_find_entities_with_subquery()
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             EntityId searched = new EntityId("http://chem.com/vocab/AdhereSealPromoteAdhesion");
             IEnumerable<IProduct> products = from product in EntityContext.AsQueryable<IProduct>()
                                              from func in product.Function
@@ -269,7 +266,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [Test]
         public void Select_with_multiple_combined_statements()
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             IQueryable<IProduct> result = null;
             var fUri = new EntityId("http://chem.com/vocab/PotEncapsulate");
             result = from product in EntityContext.AsQueryable<IProduct>()
@@ -289,7 +286,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [Test]
         public void Select_with_alternative_property_conditions()
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             EntityId id = new EntityId("http://chem.com/vocab/LifeSciences");
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
                                             where (product.Industry == id) || (product.Industry == null)
@@ -300,7 +297,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [Test]
         public void Select_with_type_check()
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             IEnumerable<IEntity> products = (from product in EntityContext.AsQueryable()
                                               where product.Is(new Uri("http://chem.com/vocab/Product"))
                                               select product).ToList();
@@ -315,12 +312,11 @@ namespace RomanticWeb.Tests.IntegrationTests
             Assert.That(product.Industry.Uri.ToString().StartsWith("http"));
         }
 
-#if DISABLED
         [Test]
         [TestCase("http://chem.com/vocab/tensile", 400.0, 600.0)]
         public void Select_with_predicate_value_type_casted_to_collection_of_IQuantitativeFloatProperty(string predicateUriString, double minValue, double maxValue)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
                                             let predicateValue = product.Predicate(predicateUri) as ICollection<IQuantitativeFloatProperty>
@@ -329,13 +325,12 @@ namespace RomanticWeb.Tests.IntegrationTests
                                             select product).ToList();
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
-#endif
 
         [Test]
         [TestCase("http://chem.com/vocab/cureSystem", "http://chem.com/vocab/Acetoxy", "http://chem.com/vocab/Oxime")]
         public void Select_with_predicate_value_type_casted_to_EntityId(string predicateUriString, params string[] filterValues)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
             List<EntityId> filter = new List<EntityId>();
             foreach (string filterValue in filterValues)
@@ -354,7 +349,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [TestCase("http://chem.com/vocab/cureTime", 0.0, 100.0)]
         public void Select_with_nested_where_clause(string predicateUriString, double minValue, double maxValue)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
 
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
@@ -366,12 +361,11 @@ namespace RomanticWeb.Tests.IntegrationTests
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
 
-#if DISABLED
         [Test]
         [TestCase("http://chem.com/vocab/tear", 0.0, 400.0)]
         public void Select_with_predicate_value_type_casted_to_IQuantitativeFloatProperty(string predicateUriString, double minValue, double maxValue)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
                                             let predicateValue = product.Predicate(predicateUri) as IQuantitativeFloatProperty
@@ -379,13 +373,12 @@ namespace RomanticWeb.Tests.IntegrationTests
                                             select product).ToList();
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
-#endif
 
         [Test]
         [TestCase("http://chem.com/vocab/specificGravity", 0.0, 400.0)]
         public void Select_with_predicate_value_type_casted_to_collection_of_double(string predicateUriString, double minValue, double maxValue)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
                                             from predicateValue in product.Predicate(predicateUri) as ICollection<double>
@@ -398,7 +391,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [TestCase("http://chem.com/vocab/viscosity", 0.0, 400.0)]
         public void Select_with_predicate_value_type_casted_to_IViscosityComplex(string predicateUriString, double minValue, double maxValue)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
                                             from predicateValue in product.Viscosity.Predicate(predicateUri) as ICollection<IQuantitativeFloatProperty>
@@ -407,12 +400,11 @@ namespace RomanticWeb.Tests.IntegrationTests
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
 
-#if DISABLED
         [Test]
         [TestCase("http://chem.com/vocab/tear", 0.0, 400.0, "http://chem.com/vocab/tensile", 0.0, 400.0)]
         public void Select_with_concatenation_of_two_predicate_casts(string predicateUriString1, double minValue1, double maxValue1, string predicateUriString2, double minValue2, double maxValue2)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri1 = new Uri(predicateUriString1);
             IQueryable<IProduct> query = from product in EntityContext.AsQueryable<IProduct>()
                                          from predicateValue in product.Predicate(predicateUri1) as ICollection<IQuantitativeFloatProperty>
@@ -433,7 +425,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [TestCase(0.0, 400.0)]
         public void Select_with_complex_type_casts_and_where_clauses(double minValue, double maxValue)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
                                             where (product.Viscosity.Viscosity.Any(viscosity => (viscosity.Value >= minValue && viscosity.Value <= maxValue))) ||
                                                   (product.Viscosity.PartA.Any(viscosityA => (viscosityA.Value >= minValue && viscosityA.Value <= maxValue))) ||
@@ -441,13 +433,12 @@ namespace RomanticWeb.Tests.IntegrationTests
                                             select product).ToList();
             Assert.That(result.Count(), Is.Not.EqualTo(0));
         }
-#endif
 
         [Test]
-        [TestCase("http://chem.com/vocab/tackFreeTime", 0.0, 400.0, "http://chem.com/vocab/mixRatio", "1 PART")]
+        [TestCase("http://chem.com/vocab/tensile", 0.0, 400.0, "http://chem.com/vocab/mixRatio", "1:1")]
         public void Select_with_cross_result_of_multiple_queries(string predicateUriString1, double minValue1, double maxValue1, string predicateUriString2, params string[] filterValues)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri1 = new Uri(predicateUriString1);
             IQueryable<IProduct> query = from product in EntityContext.AsQueryable<IProduct>()
                                          from predicateValue in product.Predicate(predicateUri1) as ICollection<IQuantitativeFloatProperty>
@@ -468,7 +459,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [TestCase("http://chem.com/vocab/appearance", "Yellow")]
         public void Select_with_regular_expression_filter(string predicateUriString, params string[] filterValues)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri = new Uri(predicateUriString);
             string pattern = System.String.Join("|", filterValues.Select(item => System.Text.RegularExpressions.Regex.Escape(item)));
             IEnumerable<IProduct> result = (from product in EntityContext.AsQueryable<IProduct>()
@@ -483,7 +474,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         [TestCase("http://chem.com/vocab/mixRatio", "1:1", "http://chem.com/vocab/cureSystem", "http://chem.com/vocab/Platinum")]
         public void Select_with_multiple_array_of_string_filters(string predicateUriString1, string filterValue1, string predicateUriString2, string filterValue2)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri1 = new Uri(predicateUriString1);
             string pattern = System.Text.RegularExpressions.Regex.Escape(filterValue1);
             IQueryable<IProduct> query = from product in EntityContext.AsQueryable<IProduct>()
@@ -502,10 +493,10 @@ namespace RomanticWeb.Tests.IntegrationTests
         }
 
         [Test]
-        [TestCase("http://chem.com/vocab/tear", 0.0, 400.0, "http://chem.com/vocab/appearance", "Black")]
+        [TestCase("http://chem.com/vocab/cureTime", 0.0, 400.0, "http://chem.com/vocab/appearance", "Black")]
         public void Select_with_concatenation_of_cast_and_regular_expression_test(string predicateUriString1, double minValue1, double maxValue1, string predicateUriString2, params string[] filterValues)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri1 = new Uri(predicateUriString1);
             IQueryable<IProduct> query = from product in EntityContext.AsQueryable<IProduct>()
                                          from predicateValue in product.Predicate(predicateUri1) as ICollection<IQuantitativeFloatProperty>
@@ -527,10 +518,10 @@ namespace RomanticWeb.Tests.IntegrationTests
         [TestCase("http://chem.com/vocab/tear", 0.0, 400.0, "http://chem.com/vocab/specificGravity", 0.0, 400.0)]
         public void Select_with_concatenation_of_cast_and_another_cast(string predicateUriString1, double minValue1, double maxValue1, string predicateUriString2, double minValue2, double maxValue2)
         {
-            LoadTestFile("LargeDataset.nq");
+            LoadTestFile("ComplexDataset.nq");
             Uri predicateUri1 = new Uri(predicateUriString1);
             IQueryable<IProduct> query = from product in EntityContext.AsQueryable<IProduct>()
-                                         where product.Industry == new EntityId("http://chem.com/vocab/LifeSciences")
+                                         where product.Industry == new EntityId("http://chem.com/vocab/AdvancedEngineering")
                                          select product;
 
             query = from product in query
