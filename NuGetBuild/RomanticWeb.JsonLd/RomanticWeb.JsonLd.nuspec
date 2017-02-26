@@ -10,12 +10,14 @@
     <releaseNotes>Initial release</releaseNotes>
     <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
     <projectUrl>http://romanticweb.net</projectUrl>
-    <copyright>Copyright MakoLab © 2013 - 2015</copyright>
+    <copyright>Copyright MakoLab © 2013 - 2017</copyright>
     <tags>rdf orm jsonld json-ld json lnked-data semanticweb semantic</tags>
     <dependencies>
-      <dependency id="Newtonsoft.Json"/>
-      <dependency id="RomanticWeb" />
-      <dependency id="NLog" />
+      <group targetFramework="net45">
+        <dependency id="Newtonsoft.Json"/>
+        <dependency id="RomanticWeb" version="$version$" />
+        <dependency id="NLog" />
+      </group>
     </dependencies>
   </metadata>
 </package>

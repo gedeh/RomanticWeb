@@ -11,12 +11,12 @@
         <releaseNotes>
             * .net Framework 4.5 and .net Standard 1.6 support
             * further performance improvements
-            * more granular libralier
+            * more granular libraries
         </releaseNotes>
         <licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
         <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
         <projectUrl>http://romanticweb.net/</projectUrl>
-        <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2016</copyright>
+        <copyright>Copyright MakoLab &amp; Karol Szczepanski © 2013 - 2017</copyright>
         <tags>rdf orm semanticweb semantic sparql linq</tags>
         <dependencies>
             <group targetFramework="net45">

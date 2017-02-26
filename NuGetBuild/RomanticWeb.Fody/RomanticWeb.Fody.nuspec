@@ -11,9 +11,11 @@
     <licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
     <iconUrl>http://makolab.github.io/RomanticWeb/images/logo-small.png</iconUrl>
     <projectUrl>http://romanticweb.net</projectUrl>
-    <copyright>Copyright MakoLab © 2013 - 2015</copyright>
+    <copyright>Copyright MakoLab © 2013 - 2017</copyright>
     <dependencies>
-      <dependency id="Fody" />
+      <group targetFramework="net45">
+        <dependency id="Fody" />
+      </group>
     </dependencies>
   </metadata>
 </package>
