@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ namespace RomanticWeb.Configuration
         : ConfigurationSection
 #endif
     {
+        private const string ConfigurationFileName = "appsettings.json";
         private const string DefaultConfigurationName = "romanticWeb";
 #if NETSTANDARD16
         private static readonly IConfigurationRoot Configuration;
@@ -28,7 +30,7 @@ namespace RomanticWeb.Configuration
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true);
+                .AddJsonFile(DiscoverConfigurationFile(), true);
             Configuration = configurationBuilder.Build();
         }
 #else
@@ -88,5 +90,20 @@ namespace RomanticWeb.Configuration
             return (ConfigurationSectionHandler)ConfigurationManager.GetSection(name) ?? new ConfigurationSectionHandler();
 #endif
         }
+
+#if NETSTANDARD16
+        private static string DiscoverConfigurationFile()
+        {
+            var path = Directory.GetCurrentDirectory();
+            if (!File.Exists(Path.Combine(path, ConfigurationFileName)))
+            {
+                return (from directory in Directory.GetDirectories(path)
+                        from file in Directory.GetFiles(directory, ConfigurationFileName)
+                        select file).FirstOrDefault() ?? Path.Combine(path, ConfigurationFileName);
+            }
+
+            return Path.Combine(path, ConfigurationFileName);
+        }
+#endif
     }
 }
