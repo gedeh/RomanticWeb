@@ -185,7 +185,7 @@ namespace RomanticWeb.Entities.Proxies
                 MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.FamANDAssem | MethodAttributes.Family,
                 null,
                 new[] { property.PropertyType });
-
+            setterBuilder.DefineParameter(1, ParameterAttributes.In, property.Name.Substring(0, 1).ToLower() + (property.Name.Length > 1 ? property.Name.Substring(1) : String.Empty));
             ILGenerator setIl = setterBuilder.GetILGenerator();
 
             setIl.Emit(OpCodes.Nop);

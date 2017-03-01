@@ -103,6 +103,7 @@ namespace RomanticWeb.Tests.IntegrationTests
         }
 
         [Test]
+        [Ignore("This test is supposed to fail, as it is only for tuning performance.")]
         public void Should_list_entities_from_large_dataset_in_a_timely_fashion_way()
         {
             // given
