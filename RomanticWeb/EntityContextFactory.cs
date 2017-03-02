@@ -295,21 +295,35 @@ namespace RomanticWeb
             var fluentAssembly = (from library in DependencyContext.Default.RuntimeLibraries
                 where StringComparer.CurrentCultureIgnoreCase.Equals(library.Name, FluentAssemblyName)
                 select Assembly.Load(new AssemblyName(library.Name))).FirstOrDefault();
+            if (fluentAssembly == null)
+            {
+                if (File.Exists(fluentLibrary))
+                {
+                    fluentAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(fluentLibrary);
+                }
+                else
+                {
+                    try
+                    {
+                        Assembly.Load(new AssemblyName(FluentAssemblyName));
+                    }
+                    catch
+                    {
+                        // Suppress any exceptionsas this is a last chance to get the assembly.
+                    }
+                }
+            }
 #else
             string fluentLibrary = Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory, FluentAssemblyName + ".dll");
             var fluentLibraryUrl = new Uri(fluentLibrary);
             var fluentAssembly = (from loadedAssembly in AppDomain.CurrentDomain.GetAssemblies()
                 where (!loadedAssembly.IsDynamic) && (StringComparer.CurrentCultureIgnoreCase.Equals(loadedAssembly.EscapedCodeBase, fluentLibraryUrl.AbsoluteUri))
                 select loadedAssembly).FirstOrDefault();
-#endif
             if ((fluentAssembly == null) && (File.Exists(fluentLibrary)))
             {
-#if NETSTANDARD16
-                fluentAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(fluentLibrary);
-#else
                 fluentAssembly = Assembly.LoadFile(fluentLibrary);
-#endif
             }
+#endif
 
             if (fluentAssembly == null)
             {
