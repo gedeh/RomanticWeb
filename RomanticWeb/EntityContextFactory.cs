@@ -305,7 +305,7 @@ namespace RomanticWeb
                 {
                     try
                     {
-                        Assembly.Load(new AssemblyName(FluentAssemblyName));
+                        fluentAssembly = Assembly.Load(new AssemblyName(FluentAssemblyName));
                     }
                     catch
                     {
