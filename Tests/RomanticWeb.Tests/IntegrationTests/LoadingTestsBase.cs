@@ -296,6 +296,15 @@ namespace RomanticWeb.Tests.IntegrationTests
         }
 
         [Test]
+        public void Select_with_alternative_property_conditions_expressed_as_inner_predicate()
+        {
+            LoadTestFile("ComplexDataset.nq");
+            EntityId id = new EntityId("http://chem.com/vocab/LifeSciences");
+            IProduct result = EntityContext.AsQueryable<IProduct>().FirstOrDefault(product => (product.Industry == id) || (product.Industry == null));
+            Assert.That(result.Id, Is.EqualTo(new EntityId("http://chem.com/product/MED3-6300")));
+        }
+
+        [Test]
         public void Select_with_type_check()
         {
             LoadTestFile("ComplexDataset.nq");

@@ -95,6 +95,25 @@ namespace RomanticWeb.Tests.Linq
             Test_correctness_of_scalar_query(6);
         }
 
+        [Test]
+        public void Test_correctness_of_query_shortened_to_inner_predicate()
+        {
+            var computedCommandText = string.Empty;
+            IEnumerable<EntityId> entities = new EntityId[0];
+            _entitySource.Setup(e => e.ExecuteEntityQuery(It.IsAny<Query>(), out entities)).Returns<Query, IEnumerable<EntityId>>((model, ids) =>
+            {
+                computedCommandText = VisitModel(model).CommandText;
+                return new IEntityQuad[0];
+            });
+
+            _persons.FirstOrDefault(person => person.FirstName == "Karol");
+            computedCommandText = Regex.Replace(computedCommandText, @"\s+", string.Empty).Trim();
+            var query = new StreamReader(GetType().GetTypeInfo().Assembly
+                .GetManifestResourceStream("RomanticWeb.Tests.Linq.Queries.SelectByName.rq")).ReadToEnd();
+            var expectedText = Regex.Replace(query, @"\s+", string.Empty).Trim();
+            Assert.That(computedCommandText, Is.EqualTo(expectedText));
+        }
+
         private void Test_correctness_of_query_asking(int queryIndex)
         {
             Tuple<System.Linq.IQueryable<IPerson>, string, string, string, string, string, string> query = _testQueries[queryIndex];
