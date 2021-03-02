@@ -15,7 +15,7 @@ namespace RomanticWeb.Configuration
 
         static MappingAssemblyElementExtensions()
         {
-            AssemblyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase.Replace("/", Path.DirectorySeparatorChar.ToString()));
+            AssemblyPath = Path.GetDirectoryName(EnsureAbsolutePath(Assembly.GetEntryAssembly().CodeBase));
         }
 #endif
         internal static Assembly Load(this MappingAssemblyElement mappingAssemblyElement)
@@ -27,6 +27,14 @@ namespace RomanticWeb.Configuration
 #else
             return Assembly.Load(mappingAssemblyElement.Assembly);
 #endif
+        }
+
+        private static string EnsureAbsolutePath(string path) {
+            if (path.StartsWith("file://", StringComparison.OrdinalIgnoreCase)) {
+                return Path.GetFullPath(new Uri(path).LocalPath).Replace("/", Path.DirectorySeparatorChar.ToString());
+            }
+
+            return path;
         }
     }
 }
