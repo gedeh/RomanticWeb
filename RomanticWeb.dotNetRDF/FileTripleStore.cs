@@ -329,7 +329,7 @@ namespace RomanticWeb.DotNetRDF
                 path = path.Substring(1);
             }
 
-            if (path.StartsWith("/"))
+            if (path.StartsWith(Path.DirectorySeparatorChar.ToString()) && !File.Exists(path))
             {
                 path = Path.Combine(AppDomainExtensions.GetPrimaryAssemblyPath(), path.Substring(1));
             }
