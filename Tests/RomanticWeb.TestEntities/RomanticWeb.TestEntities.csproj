@@ -1,127 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AF4CCD1D-3FEF-4F5A-9A89-94D0E7E6D3B5}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RomanticWeb.TestEntities</RootNamespace>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DefineConstants>$(DefineConstants);NETSTANDARD16</DefineConstants>
     <AssemblyName>RomanticWeb.TestEntities</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-    <GitVersionOnlyMajorAndMinorInAssemblyVersion>true</GitVersionOnlyMajorAndMinorInAssemblyVersion>
-    <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <PackageId>RomanticWeb.TestEntities</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="../../RomanticWeb.Contracts/RomanticWeb.Contracts.csproj" />
+    <ProjectReference Include="../../RomanticWeb.Mapping.Fluent/RomanticWeb.Mapping.Fluent.csproj" />
+    <ProjectReference Include="../../RomanticWeb/RomanticWeb.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Animals\IAnimal.cs" />
-    <Compile Include="Animals\ICarnivore.cs" />
-    <Compile Include="Animals\IHerbivore.cs" />
-    <Compile Include="Animals\IHuman.cs" />
-    <Compile Include="Animals\IOmnivore.cs" />
-    <Compile Include="Animals\IPlant.cs" />
-    <Compile Include="Animals\IUntypedAnimal.cs" />
-    <Compile Include="BlankNodes\INested.cs" />
-    <Compile Include="BlankNodes\IRoot.cs" />
-    <Compile Include="Foaf\IAddress.cs" />
-    <Compile Include="Foaf\IAlsoAgent.cs" />
-    <Compile Include="Foaf\IAlsoPerson.cs" />
-    <Compile Include="Foaf\IAgent.cs" />
-    <Compile Include="Foaf\IGroup.cs" />
-    <Compile Include="Foaf\INoTypeAgent.cs" />
-    <Compile Include="Foaf\IOrganization.cs" />
-    <Compile Include="Foaf\IPerson.cs" />
-    <Compile Include="Generic\IGenericEntity.cs" />
-    <Compile Include="Generic\IImplementsGenericWithInt.cs" />
-    <Compile Include="IEntityWithCollections.cs" />
-    <Compile Include="IEntityWithDictionary.cs" />
-    <Compile Include="IEntityWithExplicitConverters.cs" />
-    <Compile Include="Inheritance\IAttributesParent.cs" />
-    <Compile Include="Inheritance\IFluentChild.cs" />
-    <Compile Include="Inheritance\IGenericContainer.cs" />
-    <Compile Include="Inheritance\IInterface.cs" />
-    <Compile Include="Inheritance\ISpecificContainer.cs" />
-    <Compile Include="Inheritance\Specialized\IInterface.cs" />
-    <Compile Include="IPerson.cs" />
-    <Compile Include="ITestEntity.cs" />
-    <Compile Include="LargeDataset\IViscosityComplex.cs" />
-    <Compile Include="LargeDataset\ICureComplex.cs" />
-    <Compile Include="LargeDataset\IProduct.cs" />
-    <Compile Include="LargeDataset\IQuantitativeFloatProperty.cs" />
-    <Compile Include="LargeDataset\IUser.cs" />
-    <Compile Include="LinkedData\IEntityWithLabel.cs" />
-    <Compile Include="LinkedData\IKnowSomething.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\RomanticWeb.Contracts\RomanticWeb.Contracts.csproj">
-      <Project>{17315f2e-393a-422f-80ba-575794350285}</Project>
-      <Name>RomanticWeb.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.csproj">
-      <Project>{d9a45427-9698-44b8-83ab-e07351f3531d}</Project>
-      <Name>RomanticWeb.Mapping.Fluent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\RomanticWeb\RomanticWeb.csproj">
-      <Project>{0EE621E3-4A27-44B5-AEA9-04B43E730D46}</Project>
-      <Name>RomanticWeb</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FodyWeavers.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets'))" />
-  </Target>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
-  <Import Project="..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

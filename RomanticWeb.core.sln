@@ -1,20 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26114.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Contracts.core", "RomanticWeb.Contracts\RomanticWeb.Contracts.core.xproj", "{17315F2E-393A-422F-80BA-575794350285}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Mapping.Fluent.core", "RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.core.xproj", "{612982C1-4A8A-4B2C-9FE2-058944F83534}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.core", "RomanticWeb\RomanticWeb.core.xproj", "{374DFD26-832E-45BE-AF31-C03630417825}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.dotNetRDF.core", "RomanticWeb.dotNetRDF\RomanticWeb.dotNetRDF.core.xproj", "{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2EE8F175-E929-4E80-8E32-31A8A80345DB}"
 	ProjectSection(SolutionItems) = preProject
-		Tests\appsettings.json = Tests\appsettings.json
-		global.json = global.json
+		Tests\RomanticWeb.Tests\appsettings.json = Tests\RomanticWeb.Tests\appsettings.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1C9A13E2-5B31-462B-8CDB-1E134E99354F}"
@@ -27,19 +18,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1C9A13
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.TestEntities.core", "Tests\RomanticWeb.TestEntities\RomanticWeb.TestEntities.core.xproj", "{50209114-9441-4C7A-8A7A-1747D886D124}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.TestEntities.FluentMappings.core", "Tests\RomanticWeb.TestEntities.FluentMappings\RomanticWeb.TestEntities.FluentMappings.core.xproj", "{3279E686-91AA-4869-B927-DC94348259F6}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.TestEntities.MixedMappings.core", "Tests\RomanticWeb.TestEntities.MixedMappings\RomanticWeb.TestEntities.MixedMappings.core.xproj", "{4E874E1D-BA13-4911-A367-2761130FF720}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RomanticWeb.Tests.core", "Tests\RomanticWeb.Tests\RomanticWeb.Tests.core.xproj", "{8A1EE743-E472-486A-984A-5E11A40F4E87}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{A8EB811E-737B-4F8D-B99E-2E37831A3C7B}"
 	ProjectSection(SolutionItems) = preProject
 		.build\CommonAssemblyInfo.cs = .build\CommonAssemblyInfo.cs
 		.build\VersionAssemblyInfo.cs = .build\VersionAssemblyInfo.cs
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb", "RomanticWeb\RomanticWeb.csproj", "{A6CD7450-9624-4219-854B-58D12DD0B4F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.Contracts", "RomanticWeb.Contracts\RomanticWeb.Contracts.csproj", "{A1131D77-A984-4D69-9F9B-3A25F7AB3E3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.Mapping.Fluent", "RomanticWeb.Mapping.Fluent\RomanticWeb.Mapping.Fluent.csproj", "{3B203F87-2241-491C-A3B3-A35ADECEDB3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.dotNetRDF", "RomanticWeb.dotNetRDF\RomanticWeb.dotNetRDF.csproj", "{66A9643C-FA4E-4BEA-A281-D8A5983572F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.TestEntities.MixedMappings", "Tests\RomanticWeb.TestEntities.MixedMappings\RomanticWeb.TestEntities.MixedMappings.csproj", "{A184E9A0-7B71-437B-9417-E5CCD92C3652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.Tests", "Tests\RomanticWeb.Tests\RomanticWeb.Tests.csproj", "{8E20E5A0-9B69-43C4-90C1-EDC8FBEB2888}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.TestEntities.FluentMappings", "Tests\RomanticWeb.TestEntities.FluentMappings\RomanticWeb.TestEntities.FluentMappings.csproj", "{E824D34A-79B2-4CC3-A248-A18C194A2E79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomanticWeb.TestEntities", "Tests\RomanticWeb.TestEntities\RomanticWeb.TestEntities.csproj", "{878C7BC9-CBC7-459E-B6D9-7C9163A247C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,46 +46,46 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{17315F2E-393A-422F-80BA-575794350285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17315F2E-393A-422F-80BA-575794350285}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17315F2E-393A-422F-80BA-575794350285}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17315F2E-393A-422F-80BA-575794350285}.Release|Any CPU.Build.0 = Release|Any CPU
-		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{612982C1-4A8A-4B2C-9FE2-058944F83534}.Release|Any CPU.Build.0 = Release|Any CPU
-		{374DFD26-832E-45BE-AF31-C03630417825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{374DFD26-832E-45BE-AF31-C03630417825}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{374DFD26-832E-45BE-AF31-C03630417825}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{374DFD26-832E-45BE-AF31-C03630417825}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0A2766F-6794-49AB-B90B-8ACF4A112AB0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{50209114-9441-4C7A-8A7A-1747D886D124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50209114-9441-4C7A-8A7A-1747D886D124}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50209114-9441-4C7A-8A7A-1747D886D124}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50209114-9441-4C7A-8A7A-1747D886D124}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3279E686-91AA-4869-B927-DC94348259F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3279E686-91AA-4869-B927-DC94348259F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3279E686-91AA-4869-B927-DC94348259F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3279E686-91AA-4869-B927-DC94348259F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E874E1D-BA13-4911-A367-2761130FF720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E874E1D-BA13-4911-A367-2761130FF720}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E874E1D-BA13-4911-A367-2761130FF720}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E874E1D-BA13-4911-A367-2761130FF720}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A1EE743-E472-486A-984A-5E11A40F4E87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6CD7450-9624-4219-854B-58D12DD0B4F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6CD7450-9624-4219-854B-58D12DD0B4F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6CD7450-9624-4219-854B-58D12DD0B4F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6CD7450-9624-4219-854B-58D12DD0B4F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1131D77-A984-4D69-9F9B-3A25F7AB3E3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1131D77-A984-4D69-9F9B-3A25F7AB3E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1131D77-A984-4D69-9F9B-3A25F7AB3E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1131D77-A984-4D69-9F9B-3A25F7AB3E3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B203F87-2241-491C-A3B3-A35ADECEDB3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B203F87-2241-491C-A3B3-A35ADECEDB3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B203F87-2241-491C-A3B3-A35ADECEDB3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B203F87-2241-491C-A3B3-A35ADECEDB3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A9643C-FA4E-4BEA-A281-D8A5983572F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A9643C-FA4E-4BEA-A281-D8A5983572F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A9643C-FA4E-4BEA-A281-D8A5983572F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A9643C-FA4E-4BEA-A281-D8A5983572F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A184E9A0-7B71-437B-9417-E5CCD92C3652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A184E9A0-7B71-437B-9417-E5CCD92C3652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A184E9A0-7B71-437B-9417-E5CCD92C3652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A184E9A0-7B71-437B-9417-E5CCD92C3652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E20E5A0-9B69-43C4-90C1-EDC8FBEB2888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E20E5A0-9B69-43C4-90C1-EDC8FBEB2888}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E20E5A0-9B69-43C4-90C1-EDC8FBEB2888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E20E5A0-9B69-43C4-90C1-EDC8FBEB2888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E824D34A-79B2-4CC3-A248-A18C194A2E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E824D34A-79B2-4CC3-A248-A18C194A2E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E824D34A-79B2-4CC3-A248-A18C194A2E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E824D34A-79B2-4CC3-A248-A18C194A2E79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{878C7BC9-CBC7-459E-B6D9-7C9163A247C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{878C7BC9-CBC7-459E-B6D9-7C9163A247C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{878C7BC9-CBC7-459E-B6D9-7C9163A247C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{878C7BC9-CBC7-459E-B6D9-7C9163A247C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{50209114-9441-4C7A-8A7A-1747D886D124} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
-		{3279E686-91AA-4869-B927-DC94348259F6} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
-		{4E874E1D-BA13-4911-A367-2761130FF720} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
-		{8A1EE743-E472-486A-984A-5E11A40F4E87} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{A184E9A0-7B71-437B-9417-E5CCD92C3652} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{8E20E5A0-9B69-43C4-90C1-EDC8FBEB2888} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{E824D34A-79B2-4CC3-A248-A18C194A2E79} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
+		{878C7BC9-CBC7-459E-B6D9-7C9163A247C3} = {DD6FE0A1-DD8C-4C50-AF68-7AC5723E3563}
 	EndGlobalSection
 EndGlobal

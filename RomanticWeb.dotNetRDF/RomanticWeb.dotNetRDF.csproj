@@ -1,133 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B1C2726C-C24A-4DAF-AEFA-A812E3C3D145}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RomanticWeb.dotNetRDF</RootNamespace>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DefineConstants>$(DefineConstants);NETSTANDARD16</DefineConstants>
     <AssemblyName>RomanticWeb.dotNetRDF</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-    <GitVersionOnlyMajorAndMinorInAssemblyVersion>true</GitVersionOnlyMajorAndMinorInAssemblyVersion>
-    <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <PackageId>RomanticWeb.dotNetRDF</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Debug\RomanticWeb.dotNetRDF.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\RomanticWeb.dotNetRDF.XML</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\RomanticWeb.Contracts\RomanticWeb.Contracts.csproj">
-      <Project>{17315f2e-393a-422f-80ba-575794350285}</Project>
-      <Name>RomanticWeb.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RomanticWeb\RomanticWeb.csproj">
-      <Project>{0EE621E3-4A27-44B5-AEA9-04B43E730D46}</Project>
-      <Name>RomanticWeb</Name>
-    </ProjectReference>
+    <Compile Include="..\.build\CommonAssemblyInfo.cs;..\.build\VersionAssemblyInfo.cs" />
+    <EmbeddedResource Include="Queries\DeleteEntity.ru;Queries\InsertBlankEntityData.ru;Queries\ModifyEntityGraph.ru;Queries\ReconstructGraph.ru;Queries\RemoveReferences.ru" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <None Include="App.config" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\.build\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\.build\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AppDomainExtensions.cs" />
-    <Compile Include="ComponentModel\BaseUriResolutionStrategyComposition.cs" />
-    <Compile Include="Configuration\ConfigurationFileElement.cs" />
-    <Compile Include="Configuration\ConfigurationFilesCollection.cs" />
-    <Compile Include="Configuration\FileStoreElement.cs" />
-    <Compile Include="Configuration\ExternallyConfiguredStoreElement.cs" />
-    <Compile Include="Configuration\StorageProviders\AllegroGraphConnectorElement.cs" />
-    <Compile Include="Configuration\StorageProviders\CustomProviderElement.cs" />
-    <Compile Include="Configuration\InMemoryStoreElement.cs" />
-    <Compile Include="Configuration\ITripleStoreFactory.cs" />
-    <Compile Include="Configuration\PersistentStoreElement.cs" />
-    <Compile Include="Configuration\StorageProviders\StorageProviderElement.cs" />
-    <Compile Include="Configuration\StorageProviders\Validators.cs" />
-    <Compile Include="Configuration\StoreElement.cs" />
-    <Compile Include="Configuration\StoresCollection.cs" />
-    <Compile Include="Configuration\StoresConfigurationSection.cs" />
-    <Compile Include="Configuration\StorageProviders\VirtuosoManagerElement.cs" />
-    <Compile Include="DefaultSparqlCommandExecutionStrategyFactory.cs" />
-    <Compile Include="DefaultSparqlCommandFactory.cs" />
-    <Compile Include="Components.cs" />
-    <Compile Include="EntityContextFactoryExtensions.cs" />
-    <Compile Include="EntityIdExtensions.cs" />
-    <Compile Include="FileTripleStore.cs" />
-    <Compile Include="ISparqlCommandExecutionStrategy.cs" />
-    <Compile Include="ISparqlCommandExecutionStrategyFactory.cs" />
-    <Compile Include="ISparqlCommandFactory.cs" />
-    <Compile Include="LinkedData\UrlMatchingResourceResolutionStrategy.cs" />
-    <Compile Include="Mapping\BaseUriMappingModelVisitor.cs" />
-    <Compile Include="PersistentTripleStoreSparqlCommandExecutionStrategy.cs" />
-    <Compile Include="InMemoryTripleStoreSparqlCommandExecutionStrategy.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NodeExtensions.cs" />
-    <Compile Include="SparqlQueryVisitor.cs" />
-    <Compile Include="TripleStoreAdapter.cs" />
-    <Compile Include="TripleStoreExtensions.cs" />
+    <ProjectReference Include="../RomanticWeb/RomanticWeb.csproj" />
+    <ProjectReference Include="../RomanticWeb.Contracts/RomanticWeb.Contracts.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="app.config" />
-    <EmbeddedResource Include="Queries\ModifyEntityGraph.ru" />
-    <EmbeddedResource Include="Queries\ReconstructGraph.ru" />
-    <EmbeddedResource Include="Queries\RemoveReferences.ru" />
-    <EmbeddedResource Include="Queries\DeleteEntity.ru" />
-    <EmbeddedResource Include="Queries\InsertBlankEntityData.ru" />
-    <None Include="RomanticWeb.dotNetRDF.project.json" />
+    <PackageReference Include="dotNetRDF" Version="1.0.13-pre6" />
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.1.0" />
+    <PackageReference Include="System.Linq.Parallel" Version="4.0.1" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets'))" />
-  </Target>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />
+
 </Project>
