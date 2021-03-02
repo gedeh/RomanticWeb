@@ -5,7 +5,6 @@
     <DefineConstants>$(DefineConstants);</DefineConstants>
     <AssemblyName>RomanticWeb.dotNetRDF</AssemblyName>
     <PackageId>RomanticWeb.dotNetRDF</PackageId>
-    <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 

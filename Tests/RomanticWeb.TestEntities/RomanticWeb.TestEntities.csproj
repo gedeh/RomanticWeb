@@ -4,7 +4,6 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>RomanticWeb.TestEntities</AssemblyName>
     <PackageId>RomanticWeb.TestEntities</PackageId>
-    <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
