@@ -92,7 +92,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
                 var uri = new Uri(configurationFile.Path, UriKind.RelativeOrAbsolute);
                 if (!uri.IsAbsoluteUri)
                 {
-                    uri = new Uri("file:///" + Path.Combine(Directory.GetCurrentDirectory(), configurationFile.Path));
+                    uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), configurationFile.Path));
                 }
 
                 return new ConfigurationLoader(uri, configurationFile.AutoConfigure);

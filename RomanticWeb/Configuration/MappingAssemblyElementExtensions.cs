@@ -15,7 +15,7 @@ namespace RomanticWeb.Configuration
 
         static MappingAssemblyElementExtensions()
         {
-            AssemblyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase.Replace("file:///", String.Empty).Replace("/", Path.DirectorySeparatorChar.ToString()));
+            AssemblyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase.Replace("/", Path.DirectorySeparatorChar.ToString()));
         }
 #endif
         internal static Assembly Load(this MappingAssemblyElement mappingAssemblyElement)
