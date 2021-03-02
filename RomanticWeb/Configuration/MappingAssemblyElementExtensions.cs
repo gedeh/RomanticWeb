@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyModel;
 #endif
@@ -10,7 +10,7 @@ namespace RomanticWeb.Configuration
 {
     internal static class MappingAssemblyElementExtensions
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static readonly string AssemblyPath;
 
         static MappingAssemblyElementExtensions()
@@ -20,7 +20,7 @@ namespace RomanticWeb.Configuration
 #endif
         internal static Assembly Load(this MappingAssemblyElement mappingAssemblyElement)
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             return StringComparer.OrdinalIgnoreCase.Equals(Assembly.GetEntryAssembly().GetName().Name, mappingAssemblyElement.Assembly) ?
                 Assembly.GetEntryAssembly() :
                 AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.Combine(AssemblyPath, mappingAssemblyElement.Assembly + ".dll"));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
 using System.Configuration;
 using System.Xml;
 #endif
@@ -9,7 +9,7 @@ using System.Xml;
 namespace RomanticWeb.Configuration
 {
     /// <summary>Configuration of a ecntity context factory.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public class FactoryElement
     {
         private Uri _metaGraphUri;

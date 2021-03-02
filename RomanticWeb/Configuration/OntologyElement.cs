@@ -1,12 +1,12 @@
 ﻿using System;
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
 using System.Configuration;
 #endif
 
 namespace RomanticWeb.Configuration
 {
     /// <summary>An ontology configuration element.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public class OntologyElement
     {
         private Uri _uri;

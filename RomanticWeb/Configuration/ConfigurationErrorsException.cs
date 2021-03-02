@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD16
+﻿#if NETSTANDARD1_6
 namespace System.Configuration
 {
     /// <summary>Represents a configuration exception.</summary>

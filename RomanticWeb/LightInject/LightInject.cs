@@ -41,13 +41,13 @@ namespace RomanticWeb.LightInject
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
+#if NET45 || NETSTANDARD1_1 || NETSTANDARD1_3 || NETSTANDARD1_6 || NET46
     using System.IO;
 #endif
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
+#if NET45 || NETSTANDARD1_1 || NETSTANDARD1_3 || NETSTANDARD1_6 || NET46
     using System.Reflection.Emit;
 #endif
     using System.Runtime.CompilerServices;
@@ -423,7 +423,7 @@ namespace RomanticWeb.LightInject
         void RegisterPropertyDependency<TDependency>(
             Func<IServiceFactory, PropertyInfo, TDependency> factory);
 
-#if NET45 || NET46 || NETSTANDARD11
+#if NET45 || NET46 || NETSTANDARD1_1
         /// <summary>
         /// Registers composition roots from assemblies in the base directory that matches the <paramref name="searchPattern"/>.
         /// </summary>
@@ -906,7 +906,7 @@ namespace RomanticWeb.LightInject
         /// when creating a new instance of the <paramref name="implementingType"/>.</returns>
         ConstructorInfo Execute(Type implementingType);
     }
-#if NET45 || NET46 || NETSTANDARD11
+#if NET45 || NET46 || NETSTANDARD1_1
 
     /// <summary>
     /// Represents a class that is responsible loading a set of assemblies based on the given search pattern.
@@ -1738,7 +1738,7 @@ namespace RomanticWeb.LightInject
         /// Gets or sets the <see cref="IAssemblyScanner"/> instance that is responsible for scanning assemblies.
         /// </summary>
         public IAssemblyScanner AssemblyScanner { get; set; }
-#if NET45 || NETSTANDARD11 || NET46
+#if NET45 || NETSTANDARD1_1 || NET46
 
         /// <summary>
         /// Gets or sets the <see cref="IAssemblyLoader"/> instance that is responsible for loading assemblies during assembly scanning.
@@ -1975,7 +1975,7 @@ namespace RomanticWeb.LightInject
                 (s, e) => isLocked ? e : factory);
         }
 
-#if NET45 || NETSTANDARD11 || NET46
+#if NET45 || NETSTANDARD1_1 || NET46
         /// <summary>
         /// Registers composition roots from assemblies in the base directory that matches the <paramref name="searchPattern"/>.
         /// </summary>
@@ -3410,7 +3410,7 @@ namespace RomanticWeb.LightInject
             {
                 emitter = CreateEmitMethodForArrayServiceRequest(serviceType);
             }
-#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || PCL_111 || NET46
+#if NET45 || NETSTANDARD1_1 || NETSTANDARD1_3 || NETSTANDARD1_6 || PCL_111 || NET46
             else if (serviceType.IsReadOnlyCollectionOfT() || serviceType.IsReadOnlyListOfT())
             {
                 emitter = CreateEmitMethodForReadOnlyCollectionServiceRequest(serviceType);
@@ -3514,7 +3514,7 @@ namespace RomanticWeb.LightInject
                 ms.Emit(OpCodes.Call, closedGenericToListMethod);
             };
         }
-#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || PCL_111 || NET46
+#if NET45 || NETSTANDARD1_1 || NETSTANDARD1_3 || NETSTANDARD1_6 || PCL_111 || NET46
 
         private Action<IEmitter> CreateEmitMethodForReadOnlyCollectionServiceRequest(Type serviceType)
         {
@@ -3896,7 +3896,7 @@ namespace RomanticWeb.LightInject
                 emitter = new Emitter(dynamicMethod.GetILGenerator(), parameterTypes);
             }
 #endif
-#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || NET46
+#if NET45 || NETSTANDARD1_1 || NETSTANDARD1_3 || NETSTANDARD1_6 || NET46
             private void CreateDynamicMethod(Type returnType, Type[] parameterTypes)
             {
                 dynamicMethod = new DynamicMethod(
@@ -3960,7 +3960,7 @@ namespace RomanticWeb.LightInject
         }
     }
 
-#if NET45 || NETSTANDARD13 || NETSTANDARD16 || NET46
+#if NET45 || NETSTANDARD1_3 || NETSTANDARD1_6 || NET46
     /// <summary>
     /// A <see cref="IScopeManagerProvider"/> that provides a <see cref="ScopeManager"/> across
     /// async points.
@@ -4031,7 +4031,7 @@ namespace RomanticWeb.LightInject
         Unbox_Any,
 
         /// <summary>
-        /// Loads the element containing an object reference at a specified array index 
+        /// Loads the element containing an object reference at a specified array index
         /// onto the top of the evaluation stack as type O (object reference).
         /// </summary>
 		Ldelem_Ref,
@@ -4040,7 +4040,7 @@ namespace RomanticWeb.LightInject
         /// Loads an argument (referenced by a specified index value) onto the stack.
         /// </summary>
         Ldarg,
-       
+
         /// <summary>
         /// Loads the argument at index 0 onto the evaluation stack.
         /// </summary>
@@ -4082,7 +4082,7 @@ namespace RomanticWeb.LightInject
         Sub,
 
         /// <summary>
-        /// Pops the current value from the top of the evaluation stack 
+        /// Pops the current value from the top of the evaluation stack
         /// and stores it in a the local variable list at a specified index.
         /// </summary>
         Stloc,
@@ -4248,7 +4248,7 @@ namespace RomanticWeb.LightInject
         /// Adds two values and pushes the result onto the evaluation stack.
         /// </summary>
         public static OpCode Add = OpCode.Add;
-        
+
         /// <summary>
         /// Attempts to cast an object passed by reference to the specified class.
         /// </summary>
@@ -4261,7 +4261,7 @@ namespace RomanticWeb.LightInject
         public static OpCode Unbox_Any = OpCode.Unbox_Any;
 
         /// <summary>
-        /// Loads the element containing an object reference at a specified array index 
+        /// Loads the element containing an object reference at a specified array index
         /// onto the top of the evaluation stack as type O (object reference).
         /// </summary>
 		public static OpCode Ldelem_Ref = OpCode.Ldelem_Ref;
@@ -4317,7 +4317,7 @@ namespace RomanticWeb.LightInject
 		public static OpCode Ldc_I4 = OpCode.Ldc_I4;
 
         /// <summary>
-        /// Pops the current value from the top of the evaluation stack 
+        /// Pops the current value from the top of the evaluation stack
         /// and stores it in a the local variable list at a specified index.
         /// </summary>
 		public static OpCode Stloc = OpCode.Stloc;
@@ -4468,7 +4468,7 @@ namespace RomanticWeb.LightInject
 		public static OpCode Ldstr = OpCode.Ldstr;
 
 	}
-    
+
     /// <summary>
     /// Defines and represents a dynamic method that can be compiled and executed.
     /// </summary>
@@ -5984,7 +5984,7 @@ namespace RomanticWeb.LightInject
             InternalTypes.Add(typeof(GetInstanceDelegate));
             InternalTypes.Add(typeof(ContainerOptions));
             InternalTypes.Add(typeof(CompositionRootAttributeExtractor));
-#if NET45 || NET46 || NETSTANDARD13 || NETSTANDARD16
+#if NET45 || NET46 || NETSTANDARD1_3 || NETSTANDARD1_6
             InternalTypes.Add(typeof(PerLogicalCallContextScopeManagerProvider));
             InternalTypes.Add(typeof(LogicalThreadStorage<>));
 #endif
@@ -7147,7 +7147,7 @@ namespace RomanticWeb.LightInject
         }
     }
 #endif
-#if NETSTANDARD13 || NETSTANDARD16 || NET46
+#if NETSTANDARD1_3 || NETSTANDARD1_6 || NET46
     /// <summary>
     /// Provides storage per logical thread of execution.
     /// </summary>
@@ -7441,7 +7441,7 @@ namespace RomanticWeb.LightInject
             var typeInfo = type.GetTypeInfo();
             return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(ICollection<>);
         }
-#if NET45 || NETSTANDARD11 || NETSTANDARD13 || NETSTANDARD16 || PCL_111 || NET46
+#if NET45 || NETSTANDARD1_1 || NETSTANDARD1_3 || NETSTANDARD1_6 || PCL_111 || NET46
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="Type"/> is an <see cref="IReadOnlyCollection{T}"/> type.

@@ -21,7 +21,7 @@ namespace RomanticWeb.Net
             _responseUri = new Uri("file:///");
         }
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         /// <inheritdoc />
         public override long ContentLength { get { return _fileStream.Length; } }
 

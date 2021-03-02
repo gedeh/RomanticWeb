@@ -15,7 +15,7 @@ namespace RomanticWeb.Entities.Proxies
         private const string AssemblyNameString = "RomanticWeb.Proxies";
         private static readonly object Watcher = new Object();
         private static readonly AssemblyName AssemblyName = new AssemblyName(AssemblyNameString);
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static readonly AssemblyBuilder AssemblyBuilder = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run);
 #else
         private static readonly AssemblyBuilder AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run);

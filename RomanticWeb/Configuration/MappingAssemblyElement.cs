@@ -1,11 +1,11 @@
-﻿#if !NETSTANDARD16
+﻿#if !NETSTANDARD1_6
 using System.Configuration;
 #endif
 
 namespace RomanticWeb.Configuration
 {
     /// <summary>Mapping assembly configuration element.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public class MappingAssemblyElement
     {
         /// <summary>Gets or sets the assembly name.</summary>

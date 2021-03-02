@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD16
+﻿#if NETSTANDARD1_6
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,13 +15,13 @@ namespace RomanticWeb.Configuration
 {
     /// <summary>Configuration section for RomanticWeb.</summary>
     public class ConfigurationSectionHandler
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
         : ConfigurationSection
 #endif
     {
         private const string ConfigurationFileName = "appsettings.json";
         private const string DefaultConfigurationName = "romanticWeb";
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static readonly IConfigurationRoot Configuration;
         private static IDictionary<string, ConfigurationSectionHandler> _configurations = new ConcurrentDictionary<string, ConfigurationSectionHandler>();
         private FactoryElement[] _factories = Array.Empty<FactoryElement>();
@@ -41,7 +41,7 @@ namespace RomanticWeb.Configuration
         public static ConfigurationSectionHandler Default { get { return GetConfiguration(DefaultConfigurationName); } }
 
         /// <summary>Gets or sets the collection of factory configurations.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         public FactoryElement[] Factories
         {
             get { return _factories; }
@@ -69,7 +69,7 @@ namespace RomanticWeb.Configuration
         /// <returns>Configuration section of a given <paramref name="name"/> or empty configuration.</returns>
         public static ConfigurationSectionHandler GetConfiguration(string name)
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             ConfigurationSectionHandler result;
             if (!_configurations.TryGetValue(name, out result))
             {
@@ -91,7 +91,7 @@ namespace RomanticWeb.Configuration
 #endif
         }
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static string DiscoverConfigurationFile()
         {
             var path = Directory.GetCurrentDirectory();

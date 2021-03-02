@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.DependencyModel;
 using System.Runtime.Loader;
 #endif
@@ -290,7 +290,7 @@ namespace RomanticWeb
 
         private void LoadFluentMappingAssembly()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             string fluentLibrary = Path.Combine(AppContext.BaseDirectory, FluentAssemblyName + ".dll");
             var fluentAssembly = (from library in DependencyContext.Default.RuntimeLibraries
                 where StringComparer.CurrentCultureIgnoreCase.Equals(library.Name, FluentAssemblyName)

@@ -1,11 +1,11 @@
 ﻿using System;
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
 using System.Configuration;
 #endif
 namespace RomanticWeb.Configuration
 {
     /// <summary>Configuration element to set base Uri for.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public class BaseUriElement
     {
         private Uri _default;

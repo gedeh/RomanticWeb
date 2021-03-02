@@ -34,7 +34,7 @@ namespace RomanticWeb.Dynamic
         private AssemblyBuilder CreateBuilder()
         {
             var asmName = new AssemblyName("RomanticWeb.Dynamic_" + _assemblyGuid.ToString("N"));
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             return AssemblyBuilder.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
 #else
             return AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);

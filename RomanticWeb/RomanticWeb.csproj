@@ -2,10 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <DefineConstants>$(DefineConstants);NETSTANDARD16</DefineConstants>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
     <AssemblyName>RomanticWeb</AssemblyName>
     <PackageId>RomanticWeb</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
@@ -29,12 +28,12 @@
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.1.0" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
-    <PackageReference Include="System.Globalization" Version="4.0.11" />
+    <PackageReference Include="System.Globalization" Version="4.3.0" />
     <PackageReference Include="System.Net.Requests" Version="4.0.11" />
-    <PackageReference Include="System.Reflection" Version="4.1.0" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.0.1" />
-    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.0.1" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.0.1" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.0.0" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD16
+﻿#if NETSTANDARD1_6
 namespace System.Diagnostics.CodeAnalysis
 {
     internal class ExcludeFromCodeCoverageAttribute : Attribute

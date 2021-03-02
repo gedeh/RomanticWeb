@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyModel;
 #endif
@@ -163,7 +163,7 @@ namespace System
                 throw new ArgumentOutOfRangeException("interface");
             }
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             var assemblies = from library in DependencyContext.Default.RuntimeLibraries
                              from assemblyName in library.Assemblies
                              select AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName.Name);
@@ -174,6 +174,6 @@ namespace System
                     where !assembly.IsDynamic
                     from type in assembly.GetTypesWhere(type => (type != @interface) && (@interface.GetTypeInfo().IsAssignableFrom(type)) && (type.GetTypeInfo().IsInterface))
                     select type);
-        } 
+        }
     }
 }
