@@ -103,7 +103,7 @@ namespace RomanticWeb.LinkedData
             var result = WebRequest.CreateHttp(uri);
             result.Method = "GET";
             result.Accept = Accept;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             result.Headers[HttpRequestHeader.UserAgent] = "RomanticWeb";
 #else
             result.UserAgent = "RomanticWeb";

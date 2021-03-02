@@ -1,11 +1,11 @@
-﻿#if !NETSTANDARD16
+﻿#if !NETSTANDARD1_6
 using System.Configuration;
 #endif
 
 namespace RomanticWeb.DotNetRDF.Configuration
 {
     /// <summary>Configuration for a dotNetRDF configuration file.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public class ConfigurationFileElement
     {
         /// <summary>Initializes a new instance of the <see cref="ConfigurationFileElement" /> class.</summary>

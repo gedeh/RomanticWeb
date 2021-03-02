@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD16
+﻿#if !NETSTANDARD1_6
 using System.Configuration;
 #else
 using Microsoft.Extensions.Configuration;
@@ -8,7 +8,7 @@ using VDS.RDF;
 namespace RomanticWeb.DotNetRDF.Configuration
 {
     /// <summary>Configuration element for in-memory triple store connected with a file source.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public class FileStoreElement : StoreElement
     {
         /// <summary>Initializes a new instance of the <see cref="FileStoreElement" /> class.</summary>

@@ -2,10 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <DefineConstants>$(DefineConstants);NETSTANDARD16</DefineConstants>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
     <AssemblyName>RomanticWeb.dotNetRDF</AssemblyName>
     <PackageId>RomanticWeb.dotNetRDF</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

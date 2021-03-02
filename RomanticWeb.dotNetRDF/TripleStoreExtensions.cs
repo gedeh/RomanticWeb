@@ -55,7 +55,7 @@ namespace RomanticWeb.DotNetRDF
                 store.ExpandGraphs((TripleStore)targetStore, metaGraphUri);
             }
         }
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         /// <summary>Loads data from file with optional automated graph generation.</summary>
         /// <param name="store">Target store to be loaded with data.</param>
         /// <param name="file">Source file with data.</param>

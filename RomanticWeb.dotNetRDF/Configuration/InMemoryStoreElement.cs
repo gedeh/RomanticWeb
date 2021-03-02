@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD16
+﻿#if !NETSTANDARD1_6
 using System.Configuration;
 #else
 using Microsoft.Extensions.Configuration;
@@ -10,7 +10,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
     /// <summary>Configuration element for in-memory triple store.</summary>
     public class InMemoryStoreElement : StoreElement
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         /// <summary>Initializes a new instance of the <see cref="InMemoryStoreElement" /> class.</summary>
         /// <param name="configurationSection">Source configuration section.</param>
         public InMemoryStoreElement(IConfigurationSection configurationSection) : base(configurationSection)
@@ -23,7 +23,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 #endif
 
         /// <summary>Gets or sets a value indicating whether the store should be thread safe.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         public bool ThreadSafe { get; set; }
 #else
         [ConfigurationProperty(ThreadSafeAttributeName, DefaultValue = true)]

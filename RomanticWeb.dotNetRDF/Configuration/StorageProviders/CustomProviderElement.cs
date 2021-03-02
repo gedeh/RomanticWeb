@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 #else
@@ -12,7 +12,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
 {
     internal class CustomProviderElement : StorageProviderElement
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private IDictionary<string, string> _parameters = new Dictionary<string, string>();
 
         internal CustomProviderElement(IConfigurationSection configurationSection) : base(configurationSection)
@@ -60,7 +60,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         {
             get
             {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
                 return _parameters;
 #else
                 return (from KeyValueConfigurationElement element in ConstructorParametersElement select element).ToDictionary(e => e.Key, e => e.Value);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 #else
@@ -16,11 +16,11 @@ namespace RomanticWeb.DotNetRDF.Configuration
 {
     /// <summary>Configuration section for triple stores.</summary>
     public class StoresConfigurationSection
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
         : ConfigurationSection
 #endif
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static readonly IConfigurationRoot Configuration;
         private static StoresConfigurationSection _default;
 
@@ -41,7 +41,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         {
             get
             {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
                 if (_default == null)
                 {
                     _default = new StoresConfigurationSection();
@@ -64,7 +64,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         public StoresCollection Stores { get; private set; }
 
         /// <summary>Gets or sets the configuration files.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         public ConfigurationFileElement[] ConfigurationFiles { get; set; }
 #else
         [ConfigurationProperty(ConfigurationFilesElementName)]
@@ -88,7 +88,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
             if (configurationFile != null)
             {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
                 var uri = new Uri(configurationFile.Path, UriKind.RelativeOrAbsolute);
                 if (!uri.IsAbsoluteUri)
                 {
@@ -104,7 +104,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
             throw new ConfigurationErrorsException(string.Format("Configuration '{0}' wasn't found", name));
         }
 
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
         /// <summary>Tries to deserialize stores collection</summary>
         protected override bool OnDeserializeUnrecognizedElement(string elementName, System.Xml.XmlReader reader)
         {

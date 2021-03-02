@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.Configuration;
 #else
 using System.Xml;
@@ -14,7 +14,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
     /// <summary>Configuration of a third-party triple store.</summary>
     public class PersistentStoreElement : StoreElement
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static readonly IDictionary<string, Func<IConfigurationSection, StorageProviderElement>> ProviderElementFactories;
 #else
         private static readonly IDictionary<string, Func<StorageProviderElement>> ProviderElementFactories;
@@ -23,7 +23,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
         static PersistentStoreElement()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             ProviderElementFactories = new Dictionary<string, Func<IConfigurationSection, StorageProviderElement>>();
             //// TODO: Virtuoso in CORE version required!
             ProviderElementFactories["allegroGraphConnector"] = section => new AllegroGraphConnectorElement(section);
@@ -36,7 +36,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 #endif
         }
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         /// <summary>Initializes a new instance of the <see cref="PersistentStoreElement" /> class.</summary>
         /// <param name="configurationSection">Source configuration section.</param>
         public PersistentStoreElement(IConfigurationSection configurationSection) : base(configurationSection)
@@ -75,7 +75,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
             return new PersistentTripleStore(StorageProvider.CreateStorageProvider());
         }
 
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
         /// <summary>Tries to deserialize known elements representing third-party triple store connector, like Virtuoso, AllegroGraph and others.</summary>
         protected override bool OnDeserializeUnrecognizedElement(string elementName, XmlReader reader)
         {

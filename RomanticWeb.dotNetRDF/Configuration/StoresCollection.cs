@@ -1,9 +1,9 @@
 ﻿using System;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.Collections;
 #endif
 using System.Collections.Generic;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.Configuration;
 #else
 using System.Configuration;
@@ -14,13 +14,13 @@ namespace RomanticWeb.DotNetRDF.Configuration
 {
     /// <summary>Configuration elements for dotNetRDF triple stores.</summary>
     public class StoresCollection :
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         IEnumerable<StoreElement>
 #else
         ConfigurationElementCollection, IEnumerable<StoreElement>
 #endif
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static readonly IDictionary<string, Func<StoresCollection, IConfigurationSection, StoreElement>> StoreElementFactories;
         private readonly ICollection<StoreElement> _stores;
 #else
@@ -30,7 +30,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 
         static StoresCollection()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             StoreElementFactories = new Dictionary<string, Func<StoresCollection, IConfigurationSection, StoreElement>>();
             StoreElementFactories["inMemory"] = (self, section) => new InMemoryStoreElement(section);
             StoreElementFactories["file"] = (self, section) => new FileStoreElement(section);
@@ -50,7 +50,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         public StoresCollection(StoresConfigurationSection parent)
         {
             _parent = parent;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             _stores = new List<StoreElement>();
 #endif
         }
@@ -58,7 +58,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         /// <inheritdoc/>
         IEnumerator<StoreElement> IEnumerable<StoreElement>.GetEnumerator()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             return _stores.GetEnumerator();
 #else
             foreach (var storeElement in this)
@@ -68,7 +68,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 #endif
         }
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         /// <inheritdoc/>
         public IEnumerator GetEnumerator()
         {

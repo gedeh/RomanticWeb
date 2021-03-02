@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD16
+﻿#if NETSTANDARD1_6
 using System.IO;
 using System.Reflection;
 #endif
@@ -13,7 +13,7 @@ namespace System
         /// <returns>Primary place where assemblies for given application domain are stored.</returns>
         public static string GetPrimaryAssemblyPath()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             return Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase.Replace("file:///", String.Empty).Replace("/", Path.DirectorySeparatorChar.ToString()));
 #else
             return System.String.IsNullOrWhiteSpace(AppDomain.CurrentDomain.RelativeSearchPath) ?

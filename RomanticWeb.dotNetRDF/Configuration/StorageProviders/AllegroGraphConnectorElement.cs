@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.Configuration;
 #endif
 using VDS.RDF.Storage;
@@ -15,7 +15,7 @@ namespace RomanticWeb.DotNetRDF.Configuration.StorageProviders
         private const string UsernameAttributeName = "username";
         private const string PasswordAttributeName = "password";
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         internal AllegroGraphConnectorElement(IConfigurationSection configurationSection) : base(configurationSection)
         {
         }

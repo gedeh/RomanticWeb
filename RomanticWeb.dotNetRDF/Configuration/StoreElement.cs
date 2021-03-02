@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD16
+﻿#if NETSTANDARD1_6
 using System;
 using Microsoft.Extensions.Configuration;
 #else
@@ -10,7 +10,7 @@ using VDS.RDF;
 namespace RomanticWeb.DotNetRDF.Configuration
 {
     /// <summary>Configuration of a dotNetRDF triple store.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
     public abstract class StoreElement : ITripleStoreFactory
     {
         /// <summary>Initializes a new instance of the <see cref="StoreElement" /> class.</summary>

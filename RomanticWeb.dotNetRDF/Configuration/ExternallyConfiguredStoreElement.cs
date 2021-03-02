@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Configuration;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.Configuration;
 #endif
 using RomanticWeb.Configuration;
@@ -12,7 +12,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
     /// <summary>Configuration element for a triple store configured in a dotNetRDF configuration file.</summary>
     public class ExternallyConfiguredStoreElement : StoreElement
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private Uri _objectUri = null;
 #else
         private const string BnodeIdAttributeName = "blankNode";
@@ -23,7 +23,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
         private readonly StoresConfigurationSection _stores;
         private IConfigurationLoader _configurationLoader;
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         /// <summary>Initializes a new instance of the <see cref="ExternallyConfiguredStoreElement"/> class.</summary>
         /// <param name="configurationSection">Source configuration section.</param>
         /// <param name="stores">Stores configuration section.</param>
@@ -41,7 +41,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 #endif
 
         /// <summary>Gets or sets the blank node identifier of configured store.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         public string BlankNodeIdentifier { get; set; }
 #else
         [ConfigurationProperty(BnodeIdAttributeName)]
@@ -53,7 +53,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 #endif
 
         /// <summary>Gets or sets the object URI of configured store.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         public Uri ObjectUri
         {
             get
@@ -85,7 +85,7 @@ namespace RomanticWeb.DotNetRDF.Configuration
 #endif
 
         /// <summary>Gets or sets the name of the configuration as declared in the configuration section.</summary>
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         public string ConfigurationName { get; set; }
 #else
         [ConfigurationProperty(ConfigurationFileAttributeName, IsRequired = true)]
