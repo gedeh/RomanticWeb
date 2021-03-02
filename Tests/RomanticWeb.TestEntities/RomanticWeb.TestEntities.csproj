@@ -5,6 +5,7 @@
     <AssemblyName>RomanticWeb.TestEntities</AssemblyName>
     <PackageId>RomanticWeb.TestEntities</PackageId>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

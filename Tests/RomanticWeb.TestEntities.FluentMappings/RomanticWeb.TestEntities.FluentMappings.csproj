@@ -5,6 +5,7 @@
     <AssemblyName>RomanticWeb.TestEntities.FluentMappings</AssemblyName>
     <PackageId>RomanticWeb.TestEntities.FluentMappings</PackageId>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

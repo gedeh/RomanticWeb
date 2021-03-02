@@ -5,6 +5,7 @@
     <AssemblyName>RomanticWeb.TestEntities.MixedMappings</AssemblyName>
     <PackageId>RomanticWeb.TestEntities.MixedMappings</PackageId>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
