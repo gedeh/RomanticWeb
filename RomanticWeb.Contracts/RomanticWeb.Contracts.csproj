@@ -4,7 +4,6 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>RomanticWeb.Contracts</AssemblyName>
     <PackageId>RomanticWeb.Contracts</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);netcoreapp</PackageTargetFallback>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
