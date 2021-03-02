@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.IO;
 #endif
 using System.Linq;
@@ -19,13 +19,13 @@ namespace RomanticWeb.Tests.Configuration
         [SetUp]
         public void Setup()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             Directory.SetCurrentDirectory(Path.Combine(BinDirectory));
 #endif
             _configuration = StoresConfigurationSection.Default;
         }
 
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         [TearDown]
         public void Teardown()
         {
@@ -98,7 +98,7 @@ namespace RomanticWeb.Tests.Configuration
         public void Should_load_configurations()
         {
             // given
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             var loader = _configuration.OpenConfiguration("default");
 #else
             var temp = Environment.CurrentDirectory;
@@ -113,7 +113,7 @@ namespace RomanticWeb.Tests.Configuration
 
         public static IEnumerable GetProviderConfigurations()
         {
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
             var virtuoso = typeof(VDS.RDF.Storage.VirtuosoManager);
             yield return new TestCaseData("virtuoso-connectionString", virtuoso)
                 .SetDescription("Virtoso with direct connection string");

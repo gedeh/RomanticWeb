@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD16
+﻿#if NETSTANDARD1_6
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -8,7 +8,7 @@ namespace RomanticWeb.Tests
 {
     public class ConfigurationTest
     {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
         private static string _binDirectory;
 
         protected static string BaseDirectory

@@ -25,7 +25,7 @@ namespace RomanticWeb.Tests.Helpers
 
         public void Dispose()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             CultureInfo.CurrentCulture = this._rollbackCulture;
 #else
             System.Threading.Thread.CurrentThread.CurrentCulture = this._rollbackCulture;
@@ -35,7 +35,7 @@ namespace RomanticWeb.Tests.Helpers
         private void CommonConstructor(CultureInfo cultureinfo)
         {
             _rollbackCulture = CultureInfo.CurrentCulture;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             CultureInfo.CurrentCulture = cultureinfo;
 #else
             System.Threading.Thread.CurrentThread.CurrentCulture = cultureinfo;

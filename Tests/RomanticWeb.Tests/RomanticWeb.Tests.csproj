@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <DefineConstants>$(DefineConstants);NETSTANDARD16</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETSTANDARD1_6</DefineConstants>
     <AssemblyName>RomanticWeb.Tests</AssemblyName>
     <PackageId>RomanticWeb.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -36,7 +36,7 @@
     <PackageReference Include="Moq" Version="4.6.38-alpha" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

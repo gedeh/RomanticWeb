@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Configuration;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.IO;
 #endif
 using System.Linq;
@@ -18,12 +18,12 @@ namespace RomanticWeb.Tests
         [SetUp]
         public void Setup()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             Directory.SetCurrentDirectory(Path.Combine(BinDirectory));
 #endif
             _configuration = ConfigurationSectionHandler.Default;
         }
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 
         [TearDown]
         public void Teardown()

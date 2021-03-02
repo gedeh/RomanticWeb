@@ -1,4 +1,4 @@
-#if !NETSTANDARD16
+#if !NETSTANDARD1_6
 using NUnit.Framework;
 using RomanticWeb.DotNetRDF;
 using VDS.RDF;

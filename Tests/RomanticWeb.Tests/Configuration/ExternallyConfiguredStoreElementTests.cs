@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Configuration;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using System.IO;
 #endif
 using FluentAssertions;
-#if NETSTANDARD16
+#if NETSTANDARD1_6
 using Microsoft.Extensions.Configuration;
 #endif
 using Moq;
@@ -24,7 +24,7 @@ namespace RomanticWeb.Tests.Configuration
         [SetUp]
         public void Setup()
         {
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             Directory.SetCurrentDirectory(Path.Combine(BinDirectory));
             var subSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
             subSection.SetupGet(instance => instance.Value).Returns("test");
@@ -42,7 +42,7 @@ namespace RomanticWeb.Tests.Configuration
         public void Teardown()
         {
             _loader.VerifyAll();
-#if NETSTANDARD16
+#if NETSTANDARD1_6
             Directory.SetCurrentDirectory(BaseDirectory);
 #endif
         }
