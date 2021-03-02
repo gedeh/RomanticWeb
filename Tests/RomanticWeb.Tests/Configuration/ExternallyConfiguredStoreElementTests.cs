@@ -25,7 +25,7 @@ namespace RomanticWeb.Tests.Configuration
         public void Setup()
         {
 #if NETSTANDARD16
-            Directory.SetCurrentDirectory(Path.Combine(BinDirectory, "netcoreapp1.0"));
+            Directory.SetCurrentDirectory(Path.Combine(BinDirectory));
             var subSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
             subSection.SetupGet(instance => instance.Value).Returns("test");
             var configurationSection = new Mock<IConfigurationSection>(MockBehavior.Strict);

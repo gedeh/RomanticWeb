@@ -20,7 +20,7 @@ namespace RomanticWeb.Tests.Configuration
         public void Setup()
         {
 #if NETSTANDARD16
-            Directory.SetCurrentDirectory(Path.Combine(BinDirectory, "netcoreapp1.0"));
+            Directory.SetCurrentDirectory(Path.Combine(BinDirectory));
 #endif
             _configuration = StoresConfigurationSection.Default;
         }
